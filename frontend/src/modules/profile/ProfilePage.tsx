@@ -1,17 +1,32 @@
-import { useAuthStore } from '../../stores/useAuthStore'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/Card'
-import { Button } from '../../components/Button'
-import { useAccount } from 'wagmi'
-import { User, Mail, Building, Shield, ExternalLink, Settings } from 'lucide-react'
+import { useAuthStore } from "../../stores/useAuthStore";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/Card";
+import { Button } from "../../components/Button";
+import { useAccount } from "wagmi";
+import {
+  User,
+  Mail,
+  Building,
+  Shield,
+  ExternalLink,
+  Settings,
+} from "lucide-react";
 
 export function ProfilePage() {
-  const { user } = useAuthStore()
-  const { address } = useAccount()
+  const { user } = useAuthStore();
+  const { address } = useAccount();
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-10">
-        <h1 className="font-syne font-bold text-3xl md:text-4xl">User Profile</h1>
+        <h1 className="font-syne font-bold text-3xl md:text-4xl">
+          User Profile
+        </h1>
         <Button variant="outline" size="sm" className="gap-2">
           <Settings className="w-4 h-4" />
           Edit Profile
@@ -85,7 +100,9 @@ export function ProfilePage() {
                     <Shield className="w-3 h-3" /> Wallet
                   </p>
                   <div className="flex items-center gap-2">
-                    <p className="font-mono text-sm truncate max-w-[120px]">{address}</p>
+                    <p className="font-mono text-sm truncate max-w-[120px]">
+                      {address}
+                    </p>
                     <ExternalLink className="w-3 h-3 text-text-slate" />
                   </div>
                 </div>
@@ -101,7 +118,9 @@ export function ProfilePage() {
               <div className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/30 border border-text-muted/5">
                 <div>
                   <p className="text-sm font-medium">Email Notifications</p>
-                  <p className="text-xs text-text-slate">Receive updates on deal status</p>
+                  <p className="text-xs text-text-slate">
+                    Receive updates on deal status
+                  </p>
                 </div>
                 <div className="w-10 h-6 bg-brand-teal rounded-full relative">
                   <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
@@ -110,7 +129,9 @@ export function ProfilePage() {
               <div className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/30 border border-text-muted/5">
                 <div>
                   <p className="text-sm font-medium">Auto-Release</p>
-                  <p className="text-xs text-text-slate">Enable Chainlink automation for your deals</p>
+                  <p className="text-xs text-text-slate">
+                    Enable Chainlink automation for your deals
+                  </p>
                 </div>
                 <div className="w-10 h-6 bg-brand-teal rounded-full relative">
                   <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
@@ -121,5 +142,5 @@ export function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

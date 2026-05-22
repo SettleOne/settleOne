@@ -1,25 +1,33 @@
-import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
-import { cn } from '../utils/cn'
+import * as React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { cn } from "../utils/cn";
 
 interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title?: string
-  children: React.ReactNode
-  className?: string
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className,
+}: ModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = "unset";
     }
-    return () => { document.body.style.overflow = 'unset' }
-  }, [isOpen])
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -38,26 +46,24 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className={cn(
               "relative z-10 w-full max-w-lg bg-bg-secondary border border-text-muted/20 rounded-xl shadow-2xl overflow-hidden",
-              className
+              className,
             )}
           >
             <div className="flex items-center justify-between p-6 border-b border-text-muted/10">
               <h3 className="font-syne font-bold text-xl">{title}</h3>
-              <button 
+              <button
                 onClick={onClose}
                 className="p-1 rounded-md hover:bg-bg-tertiary text-text-slate hover:text-text-primary transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6">
-              {children}
-            </div>
+            <div className="p-6">{children}</div>
           </motion.div>
         </div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
-import { useEffect } from 'react'
+import { useEffect } from "react";

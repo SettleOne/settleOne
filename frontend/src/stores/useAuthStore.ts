@@ -1,7 +1,7 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export type UserRole = 'BUYER' | 'SELLER' | 'BOTH' | 'admin' | 'arbitrator';
+export type UserRole = "BUYER" | "SELLER" | "BOTH" | "admin" | "arbitrator";
 
 interface User {
   id: string;
@@ -30,12 +30,13 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
-      updateUser: (updates) => set((state) => ({
-        user: state.user ? { ...state.user, ...updates } : null
-      })),
+      updateUser: (updates) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : null,
+        })),
     }),
     {
-      name: 'settleone-auth-storage',
-    }
-  )
-)
+      name: "settleone-auth-storage",
+    },
+  ),
+);
