@@ -1,12 +1,12 @@
 import * as React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion, type MotionProps } from "framer-motion";
 import { cn } from "../utils/cn";
 
-export interface CardProps extends HTMLMotionProps<"div"> {
+export interface CardProps extends MotionProps, Omit<React.HTMLAttributes<HTMLDivElement>, keyof MotionProps> {
   glow?: "teal" | "gold" | "none";
 }
 
-export function Card({ className, glow = "none", ...props }: CardProps) {
+export function Card({ className, glow = "none", children, ...props }: CardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -18,13 +18,13 @@ export function Card({ className, glow = "none", ...props }: CardProps) {
         glow === "gold" && "glow-gold border-brand-gold/20",
         className,
       )}
-      {...props}
+      {...(props as any)}
     >
       {/* Sweeping highlight effect for card */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
         <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       </div>
-      {props.children}
+      {children}
     </motion.div>
   );
 }

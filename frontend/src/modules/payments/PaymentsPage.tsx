@@ -6,27 +6,29 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { Wallet, TrendingUp, History, ArrowUpRight } from "lucide-react";
+import { Wallet, TrendingUp, History, ArrowUpRight, Loader2 } from "lucide-react";
+import { useDealStore } from "../../stores/useDealStore";
+import { useEffect, useMemo } from "react";
+import { formatEther } from "viem";
 
 export function PaymentsPage() {
-  const activeEscrows = [
-    {
-      id: "1",
-      deal: "Website Redesign",
-      amount: "2.5 ETH",
-      yield: "0.012 ETH",
-      release: "In 4 days",
-      status: "LOCKED",
-    },
-    {
-      id: "3",
-      deal: "Smart Contract Audit",
-      amount: "1.2 ETH",
-      yield: "0.005 ETH",
-      release: "Pending Verification",
-      status: "VERIFYING",
-    },
-  ];
+  const { deals, loading, fetchDeals } = useDealStore();
+
+  useEffect(() => {
+    fetchDeals();
+  }, [fetchDeals]);
+
+  const activeEscrows = useMemo(() => {
+    return deals.filter(d => ["funded", "delivery_submitted", "verification_pending", "verified"].includes(d.status.toLowerCase()));
+  }, [deals]);
+
+  const paymentHistory = useMemo(() => {
+    return deals.filter(d => ["released", "settled", "refunded", "cancelled"].includes(d.status.toLowerCase()));
+  }, [deals]);
+
+  const totalLocked = useMemo(() => {
+    return activeEscrows.reduce((acc, d) => acc + BigInt(d.amountWei), 0n);
+  }, [activeEscrows]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -43,38 +45,41 @@ export function PaymentsPage() {
         <Card className="bg-brand-teal/5 border-brand-teal/10">
           <CardHeader>
             <CardDescription>Total Value Locked</CardDescription>
-            <CardTitle className="text-3xl text-brand-teal">3.70 ETH</CardTitle>
+            <CardTitle className="text-3xl text-brand-teal">
+              {formatEther(totalLocked)} ETH
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-brand-teal">
               <TrendingUp className="w-3 h-3" />
-              <span>+0.2% yield this week</span>
+              <span>Yield Strategy Active</span>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardDescription>Accrued Yield</CardDescription>
-            <CardTitle className="text-3xl">0.017 ETH</CardTitle>
+            <CardTitle className="text-3xl">0.00 ETH</CardTitle>
           </CardHeader>
           <CardContent>
             <Button
               variant="link"
               className="p-0 h-auto text-[10px] font-mono uppercase tracking-widest text-brand-teal"
+              disabled
             >
-              Withdraw Yield
+              Withdraw Yield (Soon)
             </Button>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardDescription>Wallet Balance</CardDescription>
-            <CardTitle className="text-3xl">12.45 ETH</CardTitle>
+            <CardDescription>Mainnet Wallet</CardDescription>
+            <CardTitle className="text-3xl">Active</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-text-slate">
               <Wallet className="w-3 h-3" />
-              <span>Mainnet Wallet</span>
+              <span>Connected via Sepolia</span>
             </div>
           </CardContent>
         </Card>
@@ -89,37 +94,47 @@ export function PaymentsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {activeEscrows.map((escrow) => (
-                <div
-                  key={escrow.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/50 border border-text-muted/5"
-                >
-                  <div>
-                    <p className="font-medium text-sm">{escrow.deal}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-[10px] font-mono text-brand-teal">
-                        {escrow.amount}
-                      </span>
-                      <span className="text-[10px] font-mono text-text-slate">
-                        •
-                      </span>
-                      <span className="text-[10px] font-mono text-text-slate">
-                        {escrow.release}
-                      </span>
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-brand-teal" />
+              </div>
+            ) : activeEscrows.length === 0 ? (
+              <div className="py-12 text-center text-text-slate text-sm">
+                No active escrows found
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeEscrows.map((escrow) => (
+                  <div
+                    key={escrow.id}
+                    className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/50 border border-text-muted/5"
+                  >
+                    <div>
+                      <p className="font-medium text-sm">{escrow.title}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[10px] font-mono text-brand-teal">
+                          {formatEther(BigInt(escrow.amountWei))} ETH
+                        </span>
+                        <span className="text-[10px] font-mono text-text-slate">
+                          •
+                        </span>
+                        <span className="text-[10px] font-mono text-text-slate uppercase">
+                          {escrow.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-mono text-text-slate uppercase tracking-widest mb-1">
+                        Yield
+                      </p>
+                      <p className="text-xs font-bold text-brand-teal">
+                        +0.00 ETH
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[10px] font-mono text-text-slate uppercase tracking-widest mb-1">
-                      Yield
-                    </p>
-                    <p className="text-xs font-bold text-brand-teal">
-                      +{escrow.yield}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -134,52 +149,48 @@ export function PaymentsPage() {
             <History className="w-4 h-4 text-text-slate" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  deal: "API Integration",
-                  amount: "0.8 ETH",
-                  type: "RECEIVED",
-                  date: "2d ago",
-                },
-                {
-                  deal: "Design Assets",
-                  amount: "0.3 ETH",
-                  type: "REFUNDED",
-                  date: "1w ago",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/30 border border-text-muted/5"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded flex items-center justify-center ${item.type === "RECEIVED" ? "bg-brand-teal/10 text-brand-teal" : "bg-brand-gold/10 text-brand-gold"}`}
-                    >
-                      <ArrowUpRight className="w-4 h-4" />
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-brand-teal" />
+              </div>
+            ) : paymentHistory.length === 0 ? (
+              <div className="py-12 text-center text-text-slate text-sm">
+                No history found
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {paymentHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-4 rounded-lg bg-bg-tertiary/30 border border-text-muted/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded flex items-center justify-center ${item.status === "settled" || item.status === "released" ? "bg-brand-teal/10 text-brand-teal" : "bg-brand-gold/10 text-brand-gold"}`}
+                      >
+                        <ArrowUpRight className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{item.title}</p>
+                        <p className="text-[10px] font-mono text-text-slate">
+                          {new Date(item.updatedAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{item.deal}</p>
-                      <p className="text-[10px] font-mono text-text-slate">
-                        {item.date}
+                    <div className="text-right">
+                      <p
+                        className={`text-sm font-bold ${item.status === "settled" || item.status === "released" ? "text-brand-teal" : "text-brand-gold"}`}
+                      >
+                        {formatEther(BigInt(item.amountWei))} ETH
+                      </p>
+                      <p className="text-[10px] font-mono text-text-slate uppercase">
+                        {item.status}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-sm font-bold ${item.type === "RECEIVED" ? "text-brand-teal" : "text-brand-gold"}`}
-                    >
-                      {item.type === "RECEIVED" ? "+" : ""}
-                      {item.amount}
-                    </p>
-                    <p className="text-[10px] font-mono text-text-slate uppercase">
-                      {item.type}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

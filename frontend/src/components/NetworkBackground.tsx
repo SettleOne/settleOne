@@ -20,7 +20,6 @@ export function NetworkBackground() {
     const TEAL = "#00E5A0",
       GOLD = "#F5A623",
       SLATE = "#3A4D66";
-    const TEAL_A = "rgba(0,229,160,";
 
     class Particle {
       orbit: boolean;
@@ -95,17 +94,17 @@ export function NetworkBackground() {
         }
       }
 
-      draw() {
+      draw(ctx: CanvasRenderingContext2D) {
         if (this.a < 0.005 || this.life < 0) return;
-        cx.save();
-        cx.globalAlpha = this.a;
-        cx.shadowBlur = 10;
-        cx.shadowColor = this.col;
-        cx.fillStyle = this.col;
-        cx.beginPath();
-        cx.arc(this.x, this.y, this.sz, 0, Math.PI * 2);
-        cx.fill();
-        cx.restore();
+        ctx.save();
+        ctx.globalAlpha = this.a;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.col;
+        ctx.fillStyle = this.col;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.sz, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
     }
 
@@ -115,27 +114,27 @@ export function NetworkBackground() {
       for (let i = 0; i < 90; i++) pts.push(new Particle(true));
     }, 2800);
 
-    const drawGrid = () => {
-      cx.save();
-      cx.strokeStyle = "rgba(0,229,160,0.022)";
-      cx.lineWidth = 0.5;
+    const drawGrid = (ctx: CanvasRenderingContext2D) => {
+      ctx.save();
+      ctx.strokeStyle = "rgba(0,229,160,0.022)";
+      ctx.lineWidth = 0.5;
       const gs = 64;
       for (let x = 0; x < W; x += gs) {
-        cx.beginPath();
-        cx.moveTo(x, 0);
-        cx.lineTo(x, H);
-        cx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
       }
       for (let y = 0; y < H; y += gs) {
-        cx.beginPath();
-        cx.moveTo(0, y);
-        cx.lineTo(W, y);
-        cx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
       }
-      cx.restore();
+      ctx.restore();
     };
 
-    const drawWeb = () => {
+    const drawWeb = (ctx: CanvasRenderingContext2D) => {
       const limit = pts.filter((p) => p.life > 0);
       for (let i = 0; i < limit.length; i++) {
         for (let j = i + 1; j < limit.length; j++) {
@@ -145,15 +144,15 @@ export function NetworkBackground() {
           if (d < 100) {
             const alpha =
               (1 - d / 100) * Math.min(limit[i].a, limit[j].a) * 0.4;
-            cx.save();
-            cx.globalAlpha = alpha;
-            cx.strokeStyle = TEAL;
-            cx.lineWidth = 0.4;
-            cx.beginPath();
-            cx.moveTo(limit[i].x, limit[i].y);
-            cx.lineTo(limit[j].x, limit[j].y);
-            cx.stroke();
-            cx.restore();
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = TEAL;
+            ctx.lineWidth = 0.4;
+            ctx.beginPath();
+            ctx.moveTo(limit[i].x, limit[i].y);
+            ctx.lineTo(limit[j].x, limit[j].y);
+            ctx.stroke();
+            ctx.restore();
           }
         }
       }
@@ -163,7 +162,7 @@ export function NetworkBackground() {
     const loop = () => {
       animationId = requestAnimationFrame(loop);
       cx.clearRect(0, 0, W, H);
-      drawGrid();
+      drawGrid(cx);
 
       const cg = cx.createRadialGradient(
         W / 2,
@@ -179,10 +178,10 @@ export function NetworkBackground() {
       cx.fillStyle = cg;
       cx.fillRect(0, 0, W, H);
 
-      drawWeb();
+      drawWeb(cx);
       pts.forEach((p) => {
         p.tick();
-        p.draw();
+        p.draw(cx);
       });
     };
     loop();

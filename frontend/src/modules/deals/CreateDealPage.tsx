@@ -11,8 +11,6 @@ import {
   ArrowLeft,
   Shield,
   Clock,
-  FileText,
-  ChevronRight,
   Sparkles,
   Send,
   Globe,
@@ -22,7 +20,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../../components/Card";

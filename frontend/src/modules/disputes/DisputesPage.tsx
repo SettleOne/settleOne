@@ -6,9 +6,18 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { Gavel, AlertCircle, FileText, Scale } from "lucide-react";
+import { Gavel, AlertCircle, FileText, Scale, Loader2, CheckCircle2 } from "lucide-react";
+import { useDisputeStore } from "../../stores/useDisputeStore";
+import { useEffect } from "react";
+import { StatusBadge } from "../../components/StatusBadge";
 
 export function DisputesPage() {
+  const { disputes, loading, fetchDisputes } = useDisputeStore();
+
+  useEffect(() => {
+    fetchDisputes();
+  }, [fetchDisputes]);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-10">
@@ -31,16 +40,44 @@ export function DisputesPage() {
               <Gavel className="w-5 h-5 text-brand-gold" />
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-bg-tertiary flex items-center justify-center mb-4">
-                  <CheckCircle2 className="w-8 h-8 text-brand-teal" />
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-brand-gold" />
                 </div>
-                <h3 className="font-bold text-lg">No active disputes</h3>
-                <p className="text-sm text-text-slate max-w-xs mt-1">
-                  Everything looks good! Your deals are proceeding according to
-                  the agreed terms.
-                </p>
-              </div>
+              ) : disputes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-bg-tertiary flex items-center justify-center mb-4">
+                    <CheckCircle2 className="w-8 h-8 text-brand-teal" />
+                  </div>
+                  <h3 className="font-bold text-lg">No active disputes</h3>
+                  <p className="text-sm text-text-slate max-w-xs mt-1">
+                    Everything looks good! Your deals are proceeding according to
+                    the agreed terms.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {disputes.map((dispute) => (
+                    <div
+                      key={dispute.id}
+                      className="flex items-center justify-between p-5 rounded-xl bg-bg-tertiary/50 border border-text-muted/10"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
+                          <AlertCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-bold">{dispute.reason}</p>
+                          <p className="text-xs text-text-slate mt-0.5">
+                            Deal ID: {dispute.dealId}
+                          </p>
+                        </div>
+                      </div>
+                      <StatusBadge status="disputed" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -112,5 +149,3 @@ export function DisputesPage() {
     </div>
   );
 }
-
-import { CheckCircle2 } from "lucide-react";

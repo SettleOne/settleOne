@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useAccount } from "wagmi";
 import {
   Plus,
   ArrowUpRight,
@@ -14,7 +13,7 @@ import {
   ArrowRight,
   ShieldCheck,
   PieChart,
-  Wallet,
+  Loader2,
 } from "lucide-react";
 import { formatEther } from "viem";
 
@@ -26,49 +25,43 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
+import { StatusBadge } from "../../components/StatusBadge";
 import { useAuthStore } from "../../stores/useAuthStore";
-import { apiClient } from "../../api/apiClient";
+import { useDealStore } from "../../stores/useDealStore";
 import { cn } from "../../utils/cn";
 
 export function DashboardPage() {
   const { user } = useAuthStore();
-  const { address } = useAccount();
+  const { deals, loading, fetchDeals } = useDealStore();
   const [stats, setStats] = useState<any>(null);
-  const [recentDeals, setRecentDeals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const { data: dealsData } = await apiClient.get("/deals?limit=5");
-        setRecentDeals(dealsData.data);
+    fetchDeals();
+  }, [fetchDeals]);
 
-        // Compute stats from deals for now
-        const totalVolume = dealsData.data.reduce(
-          (acc: bigint, deal: any) => acc + BigInt(deal.amountWei),
-          0n,
-        );
-        const activeCount = dealsData.data.filter(
-          (d: any) => d.status !== "settled" && d.status !== "cancelled",
-        ).length;
+  useEffect(() => {
+    if (deals.length > 0) {
+      const totalVolume = deals.reduce(
+        (acc: bigint, deal: any) => acc + BigInt(deal.amountWei),
+        0n,
+      );
+      const activeCount = deals.filter(
+        (d: any) => d.status !== "settled" && d.status !== "cancelled",
+      ).length;
 
-        setStats({
-          activeDeals: activeCount,
-          totalVolume: formatEther(totalVolume),
-          pendingVerif: dealsData.data.filter(
-            (d: any) => d.status === "delivery_submitted",
-          ).length,
-          settled: dealsData.data.filter((d: any) => d.status === "settled")
-            .length,
-        });
-      } catch (err) {
-        console.error("Dashboard fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboard();
-  }, []);
+      setStats({
+        activeDeals: activeCount,
+        totalVolume: formatEther(totalVolume),
+        pendingVerif: deals.filter(
+          (d: any) => d.status === "delivery_submitted",
+        ).length,
+        settled: deals.filter((d: any) => d.status === "settled")
+          .length,
+      });
+    }
+  }, [deals]);
+
+  const recentDeals = deals.slice(0, 5);
 
   return (
     <div className="container max-w-7xl mx-auto px-4 py-12 relative z-10">
@@ -85,7 +78,7 @@ export function DashboardPage() {
           <div className="flex items-center gap-3">
             <div className="h-1.5 w-1.5 rounded-full bg-brand-teal animate-pulse shadow-[0_0_8px_var(--color-brand-teal)]" />
             <p className="text-text-slate font-mono text-[10px] uppercase tracking-[0.3em]">
-              Node: {user?.displayName || "Anonymous"} • {user?.role || "Guest"}
+              Node: {user?.name || "Anonymous"} • {user?.role || "Guest"}
             </p>
           </div>
         </motion.div>
@@ -221,7 +214,7 @@ export function DashboardPage() {
                           </p>
                           <div className="flex items-center gap-3 mt-1 text-[10px] font-mono text-text-slate uppercase tracking-tighter">
                             <span className="text-brand-teal">
-                              {formatEther(deal.amountWei)} ETH
+                              {formatEther(BigInt(deal.amountWei))} ETH
                             </span>
                             <span>•</span>
                             <span className="truncate max-w-[120px]">

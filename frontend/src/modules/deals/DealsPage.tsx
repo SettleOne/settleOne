@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useAccount } from "wagmi";
 import {
   Plus,
   Search,
-  Filter,
   ArrowRight,
   Loader2,
   Wallet,
@@ -13,6 +11,7 @@ import {
   Inbox,
   ExternalLink,
   Clock,
+  ShieldCheck,
 } from "lucide-react";
 import { formatEther } from "viem";
 
@@ -26,30 +25,17 @@ import {
 } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { StatusBadge } from "../../components/StatusBadge";
-import { apiClient } from "../../api/apiClient";
+import { useDealStore } from "../../stores/useDealStore";
 import { cn } from "../../utils/cn";
 
 export function DealsPage() {
-  const { address } = useAccount();
-  const [deals, setDeals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { deals, loading, fetchDeals } = useDealStore();
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchDeals = async () => {
-      if (!address) return;
-      try {
-        const { data } = await apiClient.get("/deals");
-        setDeals(data.data);
-      } catch (err) {
-        console.error("Failed to fetch deals", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchDeals();
-  }, [address]);
+  }, [fetchDeals]);
 
   const filteredDeals = deals.filter((deal) => {
     const matchesSearch =
@@ -171,9 +157,9 @@ export function DealsPage() {
                         Obligation
                       </p>
                       <p className="text-2xl font-syne font-black text-brand-teal tracking-tighter">
-                        {formatEther(deal.amountWei)}{" "}
+                        {formatEther(BigInt(deal.amountWei))}{" "}
                         <span className="text-xs font-normal opacity-50">
-                          {deal.currencySymbol}
+                          ETH
                         </span>
                       </p>
                     </div>
@@ -196,7 +182,7 @@ export function DealsPage() {
 
                   <CardFooter className="pt-2">
                     <Link
-                      to={`/deals/${deal.contractDealId || deal.id}`}
+                      to={`/deals/${deal.onchainDealId || deal.id}`}
                       className="w-full"
                     >
                       <Button

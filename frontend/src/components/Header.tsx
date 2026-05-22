@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { Button } from "./Button";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { injected } from "wagmi/connectors";
-import { Wallet, LogOut, Menu, User as UserIcon } from "lucide-react";
+import { Wallet, LogOut, Menu, User as UserIcon, Bell } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore";
+import { useNotificationStore } from "../stores/useNotificationStore";
 import { useState, useEffect } from "react";
 import { AuthModal } from "../modules/auth/AuthModal";
 
@@ -12,6 +13,7 @@ export function Header() {
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { user, logout } = useAuthStore();
+  const { unreadCount } = useNotificationStore();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
@@ -70,15 +72,31 @@ export function Header() {
                 </span>
               </div>
               {user ? (
-                <Link to="/profile">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-bg-tertiary"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                  </Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link to="/notifications" className="relative">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-bg-tertiary"
+                    >
+                      <Bell className="w-4 h-4" />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-teal text-bg-primary text-[10px] font-bold rounded-full flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Button>
+                  </Link>
+                  <Link to="/profile">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-bg-tertiary"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
               ) : (
                 <Button
                   variant="outline"

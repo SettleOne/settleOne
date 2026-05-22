@@ -8,6 +8,7 @@ import { DealDetailsPage } from "./modules/deals/DealDetailsPage";
 import { PaymentsPage } from "./modules/payments/PaymentsPage";
 import { DisputesPage } from "./modules/disputes/DisputesPage";
 import { ProfilePage } from "./modules/profile/ProfilePage";
+import { NotificationsPage } from "./modules/notifications/NotificationsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -68,6 +69,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationsPage />
             </ProtectedRoute>
           }
         />

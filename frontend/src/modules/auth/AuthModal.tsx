@@ -31,9 +31,9 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const { setAuth, user: authUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
 
   const [step, setStep] = useState<"login" | "register" | "loading">("login");
   const [error, setError] = useState<string | null>(null);

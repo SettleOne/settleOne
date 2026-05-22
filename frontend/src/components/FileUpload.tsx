@@ -5,12 +5,10 @@ import {
   X,
   FileText,
   CheckCircle2,
-  Loader2,
   AlertCircle,
-} from "lucide-react";
-import { Button } from "./Button";
-import { apiClient } from "../api/apiClient";
-import { cn } from "../utils/cn";
+  } from "lucide-react";
+  import { Button } from "./Button";
+  import { cn } from "../utils/cn";
 
 interface FileUploadProps {
   onUploadComplete: (hash: `0x${string}`, metadata: any) => void;

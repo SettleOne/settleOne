@@ -1,4 +1,4 @@
-import { getContract, parseEther, zeroAddress } from "viem";
+import { parseEther, zeroAddress } from "viem";
 import { DEAL_MANAGER_ABI } from "../constants/abis";
 import { DEAL_MANAGER_ADDRESS } from "../constants/contracts";
 

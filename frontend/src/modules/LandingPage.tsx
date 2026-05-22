@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useConnect } from "wagmi";
+import { useConnect } from "wagmi";
 import { injected } from "wagmi/connectors";
 import {
   ArrowRight,
@@ -10,7 +10,6 @@ import {
   RefreshCw,
   Lock,
   CheckCircle,
-  Gavel,
   Globe,
   Cpu,
 } from "lucide-react";
@@ -23,7 +22,6 @@ import { cn } from "../utils/cn";
 export function LandingPage() {
   const [scene, setScene] = useState(0);
   const navigate = useNavigate();
-  const { isConnected } = useAccount();
   const { connect } = useConnect();
   const { isAuthenticated } = useAuthStore();
 

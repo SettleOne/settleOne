@@ -2,24 +2,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWalletClient, usePublicClient, useAccount } from "wagmi";
-import { formatEther, parseEther } from "viem";
+import { formatEther } from "viem";
 import {
   Loader2,
   ArrowLeft,
-  Clock,
   ShieldCheck,
-  FileText,
-  Wallet,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
-  Upload,
-  Gavel,
-  ArrowRight,
   User,
   Building,
   Zap,
   Info,
+  ExternalLink,
+  CheckCircle2,
+  AlertCircle,
+  Upload,
+  Gavel,
+  Wallet,
 } from "lucide-react";
 
 import {
@@ -33,9 +30,9 @@ import { Button } from "../../components/Button";
 import { StatusBadge } from "../../components/StatusBadge";
 import { Modal } from "../../components/Modal";
 import { FileUpload } from "../../components/FileUpload";
+import { Timer } from "../../components/Timer";
 import { dealsSdk } from "../../sdk/deals";
 import { apiClient } from "../../api/apiClient";
-import { useAuthStore } from "../../stores/useAuthStore";
 import { cn } from "../../utils/cn";
 
 export function DealDetailsPage() {
@@ -119,7 +116,7 @@ export function DealDetailsPage() {
     }
   };
 
-  const handleUploadComplete = async (hash: `0x${string}`, metadata: any) => {
+  const handleUploadComplete = async (hash: `0x${string}`) => {
     if (!walletClient || !publicClient || !id) return;
     setIsUploadModalOpen(false);
     setActionLoading(true);
@@ -279,19 +276,10 @@ export function DealDetailsPage() {
                       Temporal Constraints
                     </CardDescription>
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <Clock className="w-5 h-5 text-text-slate" />
-                        <div>
-                          <p className="text-[10px] font-mono uppercase text-text-slate tracking-tighter">
-                            Delivery Deadline
-                          </p>
-                          <p className="text-sm font-medium">
-                            {new Date(
-                              Number(contractDeal.deliveryDeadline) * 1000,
-                            ).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
+                      <Timer 
+                        deadline={Number(contractDeal.deliveryDeadline) * 1000} 
+                        label="Execution Deadline"
+                      />
                       <div className="flex items-center gap-3">
                         <ShieldCheck className="w-5 h-5 text-text-slate" />
                         <div>
