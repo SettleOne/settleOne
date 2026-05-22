@@ -1,0 +1,106 @@
+export const DEAL_MANAGER_ABI = [
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "address", "name": "seller", "type": "address" },
+          { "internalType": "address", "name": "token", "type": "address" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "uint256", "name": "deliveryDeadline", "type": "uint256" },
+          { "internalType": "uint256", "name": "disputeWindow", "type": "uint256" },
+          { "internalType": "bytes32", "name": "termsHash", "type": "bytes32" },
+          { "internalType": "bytes32", "name": "metadataHash", "type": "bytes32" },
+          { "internalType": "address", "name": "verifier", "type": "address" },
+          { "internalType": "address", "name": "disputeResolver", "type": "address" }
+        ],
+        "internalType": "struct DealStructs.DealInput",
+        "name": "input",
+        "type": "tuple"
+      }
+    ],
+    "name": "createDeal",
+    "outputs": [{ "internalType": "uint256", "name": "dealId", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "dealId", "type": "uint256" }],
+    "name": "depositFunds",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "dealId", "type": "uint256" },
+      { "internalType": "bytes32", "name": "proofHash", "type": "bytes32" }
+    ],
+    "name": "submitDeliveryProof",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "dealId", "type": "uint256" }],
+    "name": "confirmDelivery",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "dealId", "type": "uint256" },
+      { "internalType": "string", "name": "reason", "type": "string" }
+    ],
+    "name": "raiseDispute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "dealId", "type": "uint256" }],
+    "name": "getDeal",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "address", "name": "seller", "type": "address" },
+          { "internalType": "address", "name": "token", "type": "address" },
+          { "internalType": "address", "name": "verifier", "type": "address" },
+          { "internalType": "address", "name": "disputeResolver", "type": "address" },
+          { "internalType": "uint128", "name": "amount", "type": "uint128" },
+          { "internalType": "uint64", "name": "createdAt", "type": "uint64" },
+          { "internalType": "uint64", "name": "fundedAt", "type": "uint64" },
+          { "internalType": "uint64", "name": "proofSubmittedAt", "type": "uint64" },
+          { "internalType": "uint64", "name": "deliveredAt", "type": "uint64" },
+          { "internalType": "uint64", "name": "deliveryDeadline", "type": "uint64" },
+          { "internalType": "uint64", "name": "disputeWindowEndsAt", "type": "uint64" },
+          { "internalType": "uint64", "name": "settledAt", "type": "uint64" },
+          { "internalType": "uint32", "name": "disputeWindow", "type": "uint32" },
+          { "internalType": "uint8", "name": "state", "type": "uint8" },
+          { "internalType": "bytes32", "name": "termsHash", "type": "bytes32" },
+          { "internalType": "bytes32", "name": "metadataHash", "type": "bytes32" },
+          { "internalType": "bytes32", "name": "proofHash", "type": "bytes32" }
+        ],
+        "internalType": "struct DealStructs.Deal",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "dealId", "type": "uint256" },
+      { "indexed": true, "internalType": "address", "name": "seller", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "buyer", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "DealCreated",
+    "type": "event"
+  }
+] as const

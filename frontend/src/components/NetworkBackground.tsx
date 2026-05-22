@@ -1,0 +1,176 @@
+import { useEffect, useRef } from 'react'
+
+export function NetworkBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const cv = canvasRef.current
+    if (!cv) return
+    const cx = cv.getContext('2d')
+    if (!cx) return
+
+    let W: number, H: number
+    const resize = () => {
+      W = cv.width = window.innerWidth
+      H = cv.height = window.innerHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const TEAL = '#00E5A0', GOLD = '#F5A623', SLATE = '#3A4D66'
+    const TEAL_A = 'rgba(0,229,160,'
+
+    class Particle {
+      orbit: boolean
+      x: number = 0
+      y: number = 0
+      tx: number = 0
+      ty: number = 0
+      life: number = 0
+      max: number = 0
+      sz: number = 0
+      ang: number = 0
+      rad: number = 0
+      spd: number = 0
+      col: string = ''
+      a: number = 0
+
+      constructor(orbit: boolean) {
+        this.orbit = orbit
+        this.reset()
+        this.life = Math.random() * this.max
+      }
+
+      reset() {
+        if (!this.orbit) {
+          const a = Math.random() * Math.PI * 2, d = 200 + Math.random() * 500
+          this.x = W / 2 + Math.cos(a) * d
+          this.y = H / 2 + Math.sin(a) * d
+          const ta = Math.random() * Math.PI * 2, td = 40 + Math.random() * 120
+          this.tx = W / 2 + Math.cos(ta) * td
+          this.ty = H / 2 + Math.sin(ta) * td
+          this.life = -(Math.random() * 90) | 0
+          this.max = 100 + Math.random() * 90
+          this.sz = .4 + Math.random() * 1.4
+        } else {
+          this.ang = Math.random() * Math.PI * 2
+          this.rad = 140 + Math.random() * 240
+          this.spd = (.0006 + Math.random() * .0035) * (Math.random() > .5 ? 1 : -1)
+          this.x = W / 2 + Math.cos(this.ang) * this.rad
+          this.y = H / 2 + Math.sin(this.ang) * this.rad
+          this.life = 0
+          this.max = 220 + Math.random() * 300
+          this.sz = .5 + Math.random() * 1.6
+        }
+        const r = Math.random()
+        this.col = r > .6 ? TEAL : r > .3 ? GOLD : SLATE
+        this.a = 0
+      }
+
+      tick() {
+        this.life++
+        if (this.life < 0) return
+        if (!this.orbit) {
+          const t = Math.min(this.life / this.max, 1)
+          this.x += (this.tx - this.x) * .048
+          this.y += (this.ty - this.y) * .048
+          this.a = (t < .2 ? t / .2 : (1 - t) / .8) * .8
+          if (this.life > this.max) this.reset()
+        } else {
+          this.ang += this.spd
+          this.x = W / 2 + Math.cos(this.ang) * this.rad
+          this.y = H / 2 + Math.sin(this.ang) * this.rad
+          const t = (this.life % this.max) / this.max
+          this.a = (t < .08 ? t / .08 : t > .9 ? (1 - t) / .1 : 1) * .28
+          if (this.life > this.max) {
+            this.life = 0
+            this.rad = 140 + Math.random() * 240
+            this.ang = Math.random() * Math.PI * 2
+          }
+        }
+      }
+
+      draw() {
+        if (this.a < .005 || this.life < 0) return
+        cx.save()
+        cx.globalAlpha = this.a
+        cx.shadowBlur = 10
+        cx.shadowColor = this.col
+        cx.fillStyle = this.col
+        cx.beginPath()
+        cx.arc(this.x, this.y, this.sz, 0, Math.PI * 2)
+        cx.fill()
+        cx.restore()
+      }
+    }
+
+    const pts: Particle[] = []
+    for (let i = 0; i < 160; i++) pts.push(new Particle(false))
+    setTimeout(() => {
+      for (let i = 0; i < 90; i++) pts.push(new Particle(true))
+    }, 2800)
+
+    const drawGrid = () => {
+      cx.save()
+      cx.strokeStyle = 'rgba(0,229,160,0.022)'
+      cx.lineWidth = .5
+      const gs = 64
+      for (let x = 0; x < W; x += gs) { cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, H); cx.stroke() }
+      for (let y = 0; y < H; y += gs) { cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke() }
+      cx.restore()
+    }
+
+    const drawWeb = () => {
+      const limit = pts.filter(p => p.life > 0)
+      for (let i = 0; i < limit.length; i++) {
+        for (let j = i + 1; j < limit.length; j++) {
+          const dx = limit[i].x - limit[j].x, dy = limit[i].y - limit[j].y
+          const d = Math.sqrt(dx * dx + dy * dy)
+          if (d < 100) {
+            const alpha = (1 - d / 100) * Math.min(limit[i].a, limit[j].a) * .4
+            cx.save()
+            cx.globalAlpha = alpha
+            cx.strokeStyle = TEAL
+            cx.lineWidth = .4
+            cx.beginPath()
+            cx.moveTo(limit[i].x, limit[i].y)
+            cx.lineTo(limit[j].x, limit[j].y)
+            cx.stroke()
+            cx.restore()
+          }
+        }
+      }
+    }
+
+    let animationId: number
+    const loop = () => {
+      animationId = requestAnimationFrame(loop)
+      cx.clearRect(0, 0, W, H)
+      drawGrid()
+      
+      const cg = cx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.min(W, H) * .55)
+      cg.addColorStop(0, 'rgba(0,229,160,0.06)')
+      cg.addColorStop(.5, 'rgba(0,100,70,0.02)')
+      cg.addColorStop(1, 'rgba(0,0,0,0)')
+      cx.fillStyle = cg
+      cx.fillRect(0, 0, W, H)
+
+      drawWeb()
+      pts.forEach(p => { p.tick(); p.draw() })
+    }
+    loop()
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationId)
+    }
+  }, [])
+
+  return (
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <canvas ref={canvasRef} className="block w-full h-full" />
+      <div className="vignette absolute inset-0" />
+      <div className="scanlines absolute inset-0" />
+    </div>
+  )
+}
