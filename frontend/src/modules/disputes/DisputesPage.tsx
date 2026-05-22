@@ -6,7 +6,14 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { Gavel, AlertCircle, FileText, Scale, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  Gavel,
+  AlertCircle,
+  FileText,
+  Scale,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
 import { useDisputeStore } from "../../stores/useDisputeStore";
 import { useEffect } from "react";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -51,8 +58,8 @@ export function DisputesPage() {
                   </div>
                   <h3 className="font-bold text-lg">No active disputes</h3>
                   <p className="text-sm text-text-slate max-w-xs mt-1">
-                    Everything looks good! Your deals are proceeding according to
-                    the agreed terms.
+                    Everything looks good! Your deals are proceeding according
+                    to the agreed terms.
                   </p>
                 </div>
               ) : (

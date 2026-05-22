@@ -6,7 +6,13 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { Wallet, TrendingUp, History, ArrowUpRight, Loader2 } from "lucide-react";
+import {
+  Wallet,
+  TrendingUp,
+  History,
+  ArrowUpRight,
+  Loader2,
+} from "lucide-react";
 import { useDealStore } from "../../stores/useDealStore";
 import { useEffect, useMemo } from "react";
 import { formatEther } from "viem";
@@ -19,11 +25,22 @@ export function PaymentsPage() {
   }, [fetchDeals]);
 
   const activeEscrows = useMemo(() => {
-    return deals.filter(d => ["funded", "delivery_submitted", "verification_pending", "verified"].includes(d.status.toLowerCase()));
+    return deals.filter((d) =>
+      [
+        "funded",
+        "delivery_submitted",
+        "verification_pending",
+        "verified",
+      ].includes(d.status.toLowerCase()),
+    );
   }, [deals]);
 
   const paymentHistory = useMemo(() => {
-    return deals.filter(d => ["released", "settled", "refunded", "cancelled"].includes(d.status.toLowerCase()));
+    return deals.filter((d) =>
+      ["released", "settled", "refunded", "cancelled"].includes(
+        d.status.toLowerCase(),
+      ),
+    );
   }, [deals]);
 
   const totalLocked = useMemo(() => {

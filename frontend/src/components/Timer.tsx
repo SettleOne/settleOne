@@ -44,7 +44,11 @@ export function Timer({ deadline, label, className, onExpiry }: TimerProps) {
   if (!timeLeft) return null;
 
   const isCritical = timeLeft.days === 0 && timeLeft.hours < 24;
-  const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+  const isExpired =
+    timeLeft.days === 0 &&
+    timeLeft.hours === 0 &&
+    timeLeft.minutes === 0 &&
+    timeLeft.seconds === 0;
 
   return (
     <div className={cn("flex flex-col gap-1", className)}>
@@ -53,18 +57,22 @@ export function Timer({ deadline, label, className, onExpiry }: TimerProps) {
           {label}
         </span>
       )}
-      <div className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg border bg-bg-tertiary/50",
-        isExpired ? "border-red-500/20 text-red-500" : 
-        isCritical ? "border-brand-gold/20 text-brand-gold shadow-[0_0_10px_rgba(245,166,35,0.1)]" : 
-        "border-brand-teal/20 text-brand-teal"
-      )}>
+      <div
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-lg border bg-bg-tertiary/50",
+          isExpired
+            ? "border-red-500/20 text-red-500"
+            : isCritical
+              ? "border-brand-gold/20 text-brand-gold shadow-[0_0_10px_rgba(245,166,35,0.1)]"
+              : "border-brand-teal/20 text-brand-teal",
+        )}
+      >
         <Clock className="w-4 h-4" />
         <div className="flex items-center gap-1 font-mono text-sm font-bold">
           {timeLeft.days > 0 && <span>{timeLeft.days}d</span>}
-          <span>{timeLeft.hours.toString().padStart(2, '0')}h</span>
-          <span>{timeLeft.minutes.toString().padStart(2, '0')}m</span>
-          <span>{timeLeft.seconds.toString().padStart(2, '0')}s</span>
+          <span>{timeLeft.hours.toString().padStart(2, "0")}h</span>
+          <span>{timeLeft.minutes.toString().padStart(2, "0")}m</span>
+          <span>{timeLeft.seconds.toString().padStart(2, "0")}s</span>
         </div>
       </div>
     </div>

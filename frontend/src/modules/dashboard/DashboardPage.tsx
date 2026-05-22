@@ -55,8 +55,7 @@ export function DashboardPage() {
         pendingVerif: deals.filter(
           (d: any) => d.status === "delivery_submitted",
         ).length,
-        settled: deals.filter((d: any) => d.status === "settled")
-          .length,
+        settled: deals.filter((d: any) => d.status === "settled").length,
       });
     }
   }, [deals]);

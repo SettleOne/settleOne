@@ -8,17 +8,17 @@ import {
   CardTitle,
 } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { 
-  User, 
-  Mail, 
-  Wallet, 
-  Award, 
-  Activity, 
+import {
+  User,
+  Mail,
+  Wallet,
+  Award,
+  Activity,
   ShieldCheck,
   Settings,
   Bell,
   TrendingUp,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "../../utils/cn";
 
@@ -90,7 +90,9 @@ export function ProfilePage() {
                     <p className="text-[10px] font-mono text-text-slate uppercase tracking-widest">
                       Email Address
                     </p>
-                    <p className="text-sm font-medium">{user.email || "Not provided"}</p>
+                    <p className="text-sm font-medium">
+                      {user.email || "Not provided"}
+                    </p>
                   </div>
                 </div>
 
@@ -109,12 +111,18 @@ export function ProfilePage() {
 
               <div className="pt-4">
                 <div className="flex items-center justify-between py-2 border-b border-white/5">
-                  <span className="text-[10px] font-mono uppercase text-text-slate">Member Since</span>
+                  <span className="text-[10px] font-mono uppercase text-text-slate">
+                    Member Since
+                  </span>
                   <span className="text-[10px] font-mono">MAY 2026</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-white/5">
-                  <span className="text-[10px] font-mono uppercase text-text-slate">KYC Status</span>
-                  <span className="text-[10px] font-mono text-brand-teal">VERIFIED</span>
+                  <span className="text-[10px] font-mono uppercase text-text-slate">
+                    KYC Status
+                  </span>
+                  <span className="text-[10px] font-mono text-brand-teal">
+                    VERIFIED
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -129,14 +137,14 @@ export function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="h-2 w-full bg-bg-tertiary rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-brand-gold" 
+                <div
+                  className="h-full bg-brand-gold"
                   style={{ width: `${(user.reputationScore / 1000) * 100}%` }}
                 />
               </div>
               <p className="text-xs text-text-slate leading-relaxed">
-                Your reputation score is calculated based on successful settlements, 
-                dispute outcomes, and protocol adherence.
+                Your reputation score is calculated based on successful
+                settlements, dispute outcomes, and protocol adherence.
               </p>
             </CardContent>
           </Card>
@@ -153,10 +161,14 @@ export function ProfilePage() {
               <Card key={i} className="bg-bg-tertiary/20">
                 <CardHeader className="pb-2">
                   <stat.icon className="w-5 h-5 text-brand-teal mb-2" />
-                  <CardDescription className="text-[10px] tracking-[0.2em]">{stat.label}</CardDescription>
+                  <CardDescription className="text-[10px] tracking-[0.2em]">
+                    {stat.label}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-syne font-black tracking-tighter">{stat.value}</p>
+                  <p className="text-3xl font-syne font-black tracking-tighter">
+                    {stat.value}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -169,37 +181,42 @@ export function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-6">
               {[
-                { 
-                  title: "Two-Factor Auth", 
-                  desc: "Add an extra layer of security to your account.", 
-                  enabled: true 
+                {
+                  title: "Two-Factor Auth",
+                  desc: "Add an extra layer of security to your account.",
+                  enabled: true,
                 },
-                { 
-                  title: "Wallet Notifications", 
-                  desc: "Receive alerts for all on-chain deal activity.", 
-                  enabled: true 
+                {
+                  title: "Wallet Notifications",
+                  desc: "Receive alerts for all on-chain deal activity.",
+                  enabled: true,
                 },
-                { 
-                  title: "Public Profile", 
-                  desc: "Allow others to view your reputation and deal history.", 
-                  enabled: false 
+                {
+                  title: "Public Profile",
+                  desc: "Allow others to view your reputation and deal history.",
+                  enabled: false,
                 },
               ].map((setting, i) => (
-                <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-bg-tertiary/30 border border-text-muted/5">
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-6 rounded-2xl bg-bg-tertiary/30 border border-text-muted/5"
+                >
                   <div className="space-y-1">
-                    <p className="font-bold text-text-primary">{setting.title}</p>
+                    <p className="font-bold text-text-primary">
+                      {setting.title}
+                    </p>
                     <p className="text-xs text-text-slate">{setting.desc}</p>
                   </div>
-                  <div 
+                  <div
                     className={cn(
                       "w-12 h-6 rounded-full relative transition-all cursor-pointer",
-                      setting.enabled ? "bg-brand-teal" : "bg-text-muted/20"
+                      setting.enabled ? "bg-brand-teal" : "bg-text-muted/20",
                     )}
                   >
-                    <div 
+                    <div
                       className={cn(
                         "w-4 h-4 rounded-full bg-white absolute top-1 transition-all",
-                        setting.enabled ? "right-1" : "left-1"
+                        setting.enabled ? "right-1" : "left-1",
                       )}
                     />
                   </div>

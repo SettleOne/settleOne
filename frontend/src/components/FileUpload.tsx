@@ -1,14 +1,8 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Upload,
-  X,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
-  } from "lucide-react";
-  import { Button } from "./Button";
-  import { cn } from "../utils/cn";
+import { Upload, X, FileText, CheckCircle2, AlertCircle } from "lucide-react";
+import { Button } from "./Button";
+import { cn } from "../utils/cn";
 
 interface FileUploadProps {
   onUploadComplete: (hash: `0x${string}`, metadata: any) => void;

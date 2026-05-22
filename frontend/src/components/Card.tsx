@@ -2,11 +2,19 @@ import * as React from "react";
 import { motion, type MotionProps } from "framer-motion";
 import { cn } from "../utils/cn";
 
-export interface CardProps extends MotionProps, Omit<React.HTMLAttributes<HTMLDivElement>, keyof MotionProps> {
+export interface CardProps
+  extends
+    MotionProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, keyof MotionProps> {
   glow?: "teal" | "gold" | "none";
 }
 
-export function Card({ className, glow = "none", children, ...props }: CardProps) {
+export function Card({
+  className,
+  glow = "none",
+  children,
+  ...props
+}: CardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

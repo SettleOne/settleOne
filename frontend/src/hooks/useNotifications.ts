@@ -11,8 +11,11 @@ export function useNotifications() {
 
     // In a real app, this would be a WebSocket or SSE connection
     // For now, we'll simulate some notifications or just set up the infrastructure
-    
-    console.log("Setting up notification listener for user:", user.walletAddress);
+
+    console.log(
+      "Setting up notification listener for user:",
+      user.walletAddress,
+    );
 
     // Mock notification after 5 seconds
     const timer = setTimeout(() => {

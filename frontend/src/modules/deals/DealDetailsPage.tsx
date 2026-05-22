@@ -276,8 +276,8 @@ export function DealDetailsPage() {
                       Temporal Constraints
                     </CardDescription>
                     <div className="space-y-4">
-                      <Timer 
-                        deadline={Number(contractDeal.deliveryDeadline) * 1000} 
+                      <Timer
+                        deadline={Number(contractDeal.deliveryDeadline) * 1000}
                         label="Execution Deadline"
                       />
                       <div className="flex items-center gap-3">

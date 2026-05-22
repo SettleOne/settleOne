@@ -40,9 +40,9 @@ export const useDisputeStore = create<DisputeState>((set) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await apiClient.post("/disputes", disputeData);
-      set((state) => ({ 
+      set((state) => ({
         disputes: [data.data, ...state.disputes],
-        loading: false 
+        loading: false,
       }));
       return data.data;
     } catch (err: any) {

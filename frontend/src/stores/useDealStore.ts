@@ -61,9 +61,9 @@ export const useDealStore = create<DealState>((set) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await apiClient.post("/deals", dealData);
-      set((state) => ({ 
+      set((state) => ({
         deals: [data.data, ...state.deals],
-        loading: false 
+        loading: false,
       }));
       return data.data;
     } catch (err: any) {
