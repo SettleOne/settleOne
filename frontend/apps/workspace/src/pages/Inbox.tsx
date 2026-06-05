@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { WorkQueue, WorkItem } from '@settleone/design-system/components/deal';
+import { WorkQueue, WorkItem } from '@settleone/design-system';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 
 const mockWorkItems: WorkItem[] = [

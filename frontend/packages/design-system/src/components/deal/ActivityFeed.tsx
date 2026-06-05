@@ -1,5 +1,6 @@
 import React from 'react';
 import { History, ExternalLink } from 'lucide-react';
+import { cn } from '../../index';
 
 export const ActivityFeed = () => {
   const [view, setView] = React.useState<'all' | 'system'>('all');

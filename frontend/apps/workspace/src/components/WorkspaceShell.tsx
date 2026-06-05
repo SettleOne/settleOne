@@ -6,7 +6,7 @@ import {
   SidebarSection, 
   CommandPalette,
   MobileNavItem
-} from '@settleone/design-system/layouts';
+} from '@settleone/design-system';
 import { 
   Inbox as InboxIcon,
   LayoutDashboard, 

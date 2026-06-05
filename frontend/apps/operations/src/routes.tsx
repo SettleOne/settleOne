@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Placeholder } from './pages/Placeholder';
 import { OperationsShell } from './components/OperationsShell';
+import { HealthCenter } from './pages/HealthCenter';
 
 export const router = createBrowserRouter([
   {
@@ -35,7 +36,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'vault-health',
-        element: <Placeholder title="Vault Monitoring" />,
+        element: <HealthCenter />,
       },
       {
         path: 'users',

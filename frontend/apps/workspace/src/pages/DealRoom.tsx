@@ -12,8 +12,14 @@ import {
   DeliverablesWorkspace,
   EvidenceWorkspace,
   CommunicationLayer,
-  ActivityFeed
-} from '@settleone/design-system/components/deal';
+  ActivityFeed,
+  CommitmentIntelligence,
+  CounterpartyCard,
+  FinancialProjection,
+  SettlementSimulator,
+  DealAlerts,
+  TechnicalDetails
+} from '@settleone/design-system';
 
 // Mock Deal Data
 const mockDeal: Deal = {

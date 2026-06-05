@@ -1,5 +1,5 @@
 import React from 'react';
-import { BusinessProfileCard, ReputationMetrics } from '@settleone/design-system/components/reputation';
+import { BusinessProfileCard, ReputationMetrics } from '@settleone/design-system';
 
 export const CounterpartyDirectory = () => {
   return (

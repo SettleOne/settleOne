@@ -5,7 +5,7 @@ import {
   SidebarItem, 
   SidebarSection,
   MobileNavItem
-} from '@settleone/design-system/layouts';
+} from '@settleone/design-system';
 import { 
   LayoutDashboard, 
   Gavel, 

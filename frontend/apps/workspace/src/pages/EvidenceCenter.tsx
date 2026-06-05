@@ -3,7 +3,7 @@ import {
   EvidenceExplorer, 
   EvidenceHashVerifier, 
   EvidenceAuditTrail 
-} from '@settleone/design-system/components/evidence';
+} from '@settleone/design-system';
 
 export const EvidenceCenter = () => {
   return (

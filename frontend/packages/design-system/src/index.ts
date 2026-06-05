@@ -54,10 +54,9 @@ export * from './components/deal';
 export * from './components/vault';
 export * from './components/evidence';
 export * from './components/dispute';
-export * from './components/analytics';
-export * from './components/notifications';
 export * from './components/reputation';
 export * from './components/invitations';
 export * from './components/marketplace';
+export * from './components/infrastructure';
 
 export { colors, typography, spacing, radius, shadows, motion } from './tokens';

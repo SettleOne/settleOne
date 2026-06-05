@@ -3,9 +3,9 @@ import {
   CaseHeader, 
   NegotiationWorkspace, 
   SettlementProposals,
-  VerdictWorkspace
-} from '@settleone/design-system/components/dispute';
-import { EvidenceExplorer } from '@settleone/design-system/components/evidence';
+  VerdictWorkspace,
+  EvidenceExplorer
+} from '@settleone/design-system';
 
 export const DisputeWorkspace = () => {
   return (

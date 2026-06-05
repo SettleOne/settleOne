@@ -1,5 +1,6 @@
 import React from 'react';
 import { Database, Copy, Check, ExternalLink } from 'lucide-react';
+import { cn } from '../../index';
 
 interface TechnicalDetailsProps {
   dealId: string;

@@ -5,7 +5,7 @@ import {
   HistoricalYield, 
   StrategyAllocation, 
   SettlementForecasting 
-} from '@settleone/design-system/components/vault';
+} from '@settleone/design-system';
 
 export const VaultIntelligence = () => {
   return (
