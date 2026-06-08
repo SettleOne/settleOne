@@ -1,6 +1,0 @@
-[submodule "contracts"]
-	path = contracts
-	url = https://github.com/Sourav-IIITBPL/settleOne-protocol.git
-[submodule "backend"]
-	path = backend
-	url = https://github.com/Sourav-IIITBPL/settleOne-backend.git

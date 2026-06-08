@@ -1,0 +1,1876 @@
+================================================================================
+SETTLEONE — FRONTEND DEVELOPMENT MASTER SCRIPT
+Complete Product Specification for Implementation & Progress Tracking
+================================================================================
+
+DOCUMENT VERSION: 1.0
+PROJECT: SettleOne — Transaction Commitment Layer for MSME Commerce
+STACK: React 19 · TypeScript · Tailwind 4 · Turborepo · Viem/Wagmi
+APPS: workspace | marketing | operations
+
+Use this document to track every screen, component, and integration point.
+Mark each section [ ] → [x] as you complete it.
+
+================================================================================
+PART 0 — MONOREPO STRUCTURE & GLOBAL STANDARDS
+================================================================================
+
+── apps/
+│   ├── workspace/          Normal user transaction OS
+│   ├── marketing/          Public landing, docs, pricing
+│   └── operations/         Admin, arbitrator, vault manager
+── packages/
+│   ├── design-system/      All reusable UI components
+│   ├── sdk/                Viem/Wagmi + contract ABIs + eventBus
+│   ├── api/                TanStack Query hooks for off-chain data
+│   ├── types/              DealState, DisputeState, Role enums
+│   └── utils/              Formatting, address shortening, time helpers
+
+──────────────────────────────────────────────────────────────────────────────
+GLOBAL DESIGN TOKENS (apply everywhere)
+──────────────────────────────────────────────────────────────────────────────
+Colors
+  Background base:     #FAFAFA
+  Background card:     #FFFFFF
+  Background subtle:   #F3F4F6
+  Border:              #E5E7EB
+  Primary text:        #111827
+  Secondary text:      #6B7280
+  Accent blue:         #3B82F6
+  Accent green:        #10B981
+  Accent amber:        #F59E0B
+  Accent red:          #EF4444
+  Accent purple:       #8B5CF6
+  Deal state colors:
+    AwaitingFunding    → amber   #F59E0B
+    PendingAcceptance  → blue    #3B82F6
+    Active             → green   #10B981
+    DeliverySubmitted  → purple  #8B5CF6
+    AwaitingAcceptance → sky     #0EA5E9
+    Accepted           → teal    #14B8A6
+    Disputed           → red     #EF4444
+    Released           → green   #10B981
+    Refunded           → amber   #F59E0B
+    Settled            → slate   #64748B
+    Cancelled          → gray    #9CA3AF
+
+Typography
+  Font: Inter (all weights 400/500/600/700)
+  Headings: 24px/700, 20px/600, 16px/600
+  Body:     14px/400
+  Caption:  12px/400
+  Code/address: JetBrains Mono 13px
+
+Spacing: 4px grid (4, 8, 12, 16, 20, 24, 32, 40, 48, 64)
+Border radius: 6px cards, 8px modals, 4px inputs, 9999px pills/badges
+Shadow: 0 1px 3px rgba(0,0,0,0.08) cards, 0 4px 24px rgba(0,0,0,0.12) modals
+
+──────────────────────────────────────────────────────────────────────────────
+USER ROLE MATRIX
+──────────────────────────────────────────────────────────────────────────────
+Role              | App         | Auth
+Normal User       | workspace   | email + OTP + password / Google OAuth
+Admin             | operations  | email + OTP + password + 2FA mandatory
+Arbitrator        | operations  | email + OTP + password + 2FA mandatory
+Vault Manager     | operations  | email + OTP + password + 2FA mandatory
+Upgrader          | operations  | email + OTP + password + 2FA mandatory
+Verifier/Validator| operations  | email + OTP + password + 2FA mandatory
+Protocol          | operations  | same as admin
+
+On login:
+  if role == NormalUser  → redirect to apps/workspace
+  if role in [Admin, Arbitrator, VaultManager, Upgrader, Verifier] → redirect to apps/operations
+  Role is determined by querying backend user profile after successful auth.
+
+
+================================================================================
+PART 1 — MARKETING APP  (apps/marketing)
+================================================================================
+
+Routes:
+  /                 Landing / Homepage
+  /features         Features deep-dive
+  /pricing          Pricing tiers
+  /docs             Documentation index
+  /docs/:slug       Individual doc pages
+  /login            Unified login page
+  /signup           Sign-up page
+  /forgot-password  Password reset flow
+  /verify-otp       OTP verification step
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: / (Homepage / Landing)
+──────────────────────────────────────────────────────────────────────────────
+[ ] SECTION 1 — Sticky Top Navigation
+    Left:  SettleOne logo (icon + wordmark)
+    Center: nav links → Features | Pricing | Docs | Blog (placeholder)
+    Right:  "Login" button (ghost) | "Get Started" button (primary blue)
+    Mobile: hamburger menu → slide-out drawer with same links
+
+[ ] SECTION 2 — Hero (above the fold)
+    Tag line pill badge: "Transaction Commitment Layer for MSME Commerce"
+    H1 headline:  "Your money is locked. Make it work."
+    Sub-headline: "SettleOne escrows MSME deals on-chain while your funds earn
+                   yield — with tamper-proof evidence, automated settlement,
+                   and transparent arbitration."
+    CTA buttons:
+      Primary:   "Create Your First Deal →"  (links to /signup)
+      Secondary: "See How It Works"          (smooth-scroll to how-it-works section)
+    Background: subtle animated gradient mesh (blue/green/slate tones)
+    Trust indicators row (below CTAs):
+      • Chainlink Automation   • Aave Yield Strategies
+      • EIP-712 Signatures     • UUPS Upgradeable
+      • Multi-chain Ready      • Open Source
+
+[ ] SECTION 3 — How It Works (3-step horizontal flow)
+    Heading: "A deal in three certainties"
+    Step 1 — "Commit":    Buyer creates deal terms and locks funds in yield vault
+    Step 2 — "Deliver":   Seller fulfils, submits proof; verifier approves
+    Step 3 — "Settle":    Funds + earned yield distributed. Zero custody risk.
+    Visual: animated line connecting three cards with icons
+
+[ ] SECTION 4 — Feature Highlights (4-card grid)
+    Card 1 — EscrowVault Yield:
+      Icon: trending-up
+      Title: "Your escrow earns while you wait"
+      Body: "Locked principal is routed to low-risk DeFi strategies (Aave).
+             Buyers receive yield back at settlement. The longer the deal,
+             the more you earn."
+
+    Card 2 — Staged Funding:
+      Icon: layers
+      Title: "60/40 staged commitment"
+      Body: "Fund 60% upfront to secure the deal. Pay the remaining 40%
+             only after delivery is verified — aligning incentives for
+             both parties."
+
+    Card 3 — Tamper-Proof Evidence:
+      Icon: shield-check
+      Title: "On-chain evidence registry"
+      Body: "Every delivery document, invoice, and receipt is hashed and
+             committed on-chain. Evidence cannot be altered or deleted after
+             submission."
+
+    Card 4 — Human Arbitration:
+      Icon: scales
+      Title: "Expert dispute resolution"
+      Body: "When deals go wrong, a qualified arbitrator reviews on-chain
+             evidence and issues a binding verdict: Seller Wins, Buyer Wins,
+             or Split Settlement."
+
+[ ] SECTION 5 — Deal State Journey (visual timeline)
+    Heading: "From agreement to settlement — fully tracked"
+    A horizontal scrollable timeline showing all 12 deal states with
+    icons and short descriptions:
+    AwaitingFunding → PendingSellerAcceptance → Active → DeliverySubmitted
+    → Verifying → AwaitingAcceptance → Accepted → [DisputeWindow] →
+    Released / Refunded / Disputed → Settled / Cancelled
+
+[ ] SECTION 6 — Supported Tokens & Chains
+    Heading: "Works with the tokens you already use"
+    Token logos: USDC · USDT · DAI · ETH · SETL
+    Chain logos: Ethereum · Polygon · Arbitrum · Base
+    Note: "Protocol admin whitelists tokens per deployment."
+
+[ ] SECTION 7 — SETL Token Section
+    Heading: "The SETL Token — SettleOne's Infrastructure Fuel"
+    Sub: "100,000,000 SETL. Hard-capped. Powers governance, staking bonds,
+          and protocol fee buybacks."
+    3 use-case pills: Governance · Arbitrator Staking · Fee Buybacks
+    CTA: "Learn About SETL →"
+
+[ ] SECTION 8 — Pricing Preview (link to /pricing)
+    Heading: "Simple, yield-aligned pricing"
+    Single statement: "SettleOne takes 15% of generated yield only.
+                        Zero fees on principal. Zero subscription fees."
+    CTA: "See full pricing →"
+
+[ ] SECTION 9 — Footer
+    Columns:
+      Product:  Features | Pricing | Changelog | Roadmap
+      Resources: Docs | GitHub | Smart Contracts | Audit Reports
+      Company:  About | Blog | Careers | Contact
+      Legal:    Privacy Policy | Terms of Service | Cookie Policy
+    Bottom row: © 2025 SettleOne Protocol. All rights reserved.
+                Twitter/X | LinkedIn | Discord icons
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /features
+──────────────────────────────────────────────────────────────────────────────
+[ ] Full feature breakdown with screenshots/illustrations for:
+    1. EscrowVault Architecture (shared pool, share minting, yield)
+    2. Staged Funding (60/40 flow diagram)
+    3. Evidence Layer (what gets hashed, where it's stored)
+    4. Verification Layer (DeliveryVerifier EIP-712 vs ChainlinkVerifier async)
+    5. Dispute & Arbitration (timeline, resolver options, partial settlement)
+    6. Chainlink Automation (which transitions are automated, when they fire)
+    7. SETL Token Utility
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /pricing
+──────────────────────────────────────────────────────────────────────────────
+[ ] Heading: "Pricing that scales with your trust"
+    Model explanation box:
+      "We charge 15% of generated yield only.
+       If your deal generates $100 of yield, SettleOne keeps $15.
+       You keep $85. Your principal is always 100% returned."
+    Comparison table:
+      Feature          | SettleOne | Traditional Escrow | Freelance Platforms
+      Fees on principal| 0%        | 0.5-1%             | 0%
+      Platform %       | 15% yield | —                  | 10-20% project fee
+      On-chain record  | Yes       | No                 | No
+      Yield earned     | Yes       | No                 | No
+      Dispute resolver | Expert    | Platform           | Platform
+      Evidence record  | Immutable | No                 | No
+
+    FAQ section:
+      Q: What if no yield is generated?
+      A: SettleOne collects nothing. Zero yield = zero platform fee.
+
+      Q: What tokens are supported?
+      A: USDC, USDT, DAI, ETH, SETL (admin whitelisted per deployment).
+
+      Q: Can I use SettleOne for one-time deals?
+      A: Yes. No subscription or minimum commitment.
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /login
+──────────────────────────────────────────────────────────────────────────────
+[ ] Logo centered at top
+[ ] Card component (480px wide, centered)
+    Heading: "Welcome back"
+    Sub: "Sign in to your SettleOne account"
+
+    Tab toggle: "User Login" | "SettleOne Staff Login"
+
+    --- User Login tab ---
+    Field 1: Email address (input)
+    Field 2: Password (input with show/hide toggle)
+    Row: "Forgot password?" link (right-aligned)
+    Button: "Sign In" (full width, primary)
+    Divider: "or"
+    Button: "Continue with Google" (Google OAuth, full width, outlined)
+    Bottom: "Don't have an account? Sign up" (link)
+
+    --- SettleOne Staff Login tab ---
+    Field 1: Staff Email address
+    Field 2: Password
+    Field 3: 2FA Code (appears after email+password validation)
+    Button: "Staff Sign In" (full width, primary)
+    Note: "Staff accounts require 2FA. Contact your administrator
+           if you've lost access."
+
+    Auth flow after successful login:
+      1. Call backend /auth/me → returns { role, userId, email, name }
+      2. If role === 'user' → navigate to apps/workspace
+      3. If role in ['admin','arbitrator','vault_manager','upgrader','verifier']
+         → navigate to apps/operations
+      4. If unrecognized role → show error "Account type not recognized"
+
+[ ] Error states: wrong password, account not found, OTP expired, too many attempts
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /signup
+──────────────────────────────────────────────────────────────────────────────
+[ ] Card (480px)
+    Heading: "Create your account"
+    Sub: "Start your first protected deal in minutes"
+
+    Step 1 — Details:
+      Full Name (input)
+      Email Address (input)
+      Password (input, strength indicator)
+      Confirm Password (input)
+      Button: "Continue" → sends OTP to email
+
+    Step 2 — Verify Email (OTP):
+      "We sent a 6-digit code to {email}"
+      OTP input (6-box, auto-advance)
+      Timer: "Resend in 59s" (countdown then "Resend Code" button)
+      Button: "Verify & Create Account"
+
+    Step 3 — Success:
+      Checkmark animation
+      "Your account is ready."
+      Button: "Go to Workspace →"
+
+    Google OAuth path: skips Steps 1-2, goes directly to Step 3 after consent.
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /docs (Documentation)
+──────────────────────────────────────────────────────────────────────────────
+[ ] Left sidebar with doc categories:
+    Getting Started
+    Deal Lifecycle
+    Funding Guide
+    Delivery & Verification
+    Disputes & Arbitration
+    SETL Token
+    Smart Contract Reference
+    API Reference
+    SDK Reference
+
+[ ] Main content area: Markdown rendered, code blocks highlighted
+[ ] Right sidebar: "On this page" anchor links
+[ ] Search bar at top (full-text search across all docs)
+
+
+================================================================================
+PART 2 — WORKSPACE APP  (apps/workspace)
+================================================================================
+
+This is the primary app for normal users (buyers and sellers).
+Route structure:
+  /                   Redirects to /marketplace
+  /marketplace        Deal discovery and browsing
+  /marketplace/:id    Individual Deal Room
+  /create-deal        New deal creation flow
+  /portfolio          User's financial overview
+  /profile            User profile page
+  /inbox              Messages and notifications
+  /settings           Account and notification settings
+  /deals/active       Quick view: deals I'm active in
+  /deals/created      Quick view: deals I created
+  /deals/accepted     Quick view: deals I accepted
+
+──────────────────────────────────────────────────────────────────────────────
+LAYOUT: AppShell (wraps all workspace routes)
+──────────────────────────────────────────────────────────────────────────────
+[ ] COMPONENT: TopNavigationBar
+    Height: 56px, border-bottom: 1px solid #E5E7EB, background: #FFFFFF
+
+    Left section:
+      SettleOne logo + wordmark (links to /marketplace)
+
+    Center section:
+      Compact search input: "Search deals, users, or transactions..."
+      (on click → expands or opens command palette)
+
+    Right section (left to right):
+      1. "Create Deal" button (primary, small) → opens CreateDealModal
+      2. Inbox icon button (bell) with unread badge count
+         → clicking opens Inbox panel slide-over (right side)
+      3. Wallet Connect button:
+         IF not connected: "Connect Wallet" (outlined button)
+         IF connected: Shows shortened address "0x1234...5678" + network badge
+                       + chain name pill (e.g., "Arbitrum")
+                       On click: dropdown with
+                         - Full address (copy button)
+                         - Switch network
+                         - Disconnect
+      4. Profile avatar button (circular, user initials or photo)
+         On click: opens ProfileDropdown:
+           - User name + email
+           - "My Profile" link
+           - "Settings" link
+           - Divider
+           - "Log Out" (with confirmation)
+
+[ ] COMPONENT: SidebarNavigation
+    Width: 240px (desktop), collapses to icon-only 64px on md, hidden on mobile
+    Background: #FFFFFF, border-right: 1px solid #E5E7EB
+
+    Navigation items (icon + label + optional badge):
+    ─────────────────────────────────────────────────────
+    Section: MAIN
+      [ ] Marketplace      (grid icon)         → /marketplace
+      [ ] Portfolio        (pie-chart icon)    → /portfolio
+      [ ] Inbox            (mail icon)         → /inbox (+ unread count badge)
+
+    Section: MY DEALS
+      [ ] Active Deals     (activity icon)     → /deals/active  (+ count badge)
+      [ ] Created Deals    (plus-square icon)  → /deals/created (+ count badge)
+      [ ] Accepted Deals   (check-square icon) → /deals/accepted (+ count badge)
+
+    Section: TOOLS
+      [ ] Submit Evidence  (paperclip icon)    → quick action, opens modal
+      [ ] Submit Delivery  (upload icon)       → quick action, opens modal
+                                                 (disabled if no active deal)
+
+    Section: ACCOUNT
+      [ ] Settings         (settings icon)     → /settings
+      [ ] Help & Docs      (help-circle icon)  → opens /docs in new tab
+
+    Bottom of sidebar:
+      User mini-profile: avatar + name + role pill ("Buyer" / "Seller" / "Both")
+      "Create Deal" CTA button (full width)
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /marketplace (Marketplace — The Main View)
+──────────────────────────────────────────────────────────────────────────────
+This is the main deal discovery area. Layout: full width minus sidebar.
+
+[ ] SECTION A — Marketplace Header Bar
+    Left: Heading "Marketplace" (H1)
+    Right: "Create Deal" button (primary)
+
+[ ] SECTION B — Filter & Search Bar
+    (horizontal strip, sticky below top nav)
+
+    Left side filters (pill-toggle buttons):
+      Status filter: All | Open | Active | Accepted | Completed | Expired
+
+    Center filters (dropdown selects):
+      Deal Type:    All Types | Software | Hardware
+      Category:     (dynamic based on Deal Type selection)
+        IF Software → "All" | "Smart Contract Audit" | "Web Development"
+                      "Mobile App" | "Design/UI" | "Backend/API"
+                      "Data/Analytics" | "Consulting" | "Other"
+        IF Hardware → "All" | "Electronics" | "Manufacturing" | "Equipment"
+                      "Furniture" | "Wearables" | "Inventory" | "Other"
+      Chain:        All Chains | Ethereum | Arbitrum | Polygon | Base
+      Token:        All Tokens | USDC | USDT | DAI | ETH | SETL
+      Amount Range: input min/max with currency
+
+    Right side:
+      Sort dropdown: Newest | Oldest | Highest Value | Lowest Value | Ending Soon
+      Search input: "Search by deal name or ID..." (with magnifier icon)
+
+    Secondary filter row (collapsible, "More Filters" toggle):
+      Show: Full deals only | Partial settlement allowed
+      Delivery deadline: within 7d | 30d | 90d | Any
+      My Deals Only toggle
+
+[ ] SECTION C — Quick Tabs (below filter bar)
+    "All Deals" (count) | "My Created" (count) | "My Accepted" (count) | "Trending"
+
+[ ] SECTION D — Deal Cards Grid
+    Layout: 3-column grid (desktop), 2-col (tablet), 1-col (mobile)
+    Each card → DealCard component
+
+    ─────────────────────────────────────────────────────
+    COMPONENT: DealCard
+    ─────────────────────────────────────────────────────
+    Card dimensions: ~320px wide, variable height
+    Hover: slight elevation shadow + subtle border highlight
+    Click: navigates to /marketplace/:dealId
+
+    Top row:
+      Left:  Deal type badge pill (color-coded: blue=Software, orange=Hardware)
+             Category sub-badge (e.g., "Smart Contract Audit")
+      Right: Deal state badge pill (color from deal state color matrix above)
+             e.g., "● Active" (green dot + green text)
+
+    Deal Name: H3, truncated at 2 lines, 16px/600
+    Deal ID:   #DL-00142 (monospace, 12px, gray)
+
+    Buyer row:
+      "Creator:" label + shortened address "0xabc...def" (with copy-on-click)
+      Verified buyer badge if applicable
+
+    Amount row:
+      Large: "5,000 USDC" (20px/700, primary color)
+      Sub:   "Deposited: 3,000 USDC (60%)" — if staged funding in progress
+
+    Timeline row:
+      Calendar icon + "Deadline: Jan 15, 2026"
+      Clock icon + "Created 3 days ago"
+      IF deadline approaching (<72h): Amber warning "Expires in 2d 4h"
+
+    Progress bar (thin, 4px height):
+      Shows funding progress if staged (0-100%)
+      Color: green if fully funded, amber if partially funded, gray if unfunded
+
+    Bottom row:
+      Left:  Chain badge (Arbitrum logo + "Arbitrum")
+             Token badge (USDC circle logo)
+      Right: "View Deal →" text link (subtle)
+
+    IF deal is open (AwaitingFunding or PendingSellerAcceptance):
+      "Accept Deal" ghost button appears on hover/at bottom
+
+[ ] Empty state: Illustration + "No deals match your filters"
+                "Try adjusting your search or create the first deal."
+
+──────────────────────────────────────────────────────────────────────────────
+MODAL: CreateDealModal  (opens from "Create Deal" button anywhere)
+──────────────────────────────────────────────────────────────────────────────
+[ ] Full-screen overlay modal (max-width: 680px, centered)
+    Title: "Create a New Deal"
+    Subtitle: "All fields are committed on-chain after you confirm."
+
+    STEP 1 OF 3 — Deal Details
+    ─────────────────────────────────────────────────────
+    Field: Deal Name *
+      Input text, placeholder: "e.g. Smart Contract Audit for DeFi Protocol"
+      Max 120 characters, character counter
+
+    Field: Deal Type *
+      Radio cards (large, icon + label):
+        [ ] Software / Digital Delivery — "Code, designs, audits, consulting"
+        [ ] Hardware / Physical Delivery — "Products, equipment, inventory"
+
+    Field: Category * (dynamic dropdown based on Deal Type, see categories above)
+
+    Field: Deal Description *
+      Textarea, placeholder: "Describe exactly what is being bought/sold,
+      deliverables expected, acceptance criteria..."
+      Min 100 chars, markdown supported, preview toggle
+
+    Field: Deal Amount *
+      Number input + Token selector dropdown (USDC | USDT | DAI | ETH | SETL)
+      Chain selector (Ethereum | Arbitrum | Polygon | Base)
+      Display: converted USD value below (via CoinGecko price feed)
+      Validation: must be >= token minimum from tokenConfig
+
+    Field: Seller Address (optional)
+      Ethereum address input with ENS resolution
+      Placeholder: "0x... or leave empty for open marketplace"
+      If empty → deal is open for any seller to accept
+      Helper: "If you specify a seller, only they can accept this deal."
+
+    Funding Option *
+      Radio:
+        [ ] Full payment upfront (100% at funding stage)
+        [ ] Staged funding: 60% now, 40% before acceptance
+      Helper: "Staged funding gives you leverage. The seller knows
+               the remaining 40% is coming only if delivery passes verification."
+
+    Field: Partial Settlement Allowed
+      Toggle (default ON)
+      Label: "Allow arbitrator to split the amount in disputes"
+
+    STEP 2 OF 3 — Timelines & Rules
+    ─────────────────────────────────────────────────────
+    Field: Seller Acceptance Window *
+      Dropdown or input in days: "How long does the seller have to accept?"
+      Options: 1 day | 3 days | 7 days | 14 days | 30 days | Custom
+      Helper: "After you fund, the seller acceptance countdown starts."
+
+    Field: Delivery Deadline *
+      Date picker (absolute date)
+      Helper: "The seller must submit verified delivery by this date,
+               or you are automatically refunded."
+      Validation: Must be > now + sellerAcceptanceWindow
+
+    Field: Buyer Acceptance Window *
+      Dropdown: 1 day | 3 days | 7 days | 14 days
+      Helper: "How long you have to review delivery and accept/dispute.
+               If you don't act, delivery is auto-accepted."
+
+    Field: Dispute Window *
+      Dropdown: 1 day | 3 days | 5 days | 7 days
+      Helper: "After you accept, this is your window to raise a dispute."
+
+    Field: Verifier *
+      Radio:
+        [ ] Protocol Default Verifier (recommended)
+            "SettleOne's EIP-712 validator reviews and approves delivery."
+        [ ] Chainlink Oracle Verifier
+            "Async oracle node verifies delivery independently."
+        [ ] Custom Address (advanced)
+            Input: custom verifier contract address
+      Helper: "Verifier must approve your seller's delivery before
+               the acceptance window opens."
+
+    Field: Dispute Resolver *
+      Radio:
+        [ ] Protocol Default Arbitrator (recommended)
+            "SettleOne's qualified arbitration panel."
+        [ ] Custom Address (advanced)
+            Input: custom resolver contract address
+
+    STEP 3 OF 3 — Documents & Confirmation
+    ─────────────────────────────────────────────────────
+    Field: Terms & Commercial Agreement (optional upload)
+      Drag-and-drop file upload (PDF, DOC, TXT max 10MB)
+      Info: "This document is hashed and its hash committed on-chain as
+             termsHash. The file itself is stored encrypted off-chain."
+
+    Field: Evidence Requirements (optional)
+      Textarea: "Describe what the seller must submit as delivery proof..."
+      Info: "This is hashed as evidenceRequirementsHash."
+
+    Field: Settlement Rules (optional)
+      Textarea: "Any custom settlement rules for the arbitrator..."
+
+    PREVIEW PANEL (right side or expandable):
+      Shows a read-only preview of the DealInput struct being submitted
+      including computed hashes for terms, metadata, etc.
+
+    Action row:
+      "Back" ghost button
+      "Create Deal" primary button → triggers wallet signature popup
+      Disclaimer: "Creating this deal will call DealManager.createDeal()
+                   on {chainName}. Gas estimate: ~0.00X ETH"
+
+    ON WALLET POPUP SIGN:
+      Transaction pending state (spinner)
+      On success: "Deal Created! Deal ID: #DL-00143"
+                  "Share this link: settleone.xyz/deal/143"
+                  Two buttons: "View Deal Room" | "Go to Marketplace"
+      On error: Show error with retry option
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /marketplace/:dealId  (THE DEAL ROOM — CORE FEATURE)
+──────────────────────────────────────────────────────────────────────────────
+This is the most critical page of the entire application.
+Every interaction maps directly to smart contract functions.
+
+LAYOUT: full viewport minus sidebar and top nav
+  Sticky Deal Header (always visible)
+  Below: 3-column grid (desktop only)
+    Left column  (280px):  Intelligence panels
+    Center column (flex):  Main workspace
+    Right column  (280px): Activity feed
+
+──────────────────────────────────────────────
+COMPONENT: DealRoomHeader (sticky, top of page)
+──────────────────────────────────────────────
+[ ] Row 1 (breadcrumb + actions):
+    "Marketplace / #DL-00143 — Smart Contract Audit" (breadcrumb)
+    Right: Share button (copy link) | Bookmark button | "..." more menu
+
+[ ] Row 2 (deal identity):
+    Left:
+      Deal Name: H1 "Smart Contract Audit for DeFi Protocol"
+      Deal ID badge: "#DL-00143" (monospace pill)
+      Category badge: "Smart Contract Audit"
+      Type badge: "Software"
+      Chain badge: "Arbitrum" (with logo)
+    Right:
+      LIVE STATUS INDICATOR: Large colored pill, always visible
+        "● AWAITING FUNDING"  (amber)
+        "● ACTIVE"            (green, pulsing dot)
+        "● DELIVERY SUBMITTED" (purple)
+        etc. (uses deal state color matrix)
+      Token + Amount: "5,000 USDC" (prominent)
+
+──────────────────────────────────────────────
+COMPONENT: DealLifecycleTimeline
+(horizontal scrollable, appears below header)
+──────────────────────────────────────────────
+[ ] Shows all states as nodes connected by a line.
+    Completed states: filled circle, green checkmark
+    Current state: filled circle, accent color, pulsing
+    Future states: empty circle, gray
+
+    Nodes (left to right):
+    Created → Funded → Seller Accepted → Active
+    → Delivery Submitted → Verifying → Awaiting Acceptance
+    → Accepted → [Dispute Window] → Released / Refunded / Settled
+
+    Each node on hover shows:
+      - State name
+      - Timestamp if completed (e.g., "Nov 12, 2025 14:32 UTC")
+      - Duration in state (e.g., "2 days 4 hours")
+
+──────────────────────────────────────────────
+LEFT COLUMN — Intelligence Panels
+──────────────────────────────────────────────
+[ ] PANEL: Financial Overview
+    Title: "Deal Economics"
+    Rows:
+      Deal Amount:        5,000 USDC
+      Deposited:          3,000 USDC (60%)
+      Remaining:          2,000 USDC (40%)
+      Funding Stage:      Stage 1 of 2
+      Estimated Yield*:   +$12.40 USDC (at 5% APY for 30d)
+      Platform Fee:       15% of yield
+      Buyer Yield Share:  85% of yield
+      (* live, updated every 30s from vault.balanceOf)
+
+[ ] PANEL: Timeline Tracker
+    Title: "Key Deadlines"
+    Rows (with countdown timers):
+      Seller Must Accept By:  Jan 10, 2026 — "3d 4h remaining" (if pending)
+      Delivery Due:           Feb 01, 2026 — "18d 6h remaining"
+      Acceptance Window:      [shown when AwaitingAcceptance] "6d 23h left"
+      Dispute Window:         [shown when Accepted] "2d 11h left"
+    Visual: circular countdown ring for the active/nearest deadline
+
+[ ] PANEL: Parties Involved
+    Title: "Deal Participants"
+    Row: Buyer
+      Avatar + "Creator / Buyer"
+      Address: 0xabc...def (copy button + Etherscan link)
+      Name: "John D." (if profile linked)
+      "You" badge if current user
+    Row: Seller
+      IF address set: same format as buyer
+      IF open (seller=0x0): "Open — Any seller can accept"
+    Row: Verifier
+      Address + "Protocol Verifier" or "Chainlink Verifier"
+    Row: Dispute Resolver
+      Address + "Protocol Arbitrator"
+
+[ ] PANEL: Risk & Trust (placeholder for v2)
+    Title: "Trust Signals"
+    Rows:
+      Buyer history:    X deals completed
+      Seller history:   Y deals completed (if seller set)
+      Protocol rating:  ★★★★☆ (4.2/5)
+      Dispute rate:     Low (< 5%)
+
+──────────────────────────────────────────────
+CENTER COLUMN — The Workspace
+──────────────────────────────────────────────
+The center column changes content based on DealState.
+All sections are always visible; some are locked/disabled based on state.
+
+[ ] SECTION: ActionCenter (most prominent part, top of center)
+    ─────────────────────────────────────────────────
+    THIS IS STATE-DRIVEN — shows the correct actions for the current user
+
+    STATE: AwaitingFunding
+    ─────────────────────────────────────────────────
+    IF viewer is Buyer (deal creator):
+      Heading: "Fund Your Deal"
+      Body: "Lock funds in the EscrowVault to activate this deal and
+             invite the seller to accept."
+
+      [Wallet must be connected — if not, show Connect Wallet warning]
+
+      Funding option display (based on deal setting):
+        IF Full Funding:
+          "Required: 5,000 USDC"
+          "Fund Deal →" button (primary, large)
+
+        IF Staged Funding (60/40):
+          "Stage 1 — Deposit 60%: 3,000 USDC"
+          "Fund 60% Now →" button (primary, large)
+          "You will fund the remaining 2,000 USDC before accepting delivery."
+
+      On button click: Opens FundDealModal:
+        Title: "Fund Deal #DL-00143"
+        Chain: Arbitrum (non-editable, from deal)
+        Amount: 3,000 USDC (non-editable)
+        Token: USDC (with balance check: "Your balance: 8,420 USDC")
+        Note: "Funds will be deposited to EscrowVault and immediately
+               begin earning yield."
+        "Approve USDC" button (if ERC20 approval needed first)
+        "Confirm & Fund" button → wallet signature popup
+        On success: toast "Deal funded! Seller acceptance window now active."
+
+    IF viewer is NOT buyer: "This deal is awaiting funding from the buyer."
+
+    ─────────────────────────────────────────────────
+    STATE: PendingSellerAcceptance
+    ─────────────────────────────────────────────────
+    IF viewer is specified Seller (deal.seller == viewer wallet):
+      Heading: "You've been invited to accept this deal"
+      Body: "Review the deal terms carefully. By accepting, you commit to
+             delivering by {deliveryDeadline}."
+      Buttons (side by side):
+        "Accept Deal"  (primary green) → triggers DealManager.acceptDeal()
+        "Reject Deal"  (ghost red)    → triggers DealManager.rejectDeal()
+                                         Opens rejection form:
+                                           Reason field (required)
+                                           "Confirm Rejection" button
+
+    IF viewer is any user (deal.seller == 0x0, open marketplace):
+      Heading: "This deal is open for any seller"
+      Body: "Review the requirements below and accept if you can fulfil them."
+      "Accept This Deal →" button (primary green)
+
+    IF viewer is Buyer (deal creator):
+      Heading: "Waiting for seller acceptance"
+      Seller countdown: "Seller must accept by Jan 10 — 3d 4h remaining"
+      Two buttons:
+        "Extend Window" (ghost) → opens ExtendSellerWindowModal
+                                   (new window in days, calls expireSellerAcceptance
+                                    with extendDeadline=true)
+        "Cancel Deal"   (ghost red) → confirms then calls expireSellerAcceptance
+                                       with extendDeadline=false + refunds funds
+
+      ExtendSellerWindowModal:
+        Title: "Extend Seller Acceptance Window"
+        Body: "The current deadline has passed. Would you like to give the
+               seller more time to accept, or cancel and get refunded?"
+        Input: "New window duration" (in days, 1-30)
+        Buttons: "Extend Window" | "Cancel Deal & Refund"
+
+    ─────────────────────────────────────────────────
+    STATE: Active  (seller accepted, seller now working)
+    ─────────────────────────────────────────────────
+    IF viewer is Seller:
+      Heading: "You are the seller — deliver by {deadline}"
+      Progress bar: "X days remaining"
+      Primary action: "Submit Delivery →" button (primary, large)
+        → scrolls to / opens DeliverySubmissionSection in center column
+
+    IF viewer is Buyer:
+      Heading: "Deal is active. Awaiting seller delivery."
+      Countdown to deadline: "Delivery due in 18d 6h"
+      Note: "If the seller misses the deadline, you'll be automatically refunded."
+
+    ─────────────────────────────────────────────────
+    STATE: DeliverySubmitted  (verifying)
+    ─────────────────────────────────────────────────
+    For all viewers:
+      Heading: "Delivery submitted — verification in progress"
+      Status: Spinner + "Verifier is reviewing the submission..."
+      Note: "The deal's assigned verifier has been notified by email."
+
+    IF viewer is the Verifier address:
+      Heading: "Action required: Verify this delivery"
+      "You are the assigned verifier for this deal."
+      Buttons:
+        "Approve Delivery" (primary green) → EIP-712 signature popup
+          Signs: DeliveryApproval(dealId, seller, proofHash, validUntil, approved=true)
+        "Reject Delivery"  (ghost red)    → same signature with approved=false
+          Rejection form: reason field required
+
+    ─────────────────────────────────────────────────
+    STATE: AwaitingAcceptance  (buyer review window)
+    ─────────────────────────────────────────────────
+    IF viewer is Buyer:
+      Heading: "Review and accept the delivery"
+      Countdown: "Acceptance window closes in 6d 23h"
+      WARNING (if staged funding and not yet funded 40%):
+        Amber banner: "⚠ You must deposit the remaining 2,000 USDC before
+                        you can accept. Your acceptance will not process
+                        until fully funded."
+        "Fund Remaining 40%" button → opens FundDealModal for stage 1
+
+      After funding complete OR if full funding already done:
+      Buttons (prominent, side by side):
+        "Accept Delivery"   (primary green, large)  → DealManager (via DeliveryManager)
+        "Request Revision"  (amber, outlined)       → opens RevisionModal
+        "Raise Dispute"     (red, outlined)         → opens DisputeModal
+
+      RevisionModal:
+        Title: "Request Revision"
+        Reason field (required)
+        Evidence upload (optional)
+        Note: "The deal returns to Active. Seller must re-submit."
+        "Send Revision Request" button
+
+    IF viewer is Seller:
+      Heading: "Buyer is reviewing your delivery"
+      Countdown: "Window closes in 6d 23h"
+      Note: "If the buyer doesn't act, delivery is auto-accepted."
+
+    ─────────────────────────────────────────────────
+    STATE: Accepted  (dispute window open)
+    ─────────────────────────────────────────────────
+    For all viewers:
+      Heading: "Delivery accepted ✓"
+      Sub: "Dispute window is open. Settlement will execute automatically
+            when the window expires."
+      Countdown: "Dispute window closes in 2d 11h"
+
+    IF viewer is Buyer:
+      "Raise Dispute" button (red, outlined) → DisputeModal
+
+    IF viewer is Seller:
+      "Raise Dispute" button (red, outlined) → DisputeModal
+
+    DisputeModal:
+      Title: "Raise a Dispute"
+      Fields:
+        Dispute Title (required)
+        Category dropdown: Non-Delivery | Quality Issue | Wrong Deliverable
+                           Damaged Goods | Missing Items | Fraud | Other
+        Detailed Description (textarea, required, min 100 chars)
+        Supporting Evidence upload (multi-file: PDF, images, video, docs)
+        Note: "Your submission will be visible to the verifier, resolver,
+               and protocol admin only."
+      "Submit Dispute" button → calls DealManager.raiseDispute()
+
+    ─────────────────────────────────────────────────
+    STATE: Disputed
+    ─────────────────────────────────────────────────
+    For all viewers:
+      Red banner: "⚠ This deal is in dispute. An arbitrator is reviewing."
+
+    IF viewer is dispute resolver:
+      Heading: "Arbitration required — issue your verdict"
+      Buttons: (prominent, 3 options)
+        "Seller Wins — Release full amount to seller"
+           → SellerWins confirmation → calls resolveDispute on DeliveryManager
+        "Buyer Wins — Refund full amount to buyer"
+           → BuyerWins confirmation → calls resolveDispute
+        "Split Settlement — Divide the amount"
+           → SplitModal opens:
+               "Seller receives: [_____] USDC"
+               "Buyer receives:  [_____] USDC" (auto-computed as deal-seller)
+               "Confirm Verdict" button → calls resolveDispute
+      Note: "Your verdict is final and will be executed immediately on-chain."
+
+    IF viewer is opener of dispute:
+      "Cancel Dispute" button (ghost) → confirmation → calls cancelDispute
+
+    IF viewer is not a party:
+      "Awaiting arbitration..." neutral state display
+
+    ─────────────────────────────────────────────────
+    STATE: Released / Refunded / Settled  (terminal)
+    ─────────────────────────────────────────────────
+    Green banner (Released) / Amber banner (Refunded) / Blue banner (Settled)
+
+    Settlement Summary Card:
+      "This deal has been closed."
+      Table rows:
+        Outcome:        "Seller Released" / "Buyer Refunded" / "Settled (Split)"
+        Seller received: X USDC
+        Buyer received:  Y USDC (principal + yield share)
+        Buyer yield:     +Z USDC (yield earned during deal)
+        Platform fee:    W USDC (15% of yield)
+        Finalized at:    [timestamp]
+        Tx hash:         0x... (link to Etherscan)
+
+    ─────────────────────────────────────────────────
+    STATE: Cancelled
+    ─────────────────────────────────────────────────
+    Gray banner: "This deal was cancelled."
+    Shows: who cancelled + when + refund tx hash (if funds were deposited)
+
+[ ] SECTION: Deal Information Panel
+    (always visible, below ActionCenter)
+    Tabs: "Details" | "Requirements" | "Terms"
+
+    Details tab:
+      Deal Name
+      Description (full markdown rendered)
+      Deal Type + Category
+      Partial Settlement: Allowed / Not Allowed
+      Created At: [timestamp]
+      Creator/Buyer: [address with Etherscan link]
+      Seller: [address] or "Open"
+      Verifier: [address] (hover: shows verifier type)
+      Dispute Resolver: [address]
+
+    Requirements tab:
+      "Evidence Requirements" (from evidenceRequirementsHash — fetched from backend)
+      "Settlement Rules" (from settlementRulesHash)
+
+    Terms tab:
+      IF termsHash present: "Terms document committed on-chain"
+        Hash: 0x... (monospace)
+        "Download Terms" button (if viewer is buyer or seller)
+      ELSE: "No terms document attached."
+
+[ ] SECTION: DeliverySubmissionSection
+    (visible to Seller when state is Active or DeliverySubmitted for re-submission)
+
+    Heading: "Submit Your Delivery"
+    Sub: "Upload everything required per the deal's evidence requirements."
+
+    IF dealType == SoftDelivery:
+      Upload zones (drag-and-drop multi-file):
+        Primary Deliverable: accepts .zip, .pdf, .docx, .sol, .ts, .py,
+                             .figma exports, etc. Max 100MB total
+        Supporting Documents: .pdf, .doc, images
+        External Links: multi-input for GitHub repos, Figma links,
+                        video demos, deployed contract addresses etc.
+        Notes to buyer: textarea
+
+    IF dealType == HardDelivery:
+      Upload zones:
+        Invoice: PDF, max 5MB
+        Delivery Receipt: PDF or image
+        Shipment Proof: images, max 20MB total
+        Tracking Number: text input (+ courier dropdown)
+        Photos of item: images max 50MB
+        Notes to buyer: textarea
+
+    File list (after upload):
+      Each file: icon + name + size + "Remove" button
+      Hash preview: keccak256 computed client-side, shown for verification
+
+    "Submit Delivery" button (primary, full-width)
+      → calls DealManager (via DeliveryManager).submitDeliveryProof()
+      → files uploaded to IPFS/S3, hash committed on-chain
+      → state changes to DeliverySubmitted
+
+    NOTE ON ACCESS CONTROL:
+      Submitted files are ONLY viewable/downloadable by:
+        - Buyer / Creator
+        - Seller / Submitter
+        - Protocol Verifier
+        - Dispute Resolver
+        - Operations app admin
+      Files are encrypted at rest. Viewing requires backend auth check.
+      Before acceptance: Buyer can VIEW (in-browser preview only),
+                         CANNOT download.
+      After acceptance (Accepted state): Buyer can fully download.
+      Dispute Resolver: always full read-only access.
+
+[ ] SECTION: SubmittedDeliveriesLog
+    (visible to authorized parties only — see access control above)
+    Shows all delivery submissions in reverse-chronological order:
+
+    Each delivery record:
+      Revision number: "Revision #2"
+      Submitted at: [timestamp]
+      Submitted by: [seller address]
+      Proof Hash: 0x... (on-chain)
+      IPFS CID: Qm... (link)
+      Status badge: Pending | Approved | Rejected
+      Files list:
+        Each file: icon + name + size
+        Download button (gated by access control + deal state)
+      Verifier response: "Approved by 0xVerifier... at [timestamp]" or
+                         "Rejected — [reason if provided]"
+
+[ ] SECTION: DisputeEvidenceLog
+    (visible when state is Disputed, to authorized parties)
+    Shows all dispute submissions:
+
+    Each dispute item:
+      Submitter: Buyer or Seller badge
+      Submitted at: [timestamp]
+      Dispute Title
+      Category
+      Description
+      Supporting files (same access control as deliveries)
+      On-chain hash: 0x...
+
+[ ] SECTION: VerdictRecord
+    (visible when state is Settled)
+    Shows the arbitrator's verdict:
+      Issued by: [resolver address]
+      Resolution hash: 0x... (links to IPFS report)
+      Outcome: "Split — Seller 80%, Buyer 20%"
+      Seller award: 4,000 USDC
+      Buyer award: 1,000 USDC
+      Reasoning: [fetched from IPFS if CID linked to resolution]
+      Settled at: [timestamp]
+      Settlement tx: [tx hash → Etherscan]
+
+──────────────────────────────────────────────
+RIGHT COLUMN — Activity Feed (Immutable)
+──────────────────────────────────────────────
+[ ] Title: "Activity Feed"
+    Sub: "All on-chain events — uneditable"
+
+    Each event item (newest first, infinite scroll):
+      Icon (event-type specific)
+      Event name: e.g., "Deal Created", "Deal Funded", "Seller Accepted",
+                         "Delivery Submitted", "Delivery Verified",
+                         "Dispute Raised", "Dispute Resolved",
+                         "Funds Released", "Seller Accepted"
+      Who: shortened address with role label
+      When: relative time "3h ago" (hover: exact UTC timestamp)
+      Tx hash: 0x... (links to Etherscan)
+
+    Events to index and display:
+      DealCreated             → buyer address
+      DealFunded              → buyer address + amount
+      DealAcceptedBySeller    → seller address
+      DealRejectedBySeller    → seller address
+      SellerAcceptanceExpired → "Expired"
+      SellerAcceptanceWindowExtended → buyer address + new deadline
+      DeliveryProofSubmitted  → seller + revision number
+      DeliveryVerified        → verifier address
+      DeliveryAccepted        → buyer or "Auto-accepted" flag
+      RevisionRequested       → buyer address
+      DealDisputed            → opener address
+      DisputeResolved         → resolver + outcome
+      DisputeCancelled        → opener address
+      DealReleased            → seller + amounts
+      DealRefunded            → buyer + amounts
+      DealCancelled           → caller address
+
+──────────────────────────────────────────────
+BELOW 3-COLUMN LAYOUT: Private Chat Room
+──────────────────────────────────────────────
+[ ] COMPONENT: DealChatRoom
+    (full width, below the 3-col layout)
+
+    Title: "Private Messages — {Other Party Name/Address}"
+    Access: visible to buyer and seller only (back-end enforced)
+
+    Design: chat-bubble UI
+      Right-aligned bubbles: current user's messages (blue background)
+      Left-aligned bubbles:  other party's messages (gray background)
+      Each bubble: message text, timestamp (HH:MM), read receipt checkmark
+
+    Input row at bottom:
+      Text input: "Type a message..."
+      Attachment button: send files (max 10MB, any type)
+      Send button
+
+    Rules:
+      Each deal has its own isolated chat room
+      Only buyer and seller have access (enforced server-side)
+      Other users see no chat section
+      Operations admin can view in read-only mode from operations app
+      Chat history persists in off-chain database
+      Chat is NOT on-chain (off-chain only)
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /portfolio
+──────────────────────────────────────────────────────────────────────────────
+[ ] HEADER: "Your Portfolio"
+    Sub: "Track your capital, yield earnings, and deal history."
+
+[ ] SECTION: Summary Cards Row (4 cards)
+    Card 1: Total Active Capital
+      "$12,500 USDC" (large)
+      "Across 3 active deals"
+
+    Card 2: Total Yield Earned
+      "+$142.30 USDC" (large, green)
+      "This month: +$42.10"
+
+    Card 3: Deals as Buyer
+      "8 total"
+      "5 completed, 2 active, 1 disputed"
+
+    Card 4: Deals as Seller
+      "4 total"
+      "3 completed, 1 active"
+
+[ ] SECTION: Active Positions Table
+    Title: "Active Escrow Positions"
+    Columns:
+      Deal       | Role   | Principal | Current Value | Yield So Far | State  | Action
+      #DL-00143  | Buyer  | 3,000 USDC| 3,006.20 USDC | +$6.20       | Active | View
+      #DL-00129  | Seller | —         | —             | —            | Active | View
+    (live-updating values from vault.balanceOf via polling every 30s)
+
+[ ] SECTION: Yield Chart
+    Title: "Yield Accumulated Over Time"
+    Line chart: X axis = dates, Y axis = cumulative USDC yield
+    Filter: Last 30 days | 90 days | 1 year | All time
+    Library: Recharts
+
+[ ] SECTION: Transaction History Table
+    Title: "All Transactions"
+    Filterable by: type (funded, released, refunded), deal, date range
+    Columns: Date | Deal | Type | Amount | Token | Tx Hash | Status
+    Pagination: 25 per page
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /profile
+──────────────────────────────────────────────────────────────────────────────
+[ ] Left panel (240px): Profile card
+    Avatar (large, 80px, editable)
+    Name (editable)
+    Email
+    Member since: [date]
+    Wallet linked: 0xabc...def (change option)
+    Role: "Buyer/Seller"
+    Profile completion bar: 80%
+
+[ ] Right panel (tabs):
+    Tab 1: "Created Deals" — same deal card grid as marketplace
+            but filtered to deals created by this user
+            (clickable, navigates to deal room)
+
+    Tab 2: "Accepted Deals" — filtered to deals accepted by this user as seller
+
+    Tab 3: "Account Info"
+      Fields (all editable):
+        Full Name, Email, Phone Number, Organization/Company,
+        Business Location/Region, Time Zone
+      Save button
+
+    Tab 4: "Security"
+      Change Password (current + new + confirm)
+      Enable/disable 2FA
+      Active sessions list (device, IP, last seen, revoke button)
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /inbox
+──────────────────────────────────────────────────────────────────────────────
+[ ] Two-panel layout (list + detail)
+    Left panel: notification/message list
+      Filter tabs: All | Unread | Deal Updates | System | Disputes
+      Each item: icon + title + preview + time + unread dot
+
+    Right panel: selected notification detail
+      Full message content
+      Action buttons where applicable (e.g., "View Deal" link)
+
+[ ] Notification types to display:
+    - Deal state changes (e.g., "Your deal #DL-00143 was accepted by 0x...")
+    - Delivery submitted to your deal
+    - Revision requested on your delivery
+    - Dispute raised on your deal
+    - Dispute resolved
+    - Acceptance window expiring soon (<24h warning)
+    - Dispute window expiring soon (<24h warning)
+    - Delivery deadline approaching (<48h warning)
+    - Funds released/refunded
+    - System announcements
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /settings
+──────────────────────────────────────────────────────────────────────────────
+[ ] Sections:
+    1. Notifications
+       Toggles for each notification type (email / in-app / both)
+       Deal state changes: [ ] Email  [ ] In-app
+       Deadline reminders: [ ] Email  [ ] In-app
+       Dispute updates:    [ ] Email  [ ] In-app
+       New messages:       [ ] Email  [ ] In-app
+
+    2. Wallet & Network
+       Connected wallet: 0xabc...def [Disconnect]
+       Preferred network: dropdown
+       Gas limit preferences
+
+    3. Privacy
+       Profile visibility: Public / Deals only / Private
+       Show wallet address publicly: toggle
+
+    4. Danger Zone
+       Export my data
+       Delete account (with confirmation flow)
+
+
+================================================================================
+PART 3 — OPERATIONS APP  (apps/operations)
+================================================================================
+
+Routes:
+  /                   Redirects to /dashboard
+  /dashboard          System overview for admins
+  /vault              EscrowVault management
+  /disputes           Disputes queue for arbitrators
+  /deals              All deals overview
+  /verifications      Pending delivery verifications
+  /users              User management
+  /protocol           Protocol parameter management
+  /logs               Transaction & event logs
+  /settings           Operations settings
+
+──────────────────────────────────────────────────────────────────────────────
+LAYOUT: OperationsAppShell
+──────────────────────────────────────────────────────────────────────────────
+[ ] Top nav: SettleOne logo + "Operations" label, admin user info, logout
+[ ] Left sidebar: all routes listed above with icons
+[ ] Role-based visibility:
+    Admin:        all sections
+    Arbitrator:   /disputes, /deals (read-only), /dashboard (limited)
+    VaultManager: /vault, /dashboard (vault metrics only)
+    Verifier:     /verifications, /deals (read-only)
+    Upgrader:     /protocol
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /dashboard
+──────────────────────────────────────────────────────────────────────────────
+[ ] Summary KPI Cards Row:
+    Active Deals: [count]
+    Total Value Locked: $X USDC
+    Total Yield Generated: $Y USDC
+    Open Disputes: [count] (red if > 0)
+    Pending Verifications: [count] (amber if > 0)
+    Total Users: [count]
+
+[ ] Charts:
+    Daily deal creation (line chart, 30 days)
+    TVL over time (area chart)
+    Yield generated by token (bar chart)
+    Deal state distribution (donut chart)
+
+[ ] Real-time deal feed: last 20 events across all deals
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /vault  (Vault Admin — VaultManager role)
+──────────────────────────────────────────────────────────────────────────────
+[ ] SECTION: Vault Overview
+    Per-token cards (one per whitelisted token):
+      Token: USDC
+      Total Principal: $X locked
+      Total Shares: Y
+      Total Assets (incl. yield): $Z
+      Accrued Yield: $W
+      Active Positions: N deals
+
+[ ] SECTION: Strategy Management
+    Per token:
+      Title: "USDC Strategies"
+      Registered strategies table:
+        Address | Type (Aave/Morpho/etc) | TVL Deployed | Status | Actions
+        0xStrat1 | Aave v3 | $50,000 USDC | Active | [Divest] [Remove]
+      "Add Strategy" button → address input + validate + set
+      "Invest" button → enter amount → invest(token, strategy, amount)
+      "Divest" button → enter amount → divest(token, strategy, amount)
+      "Invest All" button → batch invest across all strategies
+      "Emergency Withdraw" button (red, prominent) → confirm → pause vault
+
+[ ] SECTION: Active Positions Table
+    All VaultPositions across all deals:
+      Deal ID | Token | Principal | Required | Shares | Current Value | Funded?
+    Filterable, sortable, paginated
+
+[ ] SECTION: Yield Fee Configuration
+    Platform Treasury: [address] [edit button]
+    Yield Fee: 15% (1500 BPS) [edit — max 30%]
+    "Update Configuration" button
+
+[ ] SECTION: Vault Controls
+    Pause Vault button (amber, admin only)
+    Unpause Vault button (green, admin only)
+    Set Minimum Invest Amount: [input USDC] [save]
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /disputes  (Arbitrator role)
+──────────────────────────────────────────────────────────────────────────────
+[ ] SECTION: Disputes Queue
+    Filter: Open | Resolved | Cancelled | All
+    Sort: Date opened | Deal value | Time since opened
+
+    Dispute List (each item):
+      Deal ID | Deal Name | Opened By | Opened At | Deal Value | Resolver (me?) | Status
+      #DL-00143 | Smart Contract Audit | 0xBuyer | 2 days ago | 5,000 USDC | You | Open
+
+[ ] SECTION: Dispute Detail Panel (opens when clicking a dispute)
+    Two-panel layout:
+
+    Left: Dispute Info
+      Deal info (all deal fields)
+      Dispute reason hash → decoded reason text if available
+      Dispute evidence hash
+
+    Right: Resolution Center
+      "Issue Your Verdict" heading
+      Full deal timeline viewer
+      Evidence bundles:
+        Buyer evidence: all files submitted by buyer for this dispute
+          [preview] [download] tags for each file
+          Each: file name, size, type, submitted at, IPFS CID
+        Seller evidence: same for seller
+        Delivery submissions: all revision history + files
+          [preview] [download]
+
+      Verdict panel:
+        "Seller Wins" button (green)
+        "Buyer Wins" button (amber)
+        "Split" button (blue) → shows split input
+        Resolution notes field (stored as IPFS hash)
+        "Issue Final Verdict" button → wallet sign → calls resolveDispute
+        Warning: "This is irreversible."
+
+[ ] Access control: only the deal's assigned dispute resolver
+    can see the verdict buttons. Others see read-only view.
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /verifications  (Verifier role)
+──────────────────────────────────────────────────────────────────────────────
+[ ] SECTION: Pending Verifications Queue
+    Filter: Pending | Approved | Rejected | All
+    Each item: Deal ID | Deal Name | Submitted By | Submitted At | Revision | Action
+
+[ ] SECTION: Verification Detail
+    Deal info
+    Delivery files viewer (all files from seller's submission):
+      Each file: inline preview (PDF viewer, image viewer, video player)
+      Download restricted (read-only access)
+    Evidence review checklist (optional, configurable)
+
+    Verdict panel:
+      "Approve Delivery" button (green) → signs EIP-712 DeliveryApproval
+      "Reject Delivery" button (red) → opens rejection form + signs EIP-712
+
+    Note: EIP-712 message shown before signing:
+      DeliveryApproval {
+        dealId: 143,
+        seller: 0x...,
+        proofHash: 0x...,
+        validUntil: [timestamp],
+        approved: true/false
+      }
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /deals  (Admin overview of all deals)
+──────────────────────────────────────────────────────────────────────────────
+[ ] Full deals table (all deals, all users):
+    Deal ID | Creator | Seller | Token | Amount | State | Created | Deadline | Chain
+    All fields filterable and sortable
+    Click → opens deal detail with admin read-only view
+    Admin can see all submitted files
+    Admin can see all chat histories (read-only, moderation purposes)
+
+[ ] Batch operations (admin only):
+    Select multiple deals → "Force Cancel" (emergency, requires multisig)
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /users  (Admin role)
+──────────────────────────────────────────────────────────────────────────────
+[ ] Users table:
+    User ID | Email | Name | Role | Joined | Deals Created | Deals Accepted | Status
+    Click → user profile detail
+
+[ ] User detail:
+    Profile info
+    All deals they're involved in
+    Ban/suspend button (with reason + confirmation)
+    Promote to staff role button (requires admin password confirmation)
+    Full audit log of user actions
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /protocol  (Upgrader / Admin)
+──────────────────────────────────────────────────────────────────────────────
+[ ] SECTION: Token Whitelist Management
+    Table of current whitelisted tokens:
+      Token Address | Symbol | Min Amount | Max Amount | Allowed | Actions
+    "Add Token" button → opens form:
+      Token address (validates ERC20 interface)
+      Min amount (in token units)
+      Max amount (0 = unlimited)
+      Toggle: allowed true/false
+      Submit → calls DealManager.setTokenConfig()
+
+[ ] SECTION: Module Addresses
+    Current addresses (with update buttons for admin):
+      DealManager: 0x...
+      DeliveryManager: 0x...
+      EscrowVault: 0x...
+      Settlement: 0x...
+      DisputeManager: 0x...
+      EvidenceManager: 0x...
+      AutomationHandler: 0x...
+      DefaultVerifier: 0x...
+      DefaultDisputeResolver: 0x...
+    Each has "Update" button → opens address input → calls updateX() function
+
+[ ] SECTION: Default Module Configuration
+    Default Verifier: [address] [update]
+    Default Dispute Resolver: [address] [update]
+
+[ ] SECTION: Automation
+    Automation Handler Status: Active / Paused
+    Max Scan per Upkeep: [25] [update]
+    Registered Deals Count: [live]
+    Last Upkeep: [timestamp]
+    Link to Chainlink dashboard (external)
+
+[ ] SECTION: Pause Controls (emergency)
+    DealManager: ACTIVE [Pause] (red, requires confirmation)
+    EscrowVault: ACTIVE [Pause] (red)
+    Note: "Pausing DealManager stops all new deal creation and
+           state transitions. Use only in emergencies."
+
+──────────────────────────────────────────────────────────────────────────────
+PAGE: /logs  (Admin)
+──────────────────────────────────────────────────────────────────────────────
+[ ] Event log feed from all contracts:
+    Filter: contract | event type | address | date range
+    Each event: chain | block | tx hash | contract | event name | decoded params
+    Exportable as CSV
+
+================================================================================
+PART 4 — SHARED PACKAGES SPECIFICATION
+================================================================================
+
+──────────────────────────────────────────────────────────────────────────────
+packages/types — Domain Types
+──────────────────────────────────────────────────────────────────────────────
+[ ] DealState enum (matching smart contract):
+    None | Draft | PendingSellerAcceptance | AwaitingFunding | Active
+    | DeliverySubmitted | AwaitingAcceptance | Accepted | Disputed
+    | Released | Refunded | Settled | Cancelled
+
+[ ] DisputeOutcome enum: None | SellerWins | BuyerWins | Split
+[ ] DealType enum: SoftDelivery | HardDelivery
+[ ] EvidenceRole enum: General | DealTerms | DeliveryProof | BuyerDispute | SellerDispute | SellerResponse | Arbitration | Acceptance | Rejection
+[ ] EvidenceType enum: Image | Video | PDF | Invoice | DeliveryReceipt | SourceCode | ExternalLink | TrackingInfo | InspectionReport | ChatTranscript | Email | Other
+[ ] UserRole enum: NormalUser | Admin | Arbitrator | VaultManager | Upgrader | Verifier
+
+[ ] Deal interface (matches DealStructs.Deal):
+    buyer, seller, token, verifier, disputeResolver: string (address)
+    amount, depositedFunds: bigint
+    fundingStage: number
+    createdAt, sellerAcceptanceDeadline, sellerAcceptedAt, fundedAt,
+    deliverySubmittedAt, deliveryVerifiedAt, acceptedAt, finalizedAt,
+    deliveryDeadline, acceptanceWindowEndsAt, disputeWindowEndsAt: bigint (timestamp)
+    acceptanceWindow, disputeWindow, sellerAcceptanceWindowSecs: number
+    dealType: DealType
+    state: DealState
+    partialSettlementAllowed: boolean
+    termsHash, metadataHash, evidenceRequirementsHash, settlementRulesHash, proofHash: string
+
+[ ] VaultPosition interface
+[ ] SettlementPayout interface
+[ ] Evidence interface
+[ ] Dispute interface
+[ ] Delivery interface
+
+──────────────────────────────────────────────────────────────────────────────
+packages/sdk — Blockchain Bridge
+──────────────────────────────────────────────────────────────────────────────
+[ ] Contract ABIs: all compiled ABIs imported as JSON
+[ ] wagmi config: supported chains, RPC providers, wallet connectors
+[ ] Contract hooks (using Wagmi useReadContract / useWriteContract):
+    useDealManager()
+    useDeliveryManager()
+    useEscrowVault()
+    useSettlement()
+    useDisputeManager()
+    useEvidenceManager()
+[ ] Specific action hooks:
+    useFundDeal(dealId, amount)
+    useAcceptDeal(dealId)
+    useRejectDeal(dealId)
+    useSubmitDeliveryProof(dealId, proofHash, cid, ...)
+    useFinalizeDelivery(dealId, verificationData)
+    useAcceptDelivery(dealId)
+    useRequestRevision(dealId, reasonHash, evidenceHash)
+    useRaiseDispute(dealId, reasonHash, evidenceHash)
+    useCancelDispute(dealId)
+    useResolveDispute(dealId, resolverData)
+    useExpireSellerAcceptance(dealId, extendDeadline, newWindow)
+[ ] Real-time eventBus: subscribes to contract events via WebSocket/polling
+[ ] useWalletAuth hook: connects wallet, verifies ownership, returns signature
+[ ] IPFS upload utility: pinata/nft.storage integration for file uploads
+[ ] Keccak256 client-side hash utility
+
+──────────────────────────────────────────────────────────────────────────────
+packages/api — Off-Chain Data (TanStack Query)
+──────────────────────────────────────────────────────────────────────────────
+[ ] useDeals(filters) — paginated deal list from backend (off-chain metadata)
+[ ] useDeal(dealId) — single deal off-chain data
+[ ] useDeliveries(dealId) — delivery submissions
+[ ] useEvidence(dealId) — evidence items
+[ ] useChat(dealId) — chat messages (WebSocket)
+[ ] useSendMessage(dealId) — send chat message
+[ ] useUser(userId) — user profile
+[ ] useUpdateProfile() — update profile fields
+[ ] useNotifications() — inbox notifications
+[ ] usePortfolio(userId) — portfolio metrics
+[ ] File upload utility (multipart, returns IPFS CID + S3 URL)
+
+──────────────────────────────────────────────────────────────────────────────
+packages/design-system — Component Library
+──────────────────────────────────────────────────────────────────────────────
+Foundation:
+[ ] Button (variants: primary, secondary, ghost, danger; sizes: sm, md, lg)
+[ ] Input (text, number, address, textarea, with error states)
+[ ] Select / Dropdown
+[ ] Modal / Dialog (with backdrop, close button, size variants)
+[ ] Card (with header, body, footer slots)
+[ ] Badge / Pill (with color variants)
+[ ] Toast / Notification (success, error, warning, info)
+[ ] Spinner / Loading states
+[ ] Tooltip
+[ ] Tabs
+[ ] Avatar (with initials fallback)
+
+Deal-specific:
+[ ] DealCard (as specified in Marketplace section)
+[ ] DealStateTag (colored pill for deal states)
+[ ] DealLifecycleTimeline
+[ ] ActionCenter (state-driven action container)
+[ ] VaultYieldCard
+[ ] CountdownTimer (formatted days:hours:minutes)
+[ ] FileUploadZone (drag-and-drop with progress)
+[ ] FileListItem (with icon, size, hash, download button)
+[ ] AddressDisplay (shortened address + copy + Etherscan link)
+[ ] WalletConnectButton
+[ ] NetworkBadge
+[ ] ActivityFeedItem
+[ ] ChatBubble (left/right variant)
+
+Charts (Recharts-based):
+[ ] YieldLineChart
+[ ] DealValueAreaChart
+[ ] TVLBarChart
+[ ] DealStateDonutChart
+
+──────────────────────────────────────────────────────────────────────────────
+packages/utils — Helper Functions
+──────────────────────────────────────────────────────────────────────────────
+[ ] formatAddress(addr, length=6) → "0x1234...5678"
+[ ] formatAmount(amount, decimals, symbol) → "5,000 USDC"
+[ ] formatTimestamp(ts) → "Jan 15, 2026 14:32 UTC"
+[ ] formatRelativeTime(ts) → "3 hours ago"
+[ ] formatCountdown(ts) → "3d 4h 22m"
+[ ] getDealStateColor(state) → hex color string
+[ ] getDealStateLabel(state) → human-readable string
+[ ] hashContent(content: string | Buffer) → keccak256 hex string
+[ ] isExpired(deadline: bigint) → boolean
+[ ] parseOnChainAmount(amount: bigint, decimals: number) → string
+[ ] toOnChainAmount(amount: string, decimals: number) → bigint
+
+
+================================================================================
+PART 5 — SMART CONTRACT INTEGRATION MAP
+================================================================================
+
+Every button in the frontend maps to an exact smart contract call.
+
+WORKSPACE: Creating a Deal
+  Button: "Create Deal" → confirm in modal
+  Contract: DealManager.createDeal(DealInput)
+  Required wallet state: connected, correct network
+  Pre-flight: token whitelist check (read tokenConfigs)
+
+WORKSPACE: Funding a Deal
+  Button: "Fund Deal" / "Fund 60% Now" / "Fund Remaining 40%"
+  Contract: DealManager.fundDeal(dealId, amount) + ERC20.approve(vault, amount)
+  Required wallet state: connected, correct network, correct wallet (buyer only)
+  Pre-flight: balance check, allowance check, vault.isFullyFunded check
+
+WORKSPACE: Accepting a Deal (as Seller)
+  Button: "Accept Deal"
+  Contract: DealManager.acceptDeal(dealId)
+  Required wallet state: connected
+
+WORKSPACE: Rejecting a Deal (as Seller)
+  Button: "Reject Deal"
+  Contract: DealManager.rejectDeal(dealId, reasonHash)
+  Pre-flight: reasonHash = keccak256(reason text)
+
+WORKSPACE: Extend / Cancel Seller Window (as Buyer)
+  Button: "Extend Window" or "Cancel Deal"
+  Contract: DealManager.expireSellerAcceptance(dealId, extendDeadline, newWindow)
+  Note: if extendDeadline=false AND depositedFunds > 0 → refund triggered
+
+WORKSPACE: Submitting Delivery (as Seller)
+  Button: "Submit Delivery"
+  Flow:
+    1. Upload files → IPFS → get CIDs
+    2. Compute proofHash = keccak256(all CID hashes concatenated)
+    3. Call DeliveryManager.submitDeliveryProof(dealId, proofHash, primaryCID, evidenceType, submissionData, bytes(""))
+
+OPERATIONS: Approving Delivery (as Verifier)
+  Button: "Approve Delivery"
+  Flow:
+    1. Backend generates DeliveryApproval EIP-712 message
+    2. Verifier signs message (validUntil = now + 15 minutes)
+    3. Call DeliveryManager.finalizeDelivery(dealId, encodedVerificationData)
+
+WORKSPACE: Accepting Delivery (as Buyer)
+  Button: "Accept Delivery"
+  Pre-flight: vault.isFullyFunded(dealId) must be true
+  Contract: DeliveryManager.acceptDelivery(dealId)
+
+WORKSPACE: Requesting Revision (as Buyer)
+  Button: "Request Revision"
+  Contract: DeliveryManager.requestRevision(dealId, keccak256(reason), keccak256(evidence))
+
+WORKSPACE: Raising Dispute (as Buyer or Seller)
+  Button: "Raise Dispute"
+  Flow:
+    1. Upload evidence files → IPFS → get evidence CID
+    2. evidenceHash = keccak256(evidence CID)
+    3. Call DeliveryManager.raiseDispute(dealId, keccak256(reason), evidenceHash)
+
+WORKSPACE: Cancelling Dispute (as opener)
+  Button: "Cancel Dispute"
+  Contract: DeliveryManager.cancelDispute(dealId)
+
+OPERATIONS: Resolving Dispute (as Arbitrator/Resolver)
+  Button: "Issue Verdict"
+  Flow:
+    1. Upload resolution report → IPFS → get CID
+    2. resolutionHash = keccak256(resolution CID)
+    3. SimpleResolver.decide(dealId, outcome, sellerAward, resolutionHash)
+    4. Then: DeliveryManager.resolveDispute(dealId, resolverData)
+    Note: Steps 3+4 combined in the UI as one transaction bundle
+
+AUTOMATION (no button, internal):
+  AutomationHandler.performUpkeep() called by Chainlink
+  Actions: FinalizeDelivery | AutoAcceptDelivery | ReleaseSeller | RefundBuyer
+
+
+================================================================================
+PART 6 — AUTHENTICATION & SECURITY
+================================================================================
+
+[ ] Auth flow (implemented in both workspace and operations):
+    1. User enters email + password (or Google OAuth)
+    2. POST /auth/login → returns { accessToken, refreshToken, user }
+    3. If OTP required (for staff): show OTP step
+    4. Store accessToken in memory (NOT localStorage — XSS risk)
+    5. Store refreshToken in httpOnly cookie
+    6. On every API call: send accessToken in Authorization header
+    7. On 401: attempt refresh, if fail → redirect to /login
+    8. Role check: if user.role !== expected for app → redirect
+
+[ ] Wallet binding:
+    1. After login, user connects wallet
+    2. Backend issues a nonce: GET /auth/wallet-nonce
+    3. User signs: "Sign this to link your wallet to SettleOne: {nonce}"
+    4. POST /auth/link-wallet with signature
+    5. Backend verifies + links wallet address to user account
+
+[ ] Deal access permissions (enforced server-side AND client-side):
+    All deals: read metadata, read state, read activity feed
+    Deal files: buyer + seller + verifier + resolver + admin ONLY
+    Chat room: buyer + seller ONLY
+    Verdict panel: resolver ONLY
+    Vault controls: vault admin ONLY
+    Dispute resolution: deal's resolver ONLY
+    Delivery verification: deal's verifier ONLY
+
+
+================================================================================
+PART 7 — RESPONSIVE DESIGN BREAKPOINTS
+================================================================================
+
+[ ] Mobile (< 640px):
+    - Sidebar hidden, replaced by bottom tab bar
+    - Deal cards: 1 column
+    - Deal room: stacked layout (no 3-col)
+    - Activity feed: separate tab
+    - Chat: separate tab
+
+[ ] Tablet (640–1024px):
+    - Sidebar: icon-only (64px)
+    - Deal cards: 2 columns
+    - Deal room: 2-col (left+center merged, activity feed hidden or tab)
+
+[ ] Desktop (>1024px):
+    - Full sidebar (240px)
+    - Deal cards: 3 columns
+    - Deal room: full 3-column
+
+[ ] Mobile wallet connect:
+    - WalletConnect QR code modal
+    - Deep links to MetaMask mobile / Coinbase Wallet
+
+
+================================================================================
+PART 8 — PHASE-BY-PHASE PROGRESS CHECKLIST
+================================================================================
+
+PHASE 1 — INFRASTRUCTURE [DONE per current status]
+[x] Turborepo monorepo setup
+[x] Package structure (workspace, marketing, operations)
+[x] Shared packages skeleton
+[x] Build pipeline (Turbo cache)
+[x] Command palette (⌘K)
+[x] Notification system (useNotify)
+[x] 20+ route stubs
+
+PHASE 2 — CORE SHELL & ROUTING [DONE per current status]
+[x] AppShell layout (TopNav + Sidebar)
+[x] All route definitions
+[x] Basic page stubs
+[x] Design token system
+
+PHASE 3 — DEAL ROOM (in progress)
+[x] DealRoom.tsx with mock data
+[x] Deal lifecycle timeline component
+[x] Action center scaffold
+[ ] Connect ActionCenter to DealState enum (state-driven visibility)
+[ ] FundDealModal — all fields, token selector, wallet integration
+[ ] SubmitDeliveryModal — file upload zones (soft + hard delivery variants)
+[ ] DeliveryVerificationPanel — EIP-712 signing flow
+[ ] BuyerAcceptancePanel — full funding check + accept/revision/dispute buttons
+[ ] DisputeModal — full form + evidence upload
+[ ] DisputeResolutionPanel (operations) — 3 verdict buttons
+[ ] SettlementSummaryCard — final payout display
+[ ] DealChatRoom — WebSocket messages, bubble UI, file attachment
+[ ] SubmittedDeliveriesLog — access-controlled file list
+[ ] ActivityFeed — real event polling
+
+PHASE 4 — MARKETPLACE
+[ ] DealCard component (all fields per spec)
+[ ] Filter/search bar (all dropdowns + pills)
+[ ] Deal grid layout (responsive)
+[ ] CreateDealModal — 3-step form + wallet sign
+[ ] Pagination / infinite scroll
+[ ] Empty states
+
+PHASE 5 — AUTHENTICATION
+[ ] Login page — user tab + staff tab
+[ ] Signup page — 3-step OTP flow
+[ ] Google OAuth integration
+[ ] Role-based routing (workspace vs operations)
+[ ] Token storage (memory + httpOnly cookie)
+[ ] Wallet binding flow
+[ ] Protected route wrapper
+
+PHASE 6 — PORTFOLIO & PROFILE
+[ ] Portfolio page — KPI cards + yield chart + history table
+[ ] Profile page — 4-tab layout
+[ ] Inbox — notification list + detail panel
+[ ] Settings page
+
+PHASE 7 — OPERATIONS APP
+[ ] Admin dashboard — KPIs + charts
+[ ] Vault management page — strategy management UI
+[ ] Disputes queue + dispute detail panel
+[ ] Verifications queue + verification detail
+[ ] All deals admin table
+[ ] Users management page
+[ ] Protocol parameters page
+[ ] Event logs page
+
+PHASE 8 — SMART CONTRACT INTEGRATION
+[ ] Viem/Wagmi config with all supported chains
+[ ] All contract ABIs imported
+[ ] useReadContract hooks for each view function
+[ ] useWriteContract hooks for each write function
+[ ] Transaction status management (pending/success/error)
+[ ] Real-time event subscriptions (on-chain events → activity feed)
+[ ] ERC20 approve + fund flow
+[ ] EIP-712 signing (delivery verification)
+[ ] IPFS file upload integration
+[ ] Client-side keccak256 hashing
+
+PHASE 9 — MARKETING APP
+[ ] Landing page — all sections
+[ ] Features page
+[ ] Pricing page
+[ ] Documentation system (markdown rendering)
+[ ] Marketing login/signup pages
+
+PHASE 10 — POLISH & PRODUCTION
+[ ] Mobile responsive for all pages
+[ ] Dark mode (optional)
+[ ] Loading skeleton screens for all data fetches
+[ ] Error boundary components
+[ ] Accessibility audit (WCAG 2.1 AA)
+[ ] Performance audit (Core Web Vitals)
+[ ] SEO meta tags (marketing app)
+[ ] Analytics integration
+[ ] End-to-end tests for critical flows
+[ ] Storybook stories for design-system components
+
+
+================================================================================
+PART 9 — KEY BUSINESS RULES (frontend must enforce)
+================================================================================
+
+1. Fund Deal:
+   - Only deal.buyer can fund
+   - Stage 0: min 60% of deal.amount
+   - Stage 1: remaining 40%, ONLY callable when deal.state == AwaitingAcceptance
+   - Full amount in one shot always allowed
+   - Cannot over-fund (depositedFunds + amount must not exceed deal.amount)
+
+2. Accept Deal:
+   - If deal.seller == 0x0: any connected wallet can accept
+   - If deal.seller != 0x0: only that specific wallet can accept
+   - Only callable in PendingSellerAcceptance state
+
+3. Submit Delivery:
+   - Only deal.seller can submit
+   - Only in Active or DeliverySubmitted (re-submit after rejection) state
+   - Cannot re-submit if previous state is Pending (not yet rejected)
+   - Cannot submit after deliveryDeadline
+
+4. Accept Delivery (Buyer):
+   - vault.isFullyFunded(dealId) must be true first
+   - Only callable in AwaitingAcceptance state
+   - Within acceptanceWindowEndsAt
+   - If buyer is silent: automation auto-accepts after window (if fully funded)
+
+5. Raise Dispute:
+   - Buyer OR seller can raise
+   - Only in AwaitingAcceptance or Accepted state
+   - Within the respective window (acceptanceWindow or disputeWindow)
+
+6. Resolve Dispute:
+   - Only the deal's deal.disputeResolver address can resolve
+   - Must be in Disputed state
+   - Arbiter calls SimpleResolver.decide() first, then resolveDispute()
+
+7. Cancel Deal:
+   - Only buyer can cancel
+   - Only before Active state (AwaitingFunding or PendingSellerAcceptance)
+   - If funds deposited, automatic refund triggered
+
+8. Extend / Cancel Seller Window:
+   - Only buyer can call
+   - Only in PendingSellerAcceptance state AND after sellerAcceptanceDeadline passed
+
+
+================================================================================
+END OF SETTLEONE FRONTEND MASTER SCRIPT
+================================================================================
+Total pages to build: 25+
+Total components to build: 60+
+Total smart contract integrations: 20+
+
+This document is your single source of truth.
+Mark each checkbox as completed and use it to track progress across all phases.
+================================================================================
