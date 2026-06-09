@@ -159,16 +159,16 @@ It is not risk-free. Any production deployment still needs:
 
 SettleOne can support many workflows:
 
-| Use case | How SettleOne helps |
-| --- | --- |
-| MSME supplier payments | Buyer locks payment before supplier ships or performs work. |
-| Freelance or agency work | Client commits funds before project delivery begins. |
-| Marketplace settlement | Platform coordinates deals while contracts enforce escrow rules. |
-| B2B purchase orders | Terms hash links on-chain deal to off-chain order and invoice. |
-| Logistics and delivery | Tracking or delivery proof can be hashed and verified. |
-| Service-level agreements | Delivery proof can represent completion of a service milestone. |
-| Cross-border settlement | Parties can use stablecoins or supported ERC20 assets. |
-| DAO/vendor payments | DAO commits funds and releases after verified delivery. |
+| Use case                 | How SettleOne helps                                              |
+| ------------------------ | ---------------------------------------------------------------- |
+| MSME supplier payments   | Buyer locks payment before supplier ships or performs work.      |
+| Freelance or agency work | Client commits funds before project delivery begins.             |
+| Marketplace settlement   | Platform coordinates deals while contracts enforce escrow rules. |
+| B2B purchase orders      | Terms hash links on-chain deal to off-chain order and invoice.   |
+| Logistics and delivery   | Tracking or delivery proof can be hashed and verified.           |
+| Service-level agreements | Delivery proof can represent completion of a service milestone.  |
+| Cross-border settlement  | Parties can use stablecoins or supported ERC20 assets.           |
+| DAO/vendor payments      | DAO commits funds and releases after verified delivery.          |
 
 SettleOne is most useful when:
 
@@ -305,29 +305,29 @@ The backend is the support system for:
 
 ## Component Responsibilities
 
-| Component | Responsibility | Current location |
-| --- | --- | --- |
-| Root repository | Project coordination and documentation. | `README.md` |
-| Contracts | Payment commitment, escrow, verification, dispute, settlement, automation. | `contracts/` |
-| Frontend | Wallet UX and deal management interface. | `frontend/` placeholder |
-| Backend | Private verifier, metadata, APIs, dispute support, indexing. | Not included in this public repo |
-| Chainlink / Keepers | Optional oracle and time-based automation infrastructure. | Integrated by contracts and external ops |
-| SDK | Future integration wrapper for frontend/backend apps. | Not currently included |
+| Component           | Responsibility                                                             | Current location                         |
+| ------------------- | -------------------------------------------------------------------------- | ---------------------------------------- |
+| Root repository     | Project coordination and documentation.                                    | `README.md`                              |
+| Contracts           | Payment commitment, escrow, verification, dispute, settlement, automation. | `contracts/`                             |
+| Frontend            | Wallet UX and deal management interface.                                   | `frontend/` placeholder                  |
+| Backend             | Private verifier, metadata, APIs, dispute support, indexing.               | Not included in this public repo         |
+| Chainlink / Keepers | Optional oracle and time-based automation infrastructure.                  | Integrated by contracts and external ops |
+| SDK                 | Future integration wrapper for frontend/backend apps.                      | Not currently included                   |
 
 ## Participants and Trust Boundaries
 
 SettleOne separates actors carefully.
 
-| Participant | What they can do | What they should not be able to do |
-| --- | --- | --- |
-| Seller | Create deal, submit proof, receive funds after valid settlement. | Release funds without verified delivery or dispute outcome. |
-| Buyer | Fund deal, confirm delivery, dispute during window, receive refund when valid. | Pull funds back after verified delivery and expired dispute window. |
-| Validator | Sign delivery approval for `DeliveryVerifier`. | Move funds directly from the vault. |
-| Oracle | Fulfill async verification in `ChainlinkVerifier`. | Settle funds without `DealManager` state checks. |
-| Arbiter | Record dispute decision in resolver. | Withdraw vault funds directly. |
-| Keeper | Trigger valid time-based actions. | Choose arbitrary settlement outcomes. |
-| Admin / Governance | Configure modules, roles, pause, upgrade. | Operate without multisig/timelock controls in production. |
-| Strategist | Manage optional yield strategy actions. | Override per-deal ownership or settlement rules. |
+| Participant        | What they can do                                                               | What they should not be able to do                                  |
+| ------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Seller             | Create deal, submit proof, receive funds after valid settlement.               | Release funds without verified delivery or dispute outcome.         |
+| Buyer              | Fund deal, confirm delivery, dispute during window, receive refund when valid. | Pull funds back after verified delivery and expired dispute window. |
+| Validator          | Sign delivery approval for `DeliveryVerifier`.                                 | Move funds directly from the vault.                                 |
+| Oracle             | Fulfill async verification in `ChainlinkVerifier`.                             | Settle funds without `DealManager` state checks.                    |
+| Arbiter            | Record dispute decision in resolver.                                           | Withdraw vault funds directly.                                      |
+| Keeper             | Trigger valid time-based actions.                                              | Choose arbitrary settlement outcomes.                               |
+| Admin / Governance | Configure modules, roles, pause, upgrade.                                      | Operate without multisig/timelock controls in production.           |
+| Strategist         | Manage optional yield strategy actions.                                        | Override per-deal ownership or settlement rules.                    |
 
 The key boundary:
 
@@ -490,17 +490,17 @@ SettleOne deals are represented by `DealStructs.Deal`.
 
 ### Deal States
 
-| State | Meaning |
-| --- | --- |
-| `None` | Reserved empty state. Deal ID does not exist. |
-| `Created` | Deal has been created but not funded. |
-| `FundsLocked` | Buyer has funded the deal and escrow is active. |
+| State            | Meaning                                                                 |
+| ---------------- | ----------------------------------------------------------------------- |
+| `None`           | Reserved empty state. Deal ID does not exist.                           |
+| `Created`        | Deal has been created but not funded.                                   |
+| `FundsLocked`    | Buyer has funded the deal and escrow is active.                         |
 | `ProofSubmitted` | Seller submitted delivery proof; verification is pending or finalizing. |
-| `Delivered` | Delivery proof has been approved and dispute window is open. |
-| `Disputed` | Buyer raised a dispute during the dispute window. |
-| `Settled` | Funds have been released, refunded, or split through settlement. |
-| `Refunded` | Buyer refund path executed after missed/invalid delivery. |
-| `Cancelled` | Unfunded deal was cancelled before escrow funding. |
+| `Delivered`      | Delivery proof has been approved and dispute window is open.            |
+| `Disputed`       | Buyer raised a dispute during the dispute window.                       |
+| `Settled`        | Funds have been released, refunded, or split through settlement.        |
+| `Refunded`       | Buyer refund path executed after missed/invalid delivery.               |
+| `Cancelled`      | Unfunded deal was cancelled before escrow funding.                      |
 
 ### State Diagram
 
@@ -553,17 +553,17 @@ Settled
 
 The `StateTransitions` library centralizes transition checks.
 
-| From | To | Trigger |
-| --- | --- | --- |
-| `Created` | `FundsLocked` | Buyer funds deal. |
-| `Created` | `Cancelled` | Buyer or seller cancels before funding. |
-| `FundsLocked` | `ProofSubmitted` | Seller submits proof. |
-| `FundsLocked` | `Refunded` | Delivery deadline expires without verified delivery. |
-| `ProofSubmitted` | `Delivered` | Verifier approves proof. |
-| `ProofSubmitted` | `Refunded` | Deadline expires and proof is not approved. |
-| `Delivered` | `Disputed` | Buyer disputes during dispute window. |
-| `Delivered` | `Settled` | Buyer confirms or dispute window expires. |
-| `Disputed` | `Settled` | Resolver decision is applied. |
+| From             | To               | Trigger                                              |
+| ---------------- | ---------------- | ---------------------------------------------------- |
+| `Created`        | `FundsLocked`    | Buyer funds deal.                                    |
+| `Created`        | `Cancelled`      | Buyer or seller cancels before funding.              |
+| `FundsLocked`    | `ProofSubmitted` | Seller submits proof.                                |
+| `FundsLocked`    | `Refunded`       | Delivery deadline expires without verified delivery. |
+| `ProofSubmitted` | `Delivered`      | Verifier approves proof.                             |
+| `ProofSubmitted` | `Refunded`       | Deadline expires and proof is not approved.          |
+| `Delivered`      | `Disputed`       | Buyer disputes during dispute window.                |
+| `Delivered`      | `Settled`        | Buyer confirms or dispute window expires.            |
+| `Disputed`       | `Settled`        | Resolver decision is applied.                        |
 
 ## On-Chain Data Model
 
@@ -571,92 +571,92 @@ The `StateTransitions` library centralizes transition checks.
 
 Used to create a deal.
 
-| Field | Meaning |
-| --- | --- |
-| `buyer` | Address expected to fund and confirm/dispute the deal. |
-| `seller` | Address delivering work and receiving seller-side payout. |
-| `token` | `address(0)` for native ETH, otherwise ERC20 token address. |
-| `amount` | Payment amount to lock. |
-| `deliveryDeadline` | Timestamp by which delivery must be verified. |
-| `disputeWindow` | Number of seconds buyer has to dispute after delivery approval. |
-| `termsHash` | Hash of invoice, order, agreement, or legal terms. |
-| `metadataHash` | Hash of application metadata. |
-| `verifier` | Optional per-deal verifier. Defaults to protocol verifier if zero. |
-| `disputeResolver` | Optional per-deal resolver. Defaults to protocol resolver if zero. |
+| Field              | Meaning                                                            |
+| ------------------ | ------------------------------------------------------------------ |
+| `buyer`            | Address expected to fund and confirm/dispute the deal.             |
+| `seller`           | Address delivering work and receiving seller-side payout.          |
+| `token`            | `address(0)` for native ETH, otherwise ERC20 token address.        |
+| `amount`           | Payment amount to lock.                                            |
+| `deliveryDeadline` | Timestamp by which delivery must be verified.                      |
+| `disputeWindow`    | Number of seconds buyer has to dispute after delivery approval.    |
+| `termsHash`        | Hash of invoice, order, agreement, or legal terms.                 |
+| `metadataHash`     | Hash of application metadata.                                      |
+| `verifier`         | Optional per-deal verifier. Defaults to protocol verifier if zero. |
+| `disputeResolver`  | Optional per-deal resolver. Defaults to protocol resolver if zero. |
 
 ### `Deal`
 
 Stored by `DealManager`.
 
-| Field | Meaning |
-| --- | --- |
-| `buyer` | Buyer address. |
-| `seller` | Seller address. |
-| `token` | Native ETH marker or ERC20 token. |
-| `verifier` | Verifier chosen for this deal. |
-| `disputeResolver` | Resolver chosen for this deal. |
-| `amount` | Principal amount committed. |
-| `createdAt` | Deal creation timestamp. |
-| `fundedAt` | Funding timestamp. |
-| `proofSubmittedAt` | Proof submission timestamp. |
-| `deliveredAt` | Delivery approval timestamp. |
-| `deliveryDeadline` | Delivery deadline. |
-| `disputeWindowEndsAt` | Final timestamp for buyer dispute. |
-| `settledAt` | Terminal settlement/refund/cancel timestamp. |
-| `disputeWindow` | Buyer dispute window duration. |
-| `state` | Current deal state. |
-| `termsHash` | Hash of terms. |
-| `metadataHash` | Hash of metadata. |
-| `proofHash` | Hash of submitted delivery proof. |
+| Field                 | Meaning                                      |
+| --------------------- | -------------------------------------------- |
+| `buyer`               | Buyer address.                               |
+| `seller`              | Seller address.                              |
+| `token`               | Native ETH marker or ERC20 token.            |
+| `verifier`            | Verifier chosen for this deal.               |
+| `disputeResolver`     | Resolver chosen for this deal.               |
+| `amount`              | Principal amount committed.                  |
+| `createdAt`           | Deal creation timestamp.                     |
+| `fundedAt`            | Funding timestamp.                           |
+| `proofSubmittedAt`    | Proof submission timestamp.                  |
+| `deliveredAt`         | Delivery approval timestamp.                 |
+| `deliveryDeadline`    | Delivery deadline.                           |
+| `disputeWindowEndsAt` | Final timestamp for buyer dispute.           |
+| `settledAt`           | Terminal settlement/refund/cancel timestamp. |
+| `disputeWindow`       | Buyer dispute window duration.               |
+| `state`               | Current deal state.                          |
+| `termsHash`           | Hash of terms.                               |
+| `metadataHash`        | Hash of metadata.                            |
+| `proofHash`           | Hash of submitted delivery proof.            |
 
 ### `VerificationRecord`
 
 Stored by verifiers.
 
-| Field | Meaning |
-| --- | --- |
-| `requestId` | Async oracle request ID, if used. |
-| `seller` | Seller whose proof is being verified. |
-| `proofHash` | Submitted proof hash. |
-| `responseHash` | Hash of verifier/oracle response. |
-| `submittedAt` | Proof submission timestamp. |
-| `resolvedAt` | Verification resolution timestamp. |
-| `state` | `None`, `Pending`, `Approved`, or `Rejected`. |
+| Field          | Meaning                                       |
+| -------------- | --------------------------------------------- |
+| `requestId`    | Async oracle request ID, if used.             |
+| `seller`       | Seller whose proof is being verified.         |
+| `proofHash`    | Submitted proof hash.                         |
+| `responseHash` | Hash of verifier/oracle response.             |
+| `submittedAt`  | Proof submission timestamp.                   |
+| `resolvedAt`   | Verification resolution timestamp.            |
+| `state`        | `None`, `Pending`, `Approved`, or `Rejected`. |
 
 ### `VaultPosition`
 
 Stored by `EscrowVault`.
 
-| Field | Meaning |
-| --- | --- |
-| `token` | Native ETH marker or ERC20 token. |
-| `principal` | Original principal remaining for the deal. |
-| `shares` | Vault accounting shares representing claim on pooled assets. |
-| `funded` | Whether the deal has an active vault position. |
+| Field       | Meaning                                                      |
+| ----------- | ------------------------------------------------------------ |
+| `token`     | Native ETH marker or ERC20 token.                            |
+| `principal` | Original principal remaining for the deal.                   |
+| `shares`    | Vault accounting shares representing claim on pooled assets. |
+| `funded`    | Whether the deal has an active vault position.               |
 
 ### `Dispute`
 
 Stored by `DisputeManager`.
 
-| Field | Meaning |
-| --- | --- |
-| `dealId` | Disputed deal ID. |
-| `buyer` | Buyer address. |
-| `seller` | Seller address. |
-| `token` | Payment token. |
-| `resolver` | Resolver contract used. |
-| `amount` | Deal principal amount. |
-| `openedAt` | Dispute opening timestamp. |
-| `resolvedAt` | Resolution timestamp. |
-| `outcome` | `SellerWins`, `BuyerWins`, or `Split`. |
-| `active` | Whether dispute is active. |
-| `reasonHash` | Hash of buyer reason. |
-| `evidenceHash` | Hash of evidence bundle. |
-| `resolutionHash` | Hash of final resolution explanation. |
-| `proofHash` | Delivery proof hash attached to dispute. |
-| `termsHash` | Terms hash attached to dispute. |
-| `sellerAward` | Principal awarded to seller. |
-| `buyerAward` | Principal awarded to buyer. |
+| Field            | Meaning                                  |
+| ---------------- | ---------------------------------------- |
+| `dealId`         | Disputed deal ID.                        |
+| `buyer`          | Buyer address.                           |
+| `seller`         | Seller address.                          |
+| `token`          | Payment token.                           |
+| `resolver`       | Resolver contract used.                  |
+| `amount`         | Deal principal amount.                   |
+| `openedAt`       | Dispute opening timestamp.               |
+| `resolvedAt`     | Resolution timestamp.                    |
+| `outcome`        | `SellerWins`, `BuyerWins`, or `Split`.   |
+| `active`         | Whether dispute is active.               |
+| `reasonHash`     | Hash of buyer reason.                    |
+| `evidenceHash`   | Hash of evidence bundle.                 |
+| `resolutionHash` | Hash of final resolution explanation.    |
+| `proofHash`      | Delivery proof hash attached to dispute. |
+| `termsHash`      | Terms hash attached to dispute.          |
+| `sellerAward`    | Principal awarded to seller.             |
+| `buyerAward`     | Principal awarded to buyer.              |
 
 ## Contract Suite Overview
 
@@ -704,19 +704,19 @@ contracts/src/
 
 The suite is intentionally modular:
 
-| Module | Primary contract | Purpose |
-| --- | --- | --- |
-| Core | `DealManager` | Orchestrates deal lifecycle. |
-| Data | `DealStructs` | Defines shared structs and enums. |
-| Errors | `DealErrors` | Defines custom protocol errors. |
-| Vault | `EscrowVault` | Holds and accounts for escrowed assets. |
-| Settlement | `Settlement` | Executes one-time release/refund/split. |
-| Verification | `DeliveryVerifier`, `ChainlinkVerifier` | Confirms delivery proof. |
-| Dispute | `DisputeManager`, `SimpleResolver` | Handles disputes and decisions. |
-| Automation | `AutomationHandler` | Executes valid time-based actions. |
-| Payment | `PaymentToken` | Optional ERC20 token for testing/demo rails. |
-| Strategies | `BaseStrategy`, `AaveStrategy` | Optional ERC20 yield integration. |
-| Libraries | `DealLogic`, `StateTransitions`, `TimeUtils`, `PercentageMath` | Shared validation and helper logic. |
+| Module       | Primary contract                                               | Purpose                                      |
+| ------------ | -------------------------------------------------------------- | -------------------------------------------- |
+| Core         | `DealManager`                                                  | Orchestrates deal lifecycle.                 |
+| Data         | `DealStructs`                                                  | Defines shared structs and enums.            |
+| Errors       | `DealErrors`                                                   | Defines custom protocol errors.              |
+| Vault        | `EscrowVault`                                                  | Holds and accounts for escrowed assets.      |
+| Settlement   | `Settlement`                                                   | Executes one-time release/refund/split.      |
+| Verification | `DeliveryVerifier`, `ChainlinkVerifier`                        | Confirms delivery proof.                     |
+| Dispute      | `DisputeManager`, `SimpleResolver`                             | Handles disputes and decisions.              |
+| Automation   | `AutomationHandler`                                            | Executes valid time-based actions.           |
+| Payment      | `PaymentToken`                                                 | Optional ERC20 token for testing/demo rails. |
+| Strategies   | `BaseStrategy`, `AaveStrategy`                                 | Optional ERC20 yield integration.            |
+| Libraries    | `DealLogic`, `StateTransitions`, `TimeUtils`, `PercentageMath` | Shared validation and helper logic.          |
 
 ## Detailed Contract Responsibilities
 
@@ -745,27 +745,27 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `createDeal(DealInput)` | Seller | Creates a fully specified deal. |
-| `createDeal(address,address,uint256,uint256,uint256)` | Seller | Creates a native ETH deal using defaults. |
-| `createDeal(address,address,address,uint256,uint256,uint256)` | Seller | Creates an ERC20 deal using defaults. |
-| `depositFunds(uint256)` | Buyer | Funds escrow for a deal. |
-| `fundDeal(uint256)` | Buyer | Alias to funding flow. |
-| `submitDeliveryProof(uint256,bytes32)` | Seller | Stores proof hash and starts verification. |
-| `submitDeliveryProof(uint256,bytes32,bytes,bytes)` | Seller | Submits proof plus verifier data. |
-| `finalizeDelivery(uint256,bytes)` | Anyone/automation | Finalizes pending proof if verifier approves. |
-| `confirmDelivery(uint256)` | Buyer | Releases funds to seller. |
-| `raiseDispute(uint256,string)` | Buyer | Raises dispute using plaintext reason hash. |
-| `raiseDispute(uint256,bytes32,bytes32)` | Buyer | Raises dispute using reason/evidence hashes. |
-| `resolveDispute(uint256,bytes)` | Resolver role | Applies dispute resolver decision. |
-| `autoRelease(uint256)` | Anyone/automation | Releases to seller after dispute window expiry. |
-| `refundExpired(uint256)` | Anyone/automation | Refunds buyer after missed delivery deadline. |
-| `cancelDeal(uint256)` | Buyer or seller | Cancels an unfunded deal. |
-| `getDeal(uint256)` | Anyone | Returns full deal struct. |
-| `getDealState(uint256)` | Anyone | Returns current state. |
-| `getDealCount()` | Anyone | Returns total deals created. |
-| `getAutomationAction(uint256)` | Automation/apps | Returns next valid time-based action. |
+| Function                                                      | Who calls         | What it does                                    |
+| ------------------------------------------------------------- | ----------------- | ----------------------------------------------- |
+| `createDeal(DealInput)`                                       | Seller            | Creates a fully specified deal.                 |
+| `createDeal(address,address,uint256,uint256,uint256)`         | Seller            | Creates a native ETH deal using defaults.       |
+| `createDeal(address,address,address,uint256,uint256,uint256)` | Seller            | Creates an ERC20 deal using defaults.           |
+| `depositFunds(uint256)`                                       | Buyer             | Funds escrow for a deal.                        |
+| `fundDeal(uint256)`                                           | Buyer             | Alias to funding flow.                          |
+| `submitDeliveryProof(uint256,bytes32)`                        | Seller            | Stores proof hash and starts verification.      |
+| `submitDeliveryProof(uint256,bytes32,bytes,bytes)`            | Seller            | Submits proof plus verifier data.               |
+| `finalizeDelivery(uint256,bytes)`                             | Anyone/automation | Finalizes pending proof if verifier approves.   |
+| `confirmDelivery(uint256)`                                    | Buyer             | Releases funds to seller.                       |
+| `raiseDispute(uint256,string)`                                | Buyer             | Raises dispute using plaintext reason hash.     |
+| `raiseDispute(uint256,bytes32,bytes32)`                       | Buyer             | Raises dispute using reason/evidence hashes.    |
+| `resolveDispute(uint256,bytes)`                               | Resolver role     | Applies dispute resolver decision.              |
+| `autoRelease(uint256)`                                        | Anyone/automation | Releases to seller after dispute window expiry. |
+| `refundExpired(uint256)`                                      | Anyone/automation | Refunds buyer after missed delivery deadline.   |
+| `cancelDeal(uint256)`                                         | Buyer or seller   | Cancels an unfunded deal.                       |
+| `getDeal(uint256)`                                            | Anyone            | Returns full deal struct.                       |
+| `getDealState(uint256)`                                       | Anyone            | Returns current state.                          |
+| `getDealCount()`                                              | Anyone            | Returns total deals created.                    |
+| `getAutomationAction(uint256)`                                | Automation/apps   | Returns next valid time-based action.           |
 
 Important events:
 
@@ -869,19 +869,19 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `deposit` | `DealManager` | Locks ETH/ERC20 for a deal. |
-| `release` | `Settlement` | Releases selected principal amount to recipient. |
-| `refund` | `Settlement` | Refunds remaining position to recipient. |
-| `balanceOf` | Anyone | Returns principal and current asset value. |
-| `getPosition` | Anyone | Reads stored vault position. |
-| `isFunded` | Anyone | Checks whether deal is funded. |
-| `setStrategy` | Vault admin | Configures strategy for an ERC20 token. |
-| `invest` | Vault admin | Moves idle ERC20 funds into strategy. |
-| `divest` | Vault admin | Pulls assets back from strategy. |
-| `totalAssets` | Anyone | Returns vault-held plus strategy-held assets. |
-| `pause` / `unpause` | Vault admin | Emergency controls. |
+| Function            | Who calls     | What it does                                     |
+| ------------------- | ------------- | ------------------------------------------------ |
+| `deposit`           | `DealManager` | Locks ETH/ERC20 for a deal.                      |
+| `release`           | `Settlement`  | Releases selected principal amount to recipient. |
+| `refund`            | `Settlement`  | Refunds remaining position to recipient.         |
+| `balanceOf`         | Anyone        | Returns principal and current asset value.       |
+| `getPosition`       | Anyone        | Reads stored vault position.                     |
+| `isFunded`          | Anyone        | Checks whether deal is funded.                   |
+| `setStrategy`       | Vault admin   | Configures strategy for an ERC20 token.          |
+| `invest`            | Vault admin   | Moves idle ERC20 funds into strategy.            |
+| `divest`            | Vault admin   | Pulls assets back from strategy.                 |
+| `totalAssets`       | Anyone        | Returns vault-held plus strategy-held assets.    |
+| `pause` / `unpause` | Vault admin   | Emergency controls.                              |
 
 Important events:
 
@@ -908,15 +908,15 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `releaseFundsToSeller` | `DealManager` | Releases seller payout. |
-| `refundBuyer` | `DealManager` | Refunds buyer. |
-| `partialSettlement` | `DealManager` | Splits escrow between buyer and seller. |
-| `isSettled` | Anyone | Checks whether settlement already happened. |
-| `getBalance` | Anyone | Reads vault balance. |
-| `updateVault` | Settlement admin | Updates vault module. |
-| `updateDealManager` | Settlement admin | Updates authorized manager. |
+| Function               | Who calls        | What it does                                |
+| ---------------------- | ---------------- | ------------------------------------------- |
+| `releaseFundsToSeller` | `DealManager`    | Releases seller payout.                     |
+| `refundBuyer`          | `DealManager`    | Refunds buyer.                              |
+| `partialSettlement`    | `DealManager`    | Splits escrow between buyer and seller.     |
+| `isSettled`            | Anyone           | Checks whether settlement already happened. |
+| `getBalance`           | Anyone           | Reads vault balance.                        |
+| `updateVault`          | Settlement admin | Updates vault module.                       |
+| `updateDealManager`    | Settlement admin | Updates authorized manager.                 |
 
 Important events:
 
@@ -952,14 +952,14 @@ DeliveryApproval(
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `submitProof` | `DealManager` | Stores pending proof record. |
-| `verify` | `DealManager` | Validates EIP-712 signature and approves delivery. |
-| `getVerification` | Anyone | Reads full verification record. |
-| `getProof` | Anyone | Reads proof hash. |
-| `setValidator` | Admin | Grants/revokes validator address. |
-| `hashDeliveryApproval` | Backend/apps | Computes typed-data digest. |
+| Function               | Who calls     | What it does                                       |
+| ---------------------- | ------------- | -------------------------------------------------- |
+| `submitProof`          | `DealManager` | Stores pending proof record.                       |
+| `verify`               | `DealManager` | Validates EIP-712 signature and approves delivery. |
+| `getVerification`      | Anyone        | Reads full verification record.                    |
+| `getProof`             | Anyone        | Reads proof hash.                                  |
+| `setValidator`         | Admin         | Grants/revokes validator address.                  |
+| `hashDeliveryApproval` | Backend/apps  | Computes typed-data digest.                        |
 
 Important roles:
 
@@ -982,15 +982,15 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `submitProof` | Requester role | Creates pending verification request. |
+| Function              | Who calls      | What it does                                 |
+| --------------------- | -------------- | -------------------------------------------- |
+| `submitProof`         | Requester role | Creates pending verification request.        |
 | `requestVerification` | Requester role | Re-requests verification for existing proof. |
-| `fulfillVerification` | Oracle role | Stores approved/rejected oracle response. |
-| `verify` | `DealManager` | Returns current verification result. |
-| `getVerification` | Anyone | Reads verification record. |
-| `setRequester` | Admin | Grants/revokes request creation role. |
-| `setOracle` | Admin | Grants/revokes fulfillment role. |
+| `fulfillVerification` | Oracle role    | Stores approved/rejected oracle response.    |
+| `verify`              | `DealManager`  | Returns current verification result.         |
+| `getVerification`     | Anyone         | Reads verification record.                   |
+| `setRequester`        | Admin          | Grants/revokes request creation role.        |
+| `setOracle`           | Admin          | Grants/revokes fulfillment role.             |
 
 Important roles:
 
@@ -1016,14 +1016,14 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `openDispute` | `DealManager` | Creates dispute record. |
+| Function         | Who calls     | What it does                              |
+| ---------------- | ------------- | ----------------------------------------- |
+| `openDispute`    | `DealManager` | Creates dispute record.                   |
 | `resolveDispute` | `DealManager` | Calls resolver and stores final decision. |
-| `cancelDispute` | `DealManager` | Cancels active dispute if needed. |
-| `getDispute` | Anyone | Reads dispute data. |
-| `isDisputed` | Anyone | Checks active dispute state. |
-| `setDealManager` | Dispute admin | Updates authorized manager. |
+| `cancelDispute`  | `DealManager` | Cancels active dispute if needed.         |
+| `getDispute`     | Anyone        | Reads dispute data.                       |
+| `isDisputed`     | Anyone        | Checks active dispute state.              |
+| `setDealManager` | Dispute admin | Updates authorized manager.               |
 
 Important events:
 
@@ -1077,12 +1077,12 @@ Primary responsibilities:
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `decide` | Arbiter role | Records dispute outcome and seller award. |
-| `resolve` | Consumer role | Returns and consumes decision. |
-| `setConsumer` | Admin | Grants/revokes consumer role. |
-| `getDecision` | Anyone | Reads pending decision. |
+| Function      | Who calls     | What it does                              |
+| ------------- | ------------- | ----------------------------------------- |
+| `decide`      | Arbiter role  | Records dispute outcome and seller award. |
+| `resolve`     | Consumer role | Returns and consumes decision.            |
+| `setConsumer` | Admin         | Grants/revokes consumer role.             |
+| `getDecision` | Anyone        | Reads pending decision.                   |
 
 ### `AutomationHandler.sol`
 
@@ -1091,26 +1091,26 @@ deals and checks whether a valid time-based action exists.
 
 Supported actions:
 
-| Action | Meaning |
-| --- | --- |
+| Action             | Meaning                                                     |
+| ------------------ | ----------------------------------------------------------- |
 | `FinalizeDelivery` | Verifier approved asynchronously and deal can be finalized. |
-| `ReleaseSeller` | Dispute window expired and seller can receive funds. |
-| `RefundBuyer` | Delivery deadline passed without approved delivery. |
+| `ReleaseSeller`    | Dispute window expired and seller can receive funds.        |
+| `RefundBuyer`      | Delivery deadline passed without approved delivery.         |
 
 Important functions:
 
-| Function | Who calls | What it does |
-| --- | --- | --- |
-| `registerDeal` | `DealManager` | Adds funded deal to automation set. |
-| `unregisterDeal` | `DealManager` | Removes terminal deal. |
-| `checkDeadline` | Anyone | Checks whether one deal has work. |
-| `executeAutoRelease` | Anyone | Runs seller auto-release if valid. |
-| `handleExpiry` | Anyone | Executes finalize/release/refund if valid. |
-| `handleAutoSettlement` | Anyone | Runs seller auto-release if valid. |
-| `checkUpkeep` | Chainlink Automation | Finds actionable deal. |
-| `performUpkeep` | Chainlink Automation | Executes encoded action. |
-| `registeredDeals` | Anyone | Paginates registered deal IDs. |
-| `setMaxScan` | Automation admin | Configures scan window. |
+| Function               | Who calls            | What it does                               |
+| ---------------------- | -------------------- | ------------------------------------------ |
+| `registerDeal`         | `DealManager`        | Adds funded deal to automation set.        |
+| `unregisterDeal`       | `DealManager`        | Removes terminal deal.                     |
+| `checkDeadline`        | Anyone               | Checks whether one deal has work.          |
+| `executeAutoRelease`   | Anyone               | Runs seller auto-release if valid.         |
+| `handleExpiry`         | Anyone               | Executes finalize/release/refund if valid. |
+| `handleAutoSettlement` | Anyone               | Runs seller auto-release if valid.         |
+| `checkUpkeep`          | Chainlink Automation | Finds actionable deal.                     |
+| `performUpkeep`        | Chainlink Automation | Executes encoded action.                   |
+| `registeredDeals`      | Anyone               | Paginates registered deal IDs.             |
+| `setMaxScan`           | Automation admin     | Configures scan window.                    |
 
 ### `PaymentToken.sol`
 
@@ -1130,23 +1130,23 @@ ERC20 tokens.
 
 The vault strategy folder contains optional yield infrastructure.
 
-| Contract | Purpose |
-| --- | --- |
-| `IStrategy` | Defines asset, vault, deposit, withdraw, total assets. |
+| Contract       | Purpose                                                              |
+| -------------- | -------------------------------------------------------------------- |
+| `IStrategy`    | Defines asset, vault, deposit, withdraw, total assets.               |
 | `BaseStrategy` | Upgradeable base strategy with vault-only hooks and rescue controls. |
-| `AaveStrategy` | Example Aave-compatible strategy using pool supply/withdraw. |
+| `AaveStrategy` | Example Aave-compatible strategy using pool supply/withdraw.         |
 
 Yield is optional. It adds external protocol risk and should be enabled only
 after careful review.
 
 ### Libraries
 
-| Library | Purpose |
-| --- | --- |
-| `DealLogic` | Validates deals, deadlines, refund readiness, auto-release readiness, and settlement splits. |
-| `StateTransitions` | Defines valid state transitions and terminal states. |
-| `TimeUtils` | Handles timestamp conversion, deadline validation, and dispute window math. |
-| `PercentageMath` | Provides basis-point percentage helpers. |
+| Library            | Purpose                                                                                      |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `DealLogic`        | Validates deals, deadlines, refund readiness, auto-release readiness, and settlement splits. |
+| `StateTransitions` | Defines valid state transitions and terminal states.                                         |
+| `TimeUtils`        | Handles timestamp conversion, deadline validation, and dispute window math.                  |
+| `PercentageMath`   | Provides basis-point percentage helpers.                                                     |
 
 ## Verification Model
 
@@ -1190,12 +1190,12 @@ This model is useful when:
 
 ### Verification states
 
-| State | Meaning |
-| --- | --- |
-| `None` | No proof submitted. |
-| `Pending` | Proof submitted and awaiting decision. |
-| `Approved` | Delivery accepted by verifier/oracle. |
-| `Rejected` | Delivery rejected by verifier/oracle. |
+| State      | Meaning                                |
+| ---------- | -------------------------------------- |
+| `None`     | No proof submitted.                    |
+| `Pending`  | Proof submitted and awaiting decision. |
+| `Approved` | Delivery accepted by verifier/oracle.  |
+| `Rejected` | Delivery rejected by verifier/oracle.  |
 
 ## Dispute Model
 
@@ -1216,11 +1216,11 @@ The dispute stores hashes rather than full evidence:
 
 The resolver then decides:
 
-| Outcome | Settlement |
-| --- | --- |
-| `SellerWins` | Seller receives full amount. |
-| `BuyerWins` | Buyer receives full refund. |
-| `Split` | Seller receives seller award; buyer receives remaining award. |
+| Outcome      | Settlement                                                    |
+| ------------ | ------------------------------------------------------------- |
+| `SellerWins` | Seller receives full amount.                                  |
+| `BuyerWins`  | Buyer receives full refund.                                   |
+| `Split`      | Seller receives seller award; buyer receives remaining award. |
 
 The current resolver is `SimpleResolver`, but the system is designed for more
 advanced resolvers later.
@@ -1344,16 +1344,16 @@ Recommended deal detail sections:
 
 Recommended user actions by state:
 
-| State | Buyer actions | Seller actions |
-| --- | --- | --- |
-| `Created` | Fund deal, cancel if allowed. | Cancel if allowed. |
-| `FundsLocked` | Wait for delivery. | Submit proof. |
-| `ProofSubmitted` | Wait for verification. | Monitor verification. |
-| `Delivered` | Confirm delivery or raise dispute. | Wait for confirmation/window expiry. |
-| `Disputed` | Provide evidence off-chain. | Provide evidence off-chain. |
-| `Settled` | View result. | View payout. |
-| `Refunded` | View refund. | View terminal status. |
-| `Cancelled` | No action. | No action. |
+| State            | Buyer actions                      | Seller actions                       |
+| ---------------- | ---------------------------------- | ------------------------------------ |
+| `Created`        | Fund deal, cancel if allowed.      | Cancel if allowed.                   |
+| `FundsLocked`    | Wait for delivery.                 | Submit proof.                        |
+| `ProofSubmitted` | Wait for verification.             | Monitor verification.                |
+| `Delivered`      | Confirm delivery or raise dispute. | Wait for confirmation/window expiry. |
+| `Disputed`       | Provide evidence off-chain.        | Provide evidence off-chain.          |
+| `Settled`        | View result.                       | View payout.                         |
+| `Refunded`       | View refund.                       | View terminal status.                |
+| `Cancelled`      | No action.                         | No action.                           |
 
 UX rules:
 
@@ -1434,16 +1434,16 @@ Indexing events is important for frontend UX and operational monitoring.
 
 Key events to index:
 
-| Contract | Events |
-| --- | --- |
-| `DealManager` | `DealCreated`, `DealFunded`, `DeliveryProofSubmitted`, `DealDelivered`, `DeliveryConfirmed`, `DealDisputed`, `DisputeResolved`, `DealRefunded`, `DealCancelled` |
-| `EscrowVault` | `EscrowDeposited`, `EscrowReleased`, `StrategyConfigured`, `StrategyInvestment`, `StrategyDivestment` |
-| `Settlement` | `SellerReleased`, `BuyerRefunded`, `PartialSettlementExecuted` |
-| `DeliveryVerifier` | `ProofSubmitted`, `DeliveryVerified`, `ValidatorConfigured` |
-| `ChainlinkVerifier` | `VerificationRequested`, `VerificationFulfilled`, `OracleConfigured` |
-| `DisputeManager` | `DisputeOpened`, `DisputeResolved`, `DisputeCancelled` |
-| `SimpleResolver` | `DecisionRecorded`, `ConsumerUpdated` |
-| `AutomationHandler` | `DealRegistered`, `DealUnregistered`, `MaxScanUpdated`, `DealManagerUpdated` |
+| Contract            | Events                                                                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DealManager`       | `DealCreated`, `DealFunded`, `DeliveryProofSubmitted`, `DealDelivered`, `DeliveryConfirmed`, `DealDisputed`, `DisputeResolved`, `DealRefunded`, `DealCancelled` |
+| `EscrowVault`       | `EscrowDeposited`, `EscrowReleased`, `StrategyConfigured`, `StrategyInvestment`, `StrategyDivestment`                                                           |
+| `Settlement`        | `SellerReleased`, `BuyerRefunded`, `PartialSettlementExecuted`                                                                                                  |
+| `DeliveryVerifier`  | `ProofSubmitted`, `DeliveryVerified`, `ValidatorConfigured`                                                                                                     |
+| `ChainlinkVerifier` | `VerificationRequested`, `VerificationFulfilled`, `OracleConfigured`                                                                                            |
+| `DisputeManager`    | `DisputeOpened`, `DisputeResolved`, `DisputeCancelled`                                                                                                          |
+| `SimpleResolver`    | `DecisionRecorded`, `ConsumerUpdated`                                                                                                                           |
+| `AutomationHandler` | `DealRegistered`, `DealUnregistered`, `MaxScanUpdated`, `DealManagerUpdated`                                                                                    |
 
 Recommended index fields:
 
@@ -1508,18 +1508,18 @@ Important risks:
 
 ## Access Control and Roles
 
-| Contract | Roles |
-| --- | --- |
-| `DealManager` | `DEFAULT_ADMIN_ROLE`, `PAUSER_ROLE`, `CONFIG_ROLE`, `RESOLVER_ROLE`, `UPGRADER_ROLE` |
-| `EscrowVault` | `DEFAULT_ADMIN_ROLE`, `VAULT_ADMIN_ROLE`, `FUNDING_ROLE`, `SETTLEMENT_ROLE`, `UPGRADER_ROLE` |
-| `Settlement` | `DEFAULT_ADMIN_ROLE`, `SETTLEMENT_ADMIN_ROLE`, `UPGRADER_ROLE` |
-| `DeliveryVerifier` | `DEFAULT_ADMIN_ROLE`, `VALIDATOR_ROLE`, `UPGRADER_ROLE` |
-| `ChainlinkVerifier` | `DEFAULT_ADMIN_ROLE`, `REQUESTER_ROLE`, `ORACLE_ROLE`, `UPGRADER_ROLE` |
-| `DisputeManager` | `DEFAULT_ADMIN_ROLE`, `DISPUTE_ADMIN_ROLE`, `UPGRADER_ROLE` |
-| `SimpleResolver` | `DEFAULT_ADMIN_ROLE`, `ARBITER_ROLE`, `CONSUMER_ROLE`, `UPGRADER_ROLE` |
-| `AutomationHandler` | `DEFAULT_ADMIN_ROLE`, `AUTOMATION_ADMIN_ROLE`, `REGISTRAR_ROLE`, `UPGRADER_ROLE` |
-| `BaseStrategy` | `DEFAULT_ADMIN_ROLE`, `STRATEGIST_ROLE`, `UPGRADER_ROLE` |
-| `PaymentToken` | `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE`, `BURNER_ROLE` |
+| Contract            | Roles                                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `DealManager`       | `DEFAULT_ADMIN_ROLE`, `PAUSER_ROLE`, `CONFIG_ROLE`, `RESOLVER_ROLE`, `UPGRADER_ROLE`         |
+| `EscrowVault`       | `DEFAULT_ADMIN_ROLE`, `VAULT_ADMIN_ROLE`, `FUNDING_ROLE`, `SETTLEMENT_ROLE`, `UPGRADER_ROLE` |
+| `Settlement`        | `DEFAULT_ADMIN_ROLE`, `SETTLEMENT_ADMIN_ROLE`, `UPGRADER_ROLE`                               |
+| `DeliveryVerifier`  | `DEFAULT_ADMIN_ROLE`, `VALIDATOR_ROLE`, `UPGRADER_ROLE`                                      |
+| `ChainlinkVerifier` | `DEFAULT_ADMIN_ROLE`, `REQUESTER_ROLE`, `ORACLE_ROLE`, `UPGRADER_ROLE`                       |
+| `DisputeManager`    | `DEFAULT_ADMIN_ROLE`, `DISPUTE_ADMIN_ROLE`, `UPGRADER_ROLE`                                  |
+| `SimpleResolver`    | `DEFAULT_ADMIN_ROLE`, `ARBITER_ROLE`, `CONSUMER_ROLE`, `UPGRADER_ROLE`                       |
+| `AutomationHandler` | `DEFAULT_ADMIN_ROLE`, `AUTOMATION_ADMIN_ROLE`, `REGISTRAR_ROLE`, `UPGRADER_ROLE`             |
+| `BaseStrategy`      | `DEFAULT_ADMIN_ROLE`, `STRATEGIST_ROLE`, `UPGRADER_ROLE`                                     |
+| `PaymentToken`      | `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE`, `BURNER_ROLE`                                           |
 
 Production role guidance:
 
@@ -2070,23 +2070,23 @@ Potential future improvements:
 
 ## Glossary
 
-| Term | Meaning |
-| --- | --- |
-| PCL | Payment Commitment Layer. The settlement layer that ensures payment is committed before work begins. |
-| Deal | A payment commitment between buyer and seller. |
-| Buyer | Party locking funds and receiving delivery. |
-| Seller | Party delivering work and receiving funds. |
-| Escrow | Locked funds held by `EscrowVault`. |
-| Proof hash | On-chain hash of delivery evidence. |
-| Terms hash | On-chain hash of agreement, invoice, order, or commercial terms. |
-| Verifier | Contract that approves or rejects delivery proof. |
-| Validator | Off-chain signer authorized by `DeliveryVerifier`. |
-| Oracle | Off-chain system authorized by `ChainlinkVerifier`. |
-| Dispute window | Time after verified delivery when buyer may dispute. |
-| Resolver | Contract that decides dispute outcome. |
-| Auto-release | Seller payout after buyer silence and dispute-window expiry. |
-| Refund expiry | Buyer refund after seller misses delivery deadline. |
-| Strategy | Optional external yield integration for ERC20 escrow assets. |
+| Term           | Meaning                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| PCL            | Payment Commitment Layer. The settlement layer that ensures payment is committed before work begins. |
+| Deal           | A payment commitment between buyer and seller.                                                       |
+| Buyer          | Party locking funds and receiving delivery.                                                          |
+| Seller         | Party delivering work and receiving funds.                                                           |
+| Escrow         | Locked funds held by `EscrowVault`.                                                                  |
+| Proof hash     | On-chain hash of delivery evidence.                                                                  |
+| Terms hash     | On-chain hash of agreement, invoice, order, or commercial terms.                                     |
+| Verifier       | Contract that approves or rejects delivery proof.                                                    |
+| Validator      | Off-chain signer authorized by `DeliveryVerifier`.                                                   |
+| Oracle         | Off-chain system authorized by `ChainlinkVerifier`.                                                  |
+| Dispute window | Time after verified delivery when buyer may dispute.                                                 |
+| Resolver       | Contract that decides dispute outcome.                                                               |
+| Auto-release   | Seller payout after buyer silence and dispute-window expiry.                                         |
+| Refund expiry  | Buyer refund after seller misses delivery deadline.                                                  |
+| Strategy       | Optional external yield integration for ERC20 escrow assets.                                         |
 
 ## Project Status
 

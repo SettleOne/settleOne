@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../client';
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "../client";
 
 interface PortfolioSummary {
   totalDeals: number;
@@ -26,19 +26,25 @@ interface PortfolioActivity {
 
 export function usePortfolio(address: string | undefined) {
   return useQuery({
-    queryKey: ['portfolio', address],
+    queryKey: ["portfolio", address],
     queryFn: () => apiClient<PortfolioSummary>(`/portfolio/${address}`),
     enabled: !!address,
   });
 }
 
-export function usePortfolioActivity(address: string | undefined, days: number = 30) {
+export function usePortfolioActivity(
+  address: string | undefined,
+  days: number = 30,
+) {
   return useQuery({
-    queryKey: ['portfolioActivity', address, days],
+    queryKey: ["portfolioActivity", address, days],
     queryFn: () =>
-      apiClient<{ activity: PortfolioActivity[] }>(`/portfolio/${address}/activity`, {
-        params: { days },
-      }),
+      apiClient<{ activity: PortfolioActivity[] }>(
+        `/portfolio/${address}/activity`,
+        {
+          params: { days },
+        },
+      ),
     enabled: !!address,
   });
 }

@@ -53,12 +53,12 @@ export enum EvidenceType {
 }
 
 export enum UserRole {
-  NormalUser = 'user',
-  Admin = 'admin',
-  Arbitrator = 'arbitrator',
-  VaultManager = 'vault_manager',
-  Upgrader = 'upgrader',
-  Verifier = 'verifier',
+  NormalUser = "user",
+  Admin = "admin",
+  Arbitrator = "arbitrator",
+  VaultManager = "vault_manager",
+  Upgrader = "upgrader",
+  Verifier = "verifier",
 }
 
 export enum VerificationState {

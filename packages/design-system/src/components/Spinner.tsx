@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface SpinnerProps {
   size?: number;
@@ -6,14 +6,14 @@ export interface SpinnerProps {
   style?: React.CSSProperties;
 }
 
-export function Spinner({ size = 24, color = '#6366F1', style }: SpinnerProps) {
+export function Spinner({ size = 24, color = "#6366F1", style }: SpinnerProps) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      style={{ animation: 'spin 1s linear infinite', ...style }}
+      style={{ animation: "spin 1s linear infinite", ...style }}
     >
       <circle
         cx="12"

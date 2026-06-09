@@ -1,36 +1,46 @@
-import React from 'react';
-import { Clock, ShieldAlert } from 'lucide-react';
-import { DealStateTag, NetworkBadge, CountdownTimer, Avatar } from '@settleone/design-system';
-import { DealState, DealType } from '@settleone/types';
-import { getDealStateColor, getDealStateLabel, formatAmount } from '@settleone/utils';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Clock, ShieldAlert } from "lucide-react";
+import {
+  DealStateTag,
+  NetworkBadge,
+  CountdownTimer,
+} from "@settleone/design-system";
+import { DealState, DealType } from "@settleone/types";
+import {
+  getDealStateColor,
+  getDealStateLabel,
+  formatAmount,
+} from "@settleone/utils";
+import { Link } from "react-router-dom";
 
 interface DealCardProps {
-  id: string;
-  title: string;
+  id: string | bigint;
+  title?: string;
   amount: bigint;
-  tokenSymbol: string;
-  decimals: number;
   state: DealState;
   dealType: DealType;
-  deadline: number;
-  buyerAddress: string;
+  deliveryDeadline: bigint;
   chainId: number;
 }
 
-export function DealCard({ 
-  id, title, amount, tokenSymbol, decimals, state, dealType, deadline, chainId 
+export function DealCard({
+  id,
+  title,
+  amount,
+  state,
+  dealType,
+  deliveryDeadline,
+  chainId,
 }: DealCardProps) {
   const isHardDelivery = dealType === DealType.HardDelivery;
 
   return (
     <Link to={`/marketplace/${id}`} className="block group">
       <div className="bg-white border border-[var(--border)] rounded-lg shadow-sm hover:shadow-md hover:border-[var(--accent-blue)] transition-all p-5 flex flex-col h-full">
-        
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono text-[var(--text-secondary)] bg-gray-100 px-2 py-0.5 rounded">
-              #{id}
+              #{String(id).padStart(5, "0")}
             </span>
             <NetworkBadge chainId={chainId} className="!py-0.5" />
             {isHardDelivery && (
@@ -39,30 +49,38 @@ export function DealCard({
               </span>
             )}
           </div>
-          <DealStateTag 
-            state={state} 
-            label={getDealStateLabel(state)} 
-            colorHex={getDealStateColor(state)} 
+          <DealStateTag
+            state={state}
+            label={getDealStateLabel(state)}
+            colorHex={getDealStateColor(state)}
           />
         </div>
 
         <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent-blue)] transition-colors line-clamp-2">
-          {title}
+          {title || "Smart Contract Audit for DeFi Protocol"}
         </h3>
 
         <div className="mt-auto pt-4 flex items-end justify-between border-t border-[var(--border)] border-dashed">
           <div>
             <p className="text-xs text-[var(--text-secondary)] mb-1">Budget</p>
             <p className="text-xl font-bold text-[var(--text-primary)]">
-              {formatAmount(amount, decimals, tokenSymbol)}
+              {formatAmount(amount, 6)}{" "}
+              <span className="text-sm font-medium">USDC</span>
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-[var(--text-secondary)] mb-1">Time Remaining</p>
-            <CountdownTimer deadline={deadline} />
+            <p className="text-xs text-[var(--text-secondary)] mb-1">
+              Deadline
+            </p>
+            <div className="text-sm font-semibold text-gray-700">
+              {deliveryDeadline > 0 ? (
+                <CountdownTimer deadline={Number(deliveryDeadline)} />
+              ) : (
+                "Not set"
+              )}
+            </div>
           </div>
         </div>
-
       </div>
     </Link>
   );

@@ -1,4 +1,4 @@
-import { type PublicClient, type WatchContractEventParameters } from 'viem';
+import { type PublicClient, type WatchContractEventParameters } from "viem";
 
 type EventCallback = (...args: unknown[]) => void;
 type UnsubscribeFn = () => void;
@@ -18,7 +18,7 @@ class EventBus {
   watchContract(
     client: PublicClient,
     params: WatchContractEventParameters,
-    key: string
+    key: string,
   ): UnsubscribeFn {
     // Unsubscribe existing subscription with same key
     this.unsubscribe(key);

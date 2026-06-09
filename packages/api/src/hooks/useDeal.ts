@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { Deal } from '@settleone/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../client";
+import type { Deal } from "@settleone/types";
 
 interface DealDetail extends Deal {
   chainId: number;
@@ -9,7 +9,7 @@ interface DealDetail extends Deal {
 
 export function useDeal(dealId: string | undefined) {
   return useQuery({
-    queryKey: ['deal', dealId],
+    queryKey: ["deal", dealId],
     queryFn: () => apiClient<DealDetail>(`/deals/${dealId}`),
     enabled: !!dealId,
   });
@@ -36,13 +36,13 @@ export function useCreateDealMutation() {
 
   return useMutation({
     mutationFn: (payload: CreateDealPayload) =>
-      apiClient<{ id: string; dealId: string }>('/deals', {
-        method: 'POST',
+      apiClient<{ id: string; dealId: string }>("/deals", {
+        method: "POST",
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deals'] });
-      queryClient.invalidateQueries({ queryKey: ['myDeals'] });
+      queryClient.invalidateQueries({ queryKey: ["deals"] });
+      queryClient.invalidateQueries({ queryKey: ["myDeals"] });
     },
   });
 }
@@ -53,12 +53,12 @@ export function useUpdateDealStatus() {
   return useMutation({
     mutationFn: ({ dealId, status }: { dealId: string; status: string }) =>
       apiClient<void>(`/deals/${dealId}/status`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify({ status }),
       }),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['deal', variables.dealId] });
-      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
+      queryClient.invalidateQueries({ queryKey: ["deals"] });
     },
   });
 }

@@ -47,8 +47,3 @@
 | Contract Name  | Address                                      |
 | -------------- | -------------------------------------------- |
 | SettleOneToken | `0xEC8cEC0d6F360AdF11AbF033A87203280b9deDB1` |
-
-
-
-
-

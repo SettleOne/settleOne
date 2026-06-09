@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient, setAuthToken, clearAuthToken } from '../client';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient, setAuthToken, clearAuthToken } from "../client";
 
 interface AuthResponse {
   token: string;
@@ -31,13 +31,13 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: (payload: LoginPayload) =>
-      apiClient<AuthResponse>('/auth/login', {
-        method: 'POST',
+      apiClient<AuthResponse>("/auth/login", {
+        method: "POST",
         body: JSON.stringify(payload),
       }),
     onSuccess: (data) => {
       setAuthToken(data.token);
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 }
@@ -47,13 +47,13 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: (payload: RegisterPayload) =>
-      apiClient<AuthResponse>('/auth/register', {
-        method: 'POST',
+      apiClient<AuthResponse>("/auth/register", {
+        method: "POST",
         body: JSON.stringify(payload),
       }),
     onSuccess: (data) => {
       setAuthToken(data.token);
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 }
@@ -63,8 +63,8 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: () =>
-      apiClient<void>('/auth/logout', {
-        method: 'POST',
+      apiClient<void>("/auth/logout", {
+        method: "POST",
       }),
     onSuccess: () => {
       clearAuthToken();
@@ -76,8 +76,8 @@ export function useLogout() {
 export function useNonce() {
   return useMutation({
     mutationFn: (walletAddress: string) =>
-      apiClient<{ nonce: string; message: string }>('/auth/nonce', {
-        method: 'POST',
+      apiClient<{ nonce: string; message: string }>("/auth/nonce", {
+        method: "POST",
         body: JSON.stringify({ walletAddress }),
       }),
   });

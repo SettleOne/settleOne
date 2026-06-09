@@ -1,6 +1,6 @@
-import React from 'react';
-import { SearchX } from 'lucide-react';
-import { Button } from '@settleone/design-system';
+import React from "react";
+import { SearchX } from "lucide-react";
+import { Button } from "@settleone/design-system";
 
 interface EmptyStateProps {
   onClearFilters?: () => void;
@@ -14,7 +14,8 @@ export function EmptyState({ onClearFilters }: EmptyStateProps) {
       </div>
       <h3 className="text-lg font-bold text-gray-900 mb-2">No deals found</h3>
       <p className="text-sm text-gray-500 max-w-sm mb-6">
-        We couldn't find any deals matching your current search or filter criteria. Try adjusting your filters.
+        We couldn't find any deals matching your current search or filter
+        criteria. Try adjusting your filters.
       </p>
       {onClearFilters && (
         <Button variant="secondary" onClick={onClearFilters}>

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState } from "react";
 
 interface TabsProps {
   tabs: { id: string; label: string; content: ReactNode }[];
@@ -7,7 +7,9 @@ interface TabsProps {
 }
 
 export function Tabs({ tabs, defaultTabId, onChange }: TabsProps) {
-  const [activeId, setActiveId] = useState(defaultTabId || (tabs && tabs.length > 0 ? tabs[0]?.id : ''));
+  const [activeId, setActiveId] = useState(
+    defaultTabId || (tabs && tabs.length > 0 ? tabs[0]?.id : ""),
+  );
 
   const handleTabClick = (id: string) => {
     setActiveId(id);
@@ -25,8 +27,8 @@ export function Tabs({ tabs, defaultTabId, onChange }: TabsProps) {
             onClick={() => handleTabClick(tab.id)}
             className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               activeId === tab.id
-                ? 'border-[var(--accent-blue)] text-[var(--accent-blue)]'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300'
+                ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
+                : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-gray-300"
             }`}
           >
             {tab.label}

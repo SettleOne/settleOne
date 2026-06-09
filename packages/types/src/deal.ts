@@ -1,4 +1,4 @@
-import { DealState, DealType } from './enums';
+import { DealState, DealType } from "./enums";
 
 export interface DealInput {
   buyer: `0x${string}`;

@@ -1,2 +1,2 @@
-export * from './enums';
-export * from './deal';
+export * from "./enums";
+export * from "./deal";

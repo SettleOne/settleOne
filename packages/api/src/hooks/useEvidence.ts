@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { Evidence } from '@settleone/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../client";
+import type { Evidence } from "@settleone/types";
 
 interface EvidenceResponse {
   evidence: Evidence[];
@@ -9,7 +9,7 @@ interface EvidenceResponse {
 
 export function useEvidence(dealId: string | undefined) {
   return useQuery({
-    queryKey: ['evidence', dealId],
+    queryKey: ["evidence", dealId],
     queryFn: () => apiClient<EvidenceResponse>(`/deals/${dealId}/evidence`),
     enabled: !!dealId,
   });
@@ -33,11 +33,13 @@ export function useSubmitEvidence() {
       cid: string;
     }) =>
       apiClient<{ id: string }>(`/deals/${dealId}/evidence`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ role, evidenceType, contentHash, cid }),
       }),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['evidence', variables.dealId] });
+      queryClient.invalidateQueries({
+        queryKey: ["evidence", variables.dealId],
+      });
     },
   });
 }

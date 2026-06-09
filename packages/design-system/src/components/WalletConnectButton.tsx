@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 // Note: In a real implementation this would use RainbowKit's ConnectButton
 // Since this is a UI scaffold, we'll build a visual placeholder that mimics it
 
@@ -12,7 +12,7 @@ export function WalletConnectButton() {
           <span className="w-2 h-2 rounded-full bg-[#2D374B]"></span>
           Arbitrum
         </div>
-        <button 
+        <button
           onClick={() => setIsConnected(false)}
           className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[var(--border)] rounded-md shadow-sm font-mono text-sm hover:bg-gray-50 transition-colors"
         >
@@ -24,7 +24,7 @@ export function WalletConnectButton() {
   }
 
   return (
-    <button 
+    <button
       onClick={() => setIsConnected(true)}
       className="px-4 py-2 bg-[var(--accent-blue)] text-white font-semibold text-sm rounded-md shadow-sm hover:bg-blue-600 transition-colors"
     >

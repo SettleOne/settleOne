@@ -18,19 +18,19 @@ This repository contains the production smart contracts in `src/`, deployment wi
 
 SettleOne is split into focused contracts with explicit trust boundaries.
 
-| Contract | Responsibility |
-| --- | --- |
-| `DealManager` | Canonical deal state, deal creation, funding, seller acceptance/rejection, expiry refunds, release/refund settlement paths, and restricted delivery callbacks. |
-| `DeliveryManager` | Delivery proof submission, delivery finalization, buyer acceptance, revision requests, dispute open/cancel, and dispute-resolution execution. |
-| `EscrowVault` | ETH/ERC20 custody, pooled share accounting, strategy investment/divestment, and settlement payouts. |
-| `Settlement` | One-shot payout executor called by `DealManager`; computes seller, buyer, and treasury payouts. |
-| `DeliveryVerifier` | Synchronous EIP-712 verifier for validator-approved delivery proof. |
-| `ChainlinkVerifier` | Asynchronous verifier with requester/oracle roles and request replacement support. |
-| `DisputeManager` | Stores active dispute context and accepts lifecycle calls only from `DeliveryManager`. |
-| `SimpleResolver` | Arbiter-driven resolver that returns normalized dispute outcomes. |
-| `EvidenceManager` | Tamper-evident registry of evidence hashes and CIDs. |
-| `AutomationHandler` | Chainlink Automation-compatible registry and dispatcher for deadline-driven actions. |
-| `SettleOneToken` | Hard-capped ERC20 utility token (`SETL`) with mint/burn roles and ERC20 permit support. |
+| Contract            | Responsibility                                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DealManager`       | Canonical deal state, deal creation, funding, seller acceptance/rejection, expiry refunds, release/refund settlement paths, and restricted delivery callbacks. |
+| `DeliveryManager`   | Delivery proof submission, delivery finalization, buyer acceptance, revision requests, dispute open/cancel, and dispute-resolution execution.                  |
+| `EscrowVault`       | ETH/ERC20 custody, pooled share accounting, strategy investment/divestment, and settlement payouts.                                                            |
+| `Settlement`        | One-shot payout executor called by `DealManager`; computes seller, buyer, and treasury payouts.                                                                |
+| `DeliveryVerifier`  | Synchronous EIP-712 verifier for validator-approved delivery proof.                                                                                            |
+| `ChainlinkVerifier` | Asynchronous verifier with requester/oracle roles and request replacement support.                                                                             |
+| `DisputeManager`    | Stores active dispute context and accepts lifecycle calls only from `DeliveryManager`.                                                                         |
+| `SimpleResolver`    | Arbiter-driven resolver that returns normalized dispute outcomes.                                                                                              |
+| `EvidenceManager`   | Tamper-evident registry of evidence hashes and CIDs.                                                                                                           |
+| `AutomationHandler` | Chainlink Automation-compatible registry and dispatcher for deadline-driven actions.                                                                           |
+| `SettleOneToken`    | Hard-capped ERC20 utility token (`SETL`) with mint/burn roles and ERC20 permit support.                                                                        |
 
 Core call boundaries:
 
@@ -146,24 +146,24 @@ Deployment is handled by [script/Deploy.s.sol](script/Deploy.s.sol). The script:
 
 Common environment variables:
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `PRIVATE_KEY` | Yes | Broadcast key used by Foundry. |
-| `ADMIN_ADDRESS` | Optional | Final protocol admin. Defaults to deployer. |
-| `VALIDATOR_ADDRESS` | Optional | Initial EIP-712 delivery validator. Defaults to admin. |
-| `ORACLE_ADDRESS` | Optional | Initial async verifier oracle. Defaults to validator. |
-| `ARBITER_ADDRESS` | Optional | Initial `SimpleResolver` arbiter. Defaults to admin. |
-| `PLATFORM_TREASURY` | Optional | Treasury receiving platform yield fees. Defaults to admin. |
-| `PLATFORM_YIELD_FEE_BPS` | Optional | Platform yield fee. Defaults to 1500. |
-| `AUTOMATION_MAX_SCAN` | Optional | Max deals scanned per upkeep check. Defaults to 25. |
+| Variable                  | Required | Description                                                    |
+| ------------------------- | -------- | -------------------------------------------------------------- |
+| `PRIVATE_KEY`             | Yes      | Broadcast key used by Foundry.                                 |
+| `ADMIN_ADDRESS`           | Optional | Final protocol admin. Defaults to deployer.                    |
+| `VALIDATOR_ADDRESS`       | Optional | Initial EIP-712 delivery validator. Defaults to admin.         |
+| `ORACLE_ADDRESS`          | Optional | Initial async verifier oracle. Defaults to validator.          |
+| `ARBITER_ADDRESS`         | Optional | Initial `SimpleResolver` arbiter. Defaults to admin.           |
+| `PLATFORM_TREASURY`       | Optional | Treasury receiving platform yield fees. Defaults to admin.     |
+| `PLATFORM_YIELD_FEE_BPS`  | Optional | Platform yield fee. Defaults to 1500.                          |
+| `AUTOMATION_MAX_SCAN`     | Optional | Max deals scanned per upkeep check. Defaults to 25.            |
 | `VAULT_MIN_INVEST_AMOUNT` | Optional | Minimum ERC20 strategy investment amount. Defaults to `100e6`. |
-| `SETL_INITIAL_SUPPLY` | Optional | Initial SETL supply minted to final admin. Defaults to 0. |
-| `ALLOWED_TOKEN_ADDRESS` | Optional | Extra ERC20 token to whitelist at deployment. |
-| `ALLOWED_TOKEN_MIN` | Optional | Minimum deal amount for the extra token. |
-| `ALLOWED_TOKEN_MAX` | Optional | Maximum deal amount for the extra token. `0` means uncapped. |
-| `AAVE_UNDERLYING_TOKEN` | Optional | ERC20 token for optional Aave strategy deployment. |
-| `AAVE_POOL` | Optional | Aave V3 pool address for optional strategy deployment. |
-| `AAVE_ATOKEN` | Optional | Matching aToken for optional strategy deployment. |
+| `SETL_INITIAL_SUPPLY`     | Optional | Initial SETL supply minted to final admin. Defaults to 0.      |
+| `ALLOWED_TOKEN_ADDRESS`   | Optional | Extra ERC20 token to whitelist at deployment.                  |
+| `ALLOWED_TOKEN_MIN`       | Optional | Minimum deal amount for the extra token.                       |
+| `ALLOWED_TOKEN_MAX`       | Optional | Maximum deal amount for the extra token. `0` means uncapped.   |
+| `AAVE_UNDERLYING_TOKEN`   | Optional | ERC20 token for optional Aave strategy deployment.             |
+| `AAVE_POOL`               | Optional | Aave V3 pool address for optional strategy deployment.         |
+| `AAVE_ATOKEN`             | Optional | Matching aToken for optional strategy deployment.              |
 
 Example:
 

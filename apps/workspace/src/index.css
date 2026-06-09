@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base: #FAFAFA;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #F3F4F6;
-  --border: #E5E7EB;
+  --bg-base: #fafafa;
+  --bg-card: #ffffff;
+  --bg-subtle: #f3f4f6;
+  --border: #e5e7eb;
   --text-primary: #111827;
-  --text-secondary: #6B7280;
-  --accent-blue: #3B82F6;
-  --accent-green: #10B981;
-  --accent-amber: #F59E0B;
-  --accent-red: #EF4444;
-  --accent-purple: #8B5CF6;
-  --state-awaiting-funding: #F59E0B;
-  --state-pending-acceptance: #3B82F6;
-  --state-active: #10B981;
-  --state-delivery-submitted: #8B5CF6;
-  --state-awaiting-acceptance: #0EA5E9;
-  --state-accepted: #14B8A6;
-  --state-disputed: #EF4444;
-  --state-released: #10B981;
-  --state-refunded: #F59E0B;
-  --state-settled: #64748B;
-  --state-cancelled: #9CA3AF;
+  --text-secondary: #6b7280;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --state-awaiting-funding: #f59e0b;
+  --state-pending-acceptance: #3b82f6;
+  --state-active: #10b981;
+  --state-delivery-submitted: #8b5cf6;
+  --state-awaiting-acceptance: #0ea5e9;
+  --state-accepted: #14b8a6;
+  --state-disputed: #ef4444;
+  --state-released: #10b981;
+  --state-refunded: #f59e0b;
+  --state-settled: #64748b;
+  --state-cancelled: #9ca3af;
   --radius-card: 6px;
   --radius-modal: 8px;
   --radius-input: 4px;
   --radius-pill: 9999px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-modal: 0 4px 24px rgba(0,0,0,0.12);
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.12);
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 body {

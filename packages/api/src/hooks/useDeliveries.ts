@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { Delivery } from '@settleone/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../client";
+import type { Delivery } from "@settleone/types";
 
 interface DeliveriesResponse {
   deliveries: Delivery[];
@@ -9,7 +9,7 @@ interface DeliveriesResponse {
 
 export function useDeliveries(dealId: string | undefined) {
   return useQuery({
-    queryKey: ['deliveries', dealId],
+    queryKey: ["deliveries", dealId],
     queryFn: () => apiClient<DeliveriesResponse>(`/deals/${dealId}/deliveries`),
     enabled: !!dealId,
   });
@@ -29,12 +29,14 @@ export function useSubmitDelivery() {
       cid: string;
     }) =>
       apiClient<{ id: string }>(`/deals/${dealId}/deliveries`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ proofHash, cid }),
       }),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['deliveries', variables.dealId] });
-      queryClient.invalidateQueries({ queryKey: ['deal', variables.dealId] });
+      queryClient.invalidateQueries({
+        queryKey: ["deliveries", variables.dealId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
     },
   });
 }

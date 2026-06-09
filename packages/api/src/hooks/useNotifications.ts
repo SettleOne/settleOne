@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import type { Notification } from '@settleone/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../client";
+import type { Notification } from "@settleone/types";
 
 interface NotificationsResponse {
   notifications: Notification[];
@@ -10,16 +10,16 @@ interface NotificationsResponse {
 
 export function useNotifications() {
   return useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => apiClient<NotificationsResponse>('/notifications'),
+    queryKey: ["notifications"],
+    queryFn: () => apiClient<NotificationsResponse>("/notifications"),
     refetchInterval: 30000, // Poll every 30s
   });
 }
 
 export function useUnreadCount() {
   return useQuery({
-    queryKey: ['notifications', 'unreadCount'],
-    queryFn: () => apiClient<{ count: number }>('/notifications/unread-count'),
+    queryKey: ["notifications", "unreadCount"],
+    queryFn: () => apiClient<{ count: number }>("/notifications/unread-count"),
     refetchInterval: 15000, // Poll every 15s
   });
 }
@@ -30,10 +30,10 @@ export function useMarkNotificationRead() {
   return useMutation({
     mutationFn: (notificationId: string) =>
       apiClient<void>(`/notifications/${notificationId}/read`, {
-        method: 'POST',
+        method: "POST",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
@@ -43,11 +43,11 @@ export function useMarkAllNotificationsRead() {
 
   return useMutation({
     mutationFn: () =>
-      apiClient<void>('/notifications/read-all', {
-        method: 'POST',
+      apiClient<void>("/notifications/read-all", {
+        method: "POST",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
