@@ -191,7 +191,7 @@ PAGE: / (Homepage / Landing)
       Resources: Docs | GitHub | Smart Contracts | Audit Reports
       Company:  About | Blog | Careers | Contact
       Legal:    Privacy Policy | Terms of Service | Cookie Policy
-    Bottom row: © 2025 SettleOne Protocol. All rights reserved.
+    Bottom row: © 2026 SettleOne Protocol. All rights reserved.
                 Twitter/X | LinkedIn | Discord icons
 
 ──────────────────────────────────────────────────────────────────────────────

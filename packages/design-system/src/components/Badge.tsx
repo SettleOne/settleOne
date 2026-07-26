@@ -1,12 +1,7 @@
 import React from "react";
 
 export type BadgeVariant =
-  | "default"
-  | "success"
-  | "warning"
-  | "error"
-  | "info"
-  | "purple";
+  "default" | "success" | "warning" | "error" | "info" | "purple";
 
 export interface BadgeProps {
   children: React.ReactNode;
