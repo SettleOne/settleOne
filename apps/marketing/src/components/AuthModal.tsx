@@ -16,7 +16,7 @@ export function AuthModal({
   onSwitch: (m: "login" | "signup") => void;
 }) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
-  
+
   // Sync prop changes to local state
   useEffect(() => {
     setMode(initialMode);

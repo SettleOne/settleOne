@@ -11,6 +11,9 @@ import { DocsPage } from "./pages/DocsPage";
 import { PricingPage } from "./pages/PricingPage";
 import { FeaturesPage } from "./pages/FeaturesPage";
 
+// Google OAuth callback — receives token from backend and redirects to correct app
+import { GoogleCallbackPage } from "./pages/GoogleCallbackPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 30_000 },
@@ -36,6 +39,9 @@ export default function App() {
           <Route path="/signup" element={<LandingPage />} />
           <Route path="/forgot-password" element={<LandingPage />} />
           <Route path="/verify-otp" element={<LandingPage />} />
+
+          {/* Google OAuth callback — backend redirects here after Google auth */}
+          <Route path="/auth/callback" element={<GoogleCallbackPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<LandingPage />} />
