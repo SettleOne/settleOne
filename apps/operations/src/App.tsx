@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { AuthCallback } from "./pages/AuthCallback";
 // Mocking an AppShell for operations
 function OperationsShell({ children }: { children?: React.ReactNode }) {
   return (
@@ -47,6 +47,7 @@ export default function App() {
             <Route path="/vault" element={<VaultPage />} />
             <Route path="/disputes" element={<DisputesPage />} />
             <Route path="/protocol" element={<ProtocolPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
         </OperationsShell>
       </BrowserRouter>

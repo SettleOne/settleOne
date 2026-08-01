@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Eye, EyeOff, CheckCircle } from "lucide-react";
-
+import {
+  loginUser,
+  staffLogin,
+  registerUser,
+  verifyEmail,
+  resendOtp,
+  forgotPassword,
+  resetPassword,
+  initiateGoogleAuth,
+  storeAuthResult,
+  redirectAfterAuth,
+} from "../lib/api";
 /* ══════════════════════════════════════════════════════════════════════════
    AUTH MODAL — Login + Signup + OTP + Forgot Password + Staff Login
    ══════════════════════════════════════════════════════════════════════════ */
@@ -36,6 +47,11 @@ export function AuthModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [forgotStep, setForgotStep] = useState<1 | 2>(1); // 1=enter email, 2=enter code+new pass
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (mode !== "otp") return;
@@ -71,14 +87,33 @@ export function AuthModal({
     e.preventDefault();
     setError("");
     setLoading(true);
-    setTimeout(() => {
+    try {
+      if (staffTab) {
+        // Staff login — uses email + password + TOTP
+        const result = await staffLogin(email, password, twoFACode);
+        storeAuthResult(result.accessToken, result.user.role);
+        redirectAfterAuth(result.user.role);
+      } else {
+        const result = await loginUser(email, password);
+        if ("requiresStaffAuth" in result && result.requiresStaffAuth) {
+          // User tried to log in as staff without  TOTP — switch to staff tab
+          setStaffTab(true);
+          setError(
+            "This is a staff account. Please use the Staff Login tab and enter your 2FA code.",
+          );
+          setLoading(false);
+          return;
+        }
+        storeAuthResult(result.accessToken, result.user.role);
+        redirectAfterAuth(result.user.role);
+      }
+    } catch (err: any) {
+      setError(err.message ?? "Login failed. Please try again.");
       setLoading(false);
-      if (!email || !password) setError("Please fill in all fields.");
-      else setError("Backend not connected yet.");
-    }, 1200);
+    }
   };
 
-  const handleSignupStep1 = (e: React.FormEvent) => {
+  const handleSignupStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!name || !email || !password || !confirmPass) {
@@ -93,18 +128,80 @@ export function AuthModal({
       setError("Please use a stronger password.");
       return;
     }
-    setMode("otp");
-    setTimer(59);
+    setLoading(true);
+    try {
+      await registerUser(name, email, password);
+      // Backend sent OTP email — move to OTP screen
+      setMode("otp");
+      setTimer(59);
+      setOtp(["", "", "", "", "", ""]);
+    } catch (err: any) {
+      setError(err.message ?? "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyOTP = (e: React.FormEvent) => {
+  const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.join("").length < 6) {
+    const code = otp.join("");
+    if (code.length < 6) {
       setError("Enter the full 6-digit code.");
       return;
     }
-    setStep(3);
-    setMode("signup");
+    setLoading(true);
+    setError("");
+    try {
+      const result = await verifyEmail(email, code);
+      storeAuthResult(result.accessToken, result.user.role);
+      // Show success screen
+      setStep(3);
+      setMode("signup");
+    } catch (err: any) {
+      setError(err.message ?? "Invalid or expired code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await forgotPassword(email || forgotEmail);
+      setForgotStep(2);
+      setSuccess("Check your inbox. Enter the 6-digit code below.");
+    } catch (err: any) {
+      // Always show success message to prevent email enumeration
+      setForgotStep(2);
+      setSuccess("Check your inbox. Enter the 6-digit code below.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await resetPassword(email || forgotEmail, resetCode, newPassword);
+      setSuccess("Password reset successfully! You can now sign in.");
+      setTimeout(() => {
+        setMode("login");
+        setForgotStep(1);
+        setSuccess("");
+        setResetCode("");
+        setNewPassword("");
+      }, 2000);
+    } catch (err: any) {
+      setError(
+        err.message ?? "Reset failed. Please check your code and try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -642,6 +739,7 @@ export function AuthModal({
                   </div>
                   <button
                     id="login-google"
+                    onClick={() => initiateGoogleAuth()}
                     style={{
                       width: "100%",
                       padding: "11px",
@@ -949,6 +1047,7 @@ export function AuthModal({
               </div>
               <button
                 id="signup-google"
+                onClick={() => initiateGoogleAuth()}
                 style={{
                   width: "100%",
                   padding: "11px",
@@ -1062,6 +1161,10 @@ export function AuthModal({
               </p>
               <button
                 id="signup-go-workspace"
+                onClick={() => {
+                  const role = localStorage.getItem("so_user_role") ?? "user";
+                  redirectAfterAuth(role);
+                }}
                 style={{
                   width: "100%",
                   padding: "13px",
@@ -1086,7 +1189,7 @@ export function AuthModal({
                     "0 0 24px rgba(16,185,129,0.35)";
                 }}
               >
-                Go to Workspace →
+                Enter WorkSpace →
               </button>
             </div>
           )}
@@ -1156,7 +1259,19 @@ export function AuthModal({
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setTimer(59)}
+                    onClick={async () => {
+                      try {
+                        await resendOtp(email, "signup");
+                        setTimer(59);
+                        setOtp(["", "", "", "", "", ""]);
+                        setError("");
+                      } catch (err: any) {
+                        setError(
+                          err.message ??
+                            "Could not resend code. Please wait and try again.",
+                        );
+                      }
+                    }}
                     style={{
                       background: "none",
                       border: "none",

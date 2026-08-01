@@ -10,6 +10,7 @@ import { DealRoomPage } from "./pages/DealRoomPage";
 import { CreateDealPage } from "./pages/CreateDealPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { AuthCallback } from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ export default function App() {
               </div>
             }
           />
+          <Route path="/auth/callback" element={<AuthCallback />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
