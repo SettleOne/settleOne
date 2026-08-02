@@ -63,23 +63,23 @@ export function DeliveryVerificationPanel({
 
   if (!isVerifier) {
     return (
-      <div className="bg-purple-50 border border-purple-200 rounded-lg shadow-sm overflow-hidden mb-6">
-        <div className="px-4 py-3 border-b border-purple-200 bg-purple-100/50 flex items-center gap-2">
-          <Shield size={16} className="text-purple-600" />
-          <h3 className="font-semibold text-sm text-purple-900">
+      <div className="bg-[var(--accent-purple)]/10 border border-[var(--accent-purple)]/30 rounded-lg shadow-sm overflow-hidden mb-6">
+        <div className="px-4 py-3 border-b border-[var(--accent-purple)]/30 bg-[var(--accent-purple)]/20 flex items-center gap-2">
+          <Shield size={16} className="text-[var(--accent-purple)]" />
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
             Verification in Progress
           </h3>
         </div>
         <div className="p-4 flex items-center gap-4">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 shrink-0 shadow-sm">
+          <div className="w-10 h-10 bg-[var(--bg-card)] rounded-full flex items-center justify-center text-[var(--accent-purple)] shrink-0 shadow-sm shadow-glow">
             <Spinner size="sm" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-purple-900">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
               Waiting for {deal.verifier.slice(0, 6)}...
               {deal.verifier.slice(-4)}
             </p>
-            <p className="text-xs text-purple-700">
+            <p className="text-xs text-[var(--text-secondary)]">
               The assigned verifier must review and sign the delivery proof
               before you can accept it.
             </p>
@@ -90,31 +90,31 @@ export function DeliveryVerificationPanel({
   }
 
   return (
-    <div className="bg-white border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
-      <div className="px-4 py-3 border-b border-[var(--border)] bg-gray-50 flex items-center gap-2">
-        <Shield size={16} className="text-gray-500" />
-        <h3 className="font-semibold text-sm">
+    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
+      <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
+        <Shield size={16} className="text-[var(--text-muted)]" />
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">
           Action Required: Verify Delivery
         </h3>
       </div>
       <div className="p-4 space-y-4">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[var(--text-secondary)]">
           You are the assigned verifier. Please review the submitted materials
           in the "Deliverables" tab and issue your verdict.
         </p>
 
         {status === "success" ? (
-          <div className="flex items-center gap-3 bg-green-50 p-4 rounded-md border border-green-200 text-green-700 text-sm font-medium">
+          <div className="flex items-center gap-3 bg-[var(--state-active)]/10 p-4 rounded-md border border-[var(--state-active)]/30 text-[var(--state-active)] text-sm font-medium">
             <CheckCircle size={20} /> Verification submitted successfully!
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row items-center gap-4 bg-gray-50 p-4 rounded-md border border-gray-200">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 bg-[var(--bg-subtle)] p-4 rounded-md border border-[var(--border)]">
+            <div className="w-10 h-10 bg-[var(--accent-blue)]/20 rounded-full flex items-center justify-center text-[var(--accent-blue)] shrink-0">
               <Key size={20} />
             </div>
             <div>
-              <p className="text-sm font-semibold">Sign Delivery Approval</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Sign Delivery Approval</p>
+              <p className="text-xs text-[var(--text-muted)]">
                 Your EIP-712 signature will be recorded on-chain as proof of
                 verification.
               </p>
@@ -124,7 +124,7 @@ export function DeliveryVerificationPanel({
                 variant="secondary"
                 onClick={() => handleVerify(false)}
                 disabled={status !== "idle"}
-                className="text-red-600 hover:bg-red-50 border-red-100"
+                className="text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 border-[var(--accent-red)]/30 bg-transparent"
               >
                 Reject
               </Button>
@@ -132,7 +132,7 @@ export function DeliveryVerificationPanel({
                 variant="primary"
                 onClick={() => handleVerify(true)}
                 disabled={status !== "idle"}
-                className="bg-green-600 hover:bg-green-700 min-w-[120px]"
+                className="bg-[var(--state-active)] hover:brightness-110 min-w-[120px] text-[var(--bg-base)] font-bold border-none shadow-glow"
               >
                 {status === "signing" ? (
                   "Check Wallet..."
@@ -147,7 +147,7 @@ export function DeliveryVerificationPanel({
         )}
 
         {status === "error" && (
-          <p className="text-xs text-red-600 font-medium">
+          <p className="text-xs text-[var(--accent-red)] font-medium">
             Verification failed. Please try again.
           </p>
         )}

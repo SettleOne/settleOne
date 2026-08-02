@@ -6,14 +6,14 @@ export function formatAddress(addr: string, length: number = 6): string {
 export function formatAmount(
   amount: bigint,
   decimals: number,
-  symbol: string,
+  symbol?: string,
 ): string {
   const divisor = BigInt(10 ** decimals);
   const whole = amount / divisor;
   const fraction = amount % divisor;
   const fractionStr = fraction.toString().padStart(decimals, "0").slice(0, 2);
   const formatted = whole.toLocaleString("en-US");
-  return `${formatted}.${fractionStr} ${symbol}`;
+  return symbol ? `${formatted}.${fractionStr} ${symbol}` : `${formatted}.${fractionStr}`;
 }
 
 export function formatTimestamp(ts: bigint | number): string {

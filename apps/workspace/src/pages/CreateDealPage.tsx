@@ -56,7 +56,6 @@ export function CreateDealPage() {
     try {
       setError("");
 
-      // Validation
       if (!title || !amount || !deliveryDeadline) {
         setError("Please fill in all required fields.");
         return;
@@ -66,7 +65,6 @@ export function CreateDealPage() {
         Math.floor(new Date(deliveryDeadline).getTime() / 1000),
       );
 
-      // Construct DealInput
       const dealInput = {
         title,
         seller:
@@ -85,7 +83,6 @@ export function CreateDealPage() {
 
       await createDeal(dealInput as any);
 
-      // In a real app, we'd wait for the event to get the Deal ID
       setCreatedDealId("00146");
       setSuccessModalOpen(true);
     } catch (err: any) {
@@ -97,31 +94,31 @@ export function CreateDealPage() {
   const renderStep1 = () => (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4">
+        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">
           I am acting as the:
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div
             onClick={() => setRole("buyer")}
-            className={`cursor-pointer border rounded-xl p-5 transition-all ${role === "buyer" ? "border-[var(--accent-blue)] bg-blue-50 ring-1 ring-[var(--accent-blue)]" : "border-gray-200 hover:border-blue-300"}`}
+            className={`cursor-pointer border rounded-[var(--radius-card)] p-5 transition-all ${role === "buyer" ? "border-[var(--accent-blue)] bg-[var(--bg-subtle)] ring-1 ring-[var(--accent-blue)] shadow-[var(--shadow-glow)]" : "border-[var(--border)] hover:border-[var(--border-light)] bg-[var(--bg-card)]"}`}
           >
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold mb-3">
+            <div className="w-10 h-10 bg-[var(--bg-base)] rounded-full flex items-center justify-center shadow-sm text-[var(--accent-blue)] font-bold mb-3 border border-[var(--border)]">
               B
             </div>
-            <h4 className="font-bold text-gray-900 mb-1">Buyer</h4>
-            <p className="text-xs text-gray-500">
+            <h4 className="font-bold text-[var(--text-primary)] mb-1">Buyer</h4>
+            <p className="text-xs text-[var(--text-secondary)]">
               I will fund the escrow vault and receive the final delivery.
             </p>
           </div>
           <div
             onClick={() => setRole("seller")}
-            className={`cursor-pointer border rounded-xl p-5 transition-all ${role === "seller" ? "border-[var(--accent-blue)] bg-blue-50 ring-1 ring-[var(--accent-blue)]" : "border-gray-200 hover:border-blue-300"}`}
+            className={`cursor-pointer border rounded-[var(--radius-card)] p-5 transition-all ${role === "seller" ? "border-[var(--accent-purple)] bg-[var(--bg-subtle)] ring-1 ring-[var(--accent-purple)] shadow-[0_0_20px_rgba(139,92,246,0.25)]" : "border-[var(--border)] hover:border-[var(--border-light)] bg-[var(--bg-card)]"}`}
           >
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-purple-600 font-bold mb-3">
+            <div className="w-10 h-10 bg-[var(--bg-base)] rounded-full flex items-center justify-center shadow-sm text-[var(--accent-purple)] font-bold mb-3 border border-[var(--border)]">
               S
             </div>
-            <h4 className="font-bold text-gray-900 mb-1">Seller</h4>
-            <p className="text-xs text-gray-500">
+            <h4 className="font-bold text-[var(--text-primary)] mb-1">Seller</h4>
+            <p className="text-xs text-[var(--text-secondary)]">
               I will perform the work, submit the delivery, and receive the
               payout.
             </p>
@@ -131,17 +128,18 @@ export function CreateDealPage() {
 
       <div className="space-y-4 pt-4 border-t border-[var(--border)]">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Deal Title *
           </label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Smart Contract Audit, Component Sourcing..."
+            className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Deal Category
           </label>
           <Select
@@ -157,6 +155,7 @@ export function CreateDealPage() {
               { value: "soft", label: "Digital Services (Soft Delivery)" },
               { value: "hard", label: "Physical Goods (Hard Delivery)" },
             ]}
+            className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
           />
         </div>
       </div>
@@ -167,11 +166,11 @@ export function CreateDealPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Amount *
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]">
               $
             </span>
             <Input
@@ -179,12 +178,12 @@ export function CreateDealPage() {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="5,000"
               type="number"
-              className="pl-7"
+              className="pl-7 bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
             />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Token
           </label>
           <Select
@@ -195,26 +194,50 @@ export function CreateDealPage() {
               { value: "USDT", label: "USDT" },
               { value: "DAI", label: "DAI" },
             ]}
+            className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[var(--border)]">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Delivery Deadline *
           </label>
           <Input
             type="date"
             value={deliveryDeadline}
             onChange={(e) => setDeliveryDeadline(e.target.value)}
+            className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Acceptance Window (Days)
           </label>
-          <Input type="number" defaultValue="7" />
+          <Input type="number" defaultValue="7" className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]" />
+        </div>
+      </div>
+      
+      <div className="pt-4 border-t border-[var(--border)]">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+          Funding Option *
+        </label>
+        <div className="space-y-3">
+          <label className="flex items-start gap-3 p-3 border border-[var(--border)] rounded-[var(--radius-input)] bg-[var(--bg-subtle)] cursor-pointer hover:border-[var(--border-light)] transition-colors">
+            <input type="radio" name="funding" className="mt-1 text-[var(--accent-blue)] focus:ring-[var(--accent-blue)] bg-[var(--bg-base)] border-[var(--border)]" />
+            <div>
+              <p className="text-sm font-medium text-[var(--text-primary)]">Full payment upfront</p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">100% at funding stage</p>
+            </div>
+          </label>
+          <label className="flex items-start gap-3 p-3 border border-[var(--accent-blue)] rounded-[var(--radius-input)] bg-[rgba(59,130,246,0.05)] cursor-pointer shadow-[0_0_10px_rgba(59,130,246,0.1)] transition-colors">
+            <input type="radio" name="funding" defaultChecked className="mt-1 text-[var(--accent-blue)] focus:ring-[var(--accent-blue)] bg-[var(--bg-base)] border-[var(--border)]" />
+            <div>
+              <p className="text-sm font-medium text-[var(--accent-blue)]">Staged funding: 60/40</p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">Fund 60% now, 40% before acceptance. This gives you leverage.</p>
+            </div>
+          </label>
         </div>
       </div>
     </div>
@@ -223,7 +246,7 @@ export function CreateDealPage() {
   const renderStep3 = () => (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
           Dispute Resolver
         </label>
         <Select
@@ -231,20 +254,21 @@ export function CreateDealPage() {
             { value: "settleone", label: "SettleOne Protocol Arbitrators" },
             { value: "custom", label: "Custom Arbitrator Address" },
           ]}
+          className="bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-primary)] focus:border-[var(--accent-blue)]"
         />
       </div>
 
       <div className="pt-4 border-t border-[var(--border)] space-y-4">
-        <h4 className="text-sm font-semibold text-gray-900">
+        <h4 className="text-sm font-semibold text-[var(--text-primary)]">
           Settlement Rules
         </h4>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            className="rounded text-[var(--accent-blue)]"
+            className="rounded bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--accent-blue)] focus:ring-[var(--accent-blue)]"
             defaultChecked
           />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
             Allow Partial Settlements
           </span>
         </label>
@@ -254,29 +278,29 @@ export function CreateDealPage() {
 
   const renderStep4 = () => (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-      <div className="bg-gray-50 border border-[var(--border)] rounded-lg p-6">
-        <h3 className="font-bold text-lg mb-4 text-gray-900">Summary</h3>
+      <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-sm">
+        <h3 className="font-bold text-lg mb-4 text-[var(--text-primary)]">Summary</h3>
 
         <div className="space-y-3 text-sm">
-          <div className="flex justify-between border-b border-gray-200 pb-2">
-            <span className="text-gray-500">Title</span>
-            <span className="font-medium text-gray-900">
+          <div className="flex justify-between border-b border-[var(--border)] pb-2">
+            <span className="text-[var(--text-secondary)]">Title</span>
+            <span className="font-medium text-[var(--text-primary)]">
               {title || "Untitled Deal"}
             </span>
           </div>
-          <div className="flex justify-between border-b border-gray-200 pb-2">
-            <span className="text-gray-500">Your Role</span>
-            <span className="font-medium text-gray-900 capitalize">{role}</span>
+          <div className="flex justify-between border-b border-[var(--border)] pb-2">
+            <span className="text-[var(--text-secondary)]">Your Role</span>
+            <span className="font-medium text-[var(--text-primary)] capitalize">{role}</span>
           </div>
-          <div className="flex justify-between border-b border-gray-200 pb-2">
-            <span className="text-gray-500">Value</span>
-            <span className="font-bold text-green-600">
+          <div className="flex justify-between border-b border-[var(--border)] pb-2">
+            <span className="text-[var(--text-secondary)]">Value</span>
+            <span className="font-bold text-[var(--accent-green)]">
               {amount ? `${amount} ${token}` : "—"}
             </span>
           </div>
-          <div className="flex justify-between border-b border-gray-200 pb-2">
-            <span className="text-gray-500">Deadline</span>
-            <span className="font-medium text-gray-900">
+          <div className="flex justify-between border-b border-[var(--border)] pb-2">
+            <span className="text-[var(--text-secondary)]">Deadline</span>
+            <span className="font-medium text-[var(--text-primary)]">
               {deliveryDeadline || "—"}
             </span>
           </div>
@@ -284,12 +308,12 @@ export function CreateDealPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md text-sm flex gap-2">
+        <div className="bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-[var(--accent-red)] p-4 rounded-[var(--radius-input)] text-sm flex gap-2">
           <AlertCircle size={18} /> {error}
         </div>
       )}
 
-      <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-md text-sm text-blue-900">
+      <div className="flex items-start gap-3 bg-[rgba(59,130,246,0.1)] p-4 rounded-[var(--radius-input)] text-sm text-[var(--accent-blue)] border border-[rgba(59,130,246,0.2)]">
         <ShieldCheck className="shrink-0 mt-0.5" size={20} />
         <p>
           By creating this deal, you are signing an on-chain transaction. Your
@@ -302,21 +326,21 @@ export function CreateDealPage() {
   const isProcessing = isPending || isConfirming;
 
   return (
-    <div className="max-w-3xl mx-auto py-8">
+    <div className="max-w-3xl mx-auto py-8 bg-[var(--bg-base)] text-[var(--text-primary)] min-h-full">
       <div className="mb-8 px-4 sm:px-0">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">
           Create New Deal
         </h1>
-        <p className="text-gray-500">
+        <p className="text-[var(--text-secondary)]">
           Configure your terms and initialize the transaction commitment layer.
         </p>
       </div>
 
       {/* Progress Stepper */}
       <div className="flex items-center justify-between mb-8 relative px-4 sm:px-0">
-        <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-200 -z-10 -translate-y-1/2"></div>
+        <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-[var(--bg-subtle)] -z-10 -translate-y-1/2 border-y border-[var(--border)]"></div>
         <div
-          className="absolute left-0 top-1/2 h-0.5 bg-[var(--accent-blue)] transition-all duration-300 ease-in-out -z-10 -translate-y-1/2"
+          className="absolute left-0 top-1/2 h-0.5 bg-[var(--accent-blue)] transition-all duration-300 ease-in-out -z-10 -translate-y-1/2 shadow-[var(--shadow-glow)]"
           style={{ width: `${((step - 1) / 3) * 100}%` }}
         ></div>
 
@@ -329,16 +353,16 @@ export function CreateDealPage() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${
                   isPassed
-                    ? "bg-[var(--accent-blue)] text-white"
+                    ? "bg-[var(--accent-blue)] text-[var(--text-primary)] shadow-[var(--shadow-glow)]"
                     : isActive
-                      ? "bg-[var(--accent-blue)] text-white ring-4 ring-blue-100"
-                      : "bg-white border-2 border-gray-300 text-gray-400"
+                      ? "bg-[var(--accent-blue)] text-[var(--text-primary)] ring-4 ring-[rgba(59,130,246,0.2)] shadow-[var(--shadow-glow)]"
+                      : "bg-[var(--bg-card)] border-2 border-[var(--border)] text-[var(--text-secondary)]"
                 }`}
               >
                 {isPassed ? <Check size={20} /> : s.icon}
               </div>
               <span
-                className={`text-xs mt-2 font-medium hidden sm:block ${isActive ? "text-[var(--text-primary)] font-bold" : "text-gray-500"}`}
+                className={`text-xs mt-2 font-medium hidden sm:block ${isActive ? "text-[var(--text-primary)] font-bold drop-shadow-md" : "text-[var(--text-secondary)]"}`}
               >
                 {s.title}
               </span>
@@ -347,7 +371,7 @@ export function CreateDealPage() {
         })}
       </div>
 
-      <div className="bg-white border border-[var(--border)] rounded-xl shadow-sm p-6 md:p-8 min-h-[400px] flex flex-col mx-4 sm:mx-0">
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-modal)] shadow-[var(--shadow-card)] p-6 md:p-8 min-h-[400px] flex flex-col mx-4 sm:mx-0">
         <div className="flex-1">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
@@ -360,7 +384,7 @@ export function CreateDealPage() {
             variant="ghost"
             onClick={handlePrev}
             disabled={isProcessing}
-            className={step === 1 ? "invisible" : ""}
+            className={`text-[var(--text-primary)] border-[var(--border)] hover:bg-[var(--bg-subtle)] ${step === 1 ? "invisible" : ""}`}
           >
             Back
           </Button>
@@ -369,7 +393,7 @@ export function CreateDealPage() {
             <Button
               variant="primary"
               onClick={handleNext}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] text-white"
             >
               Next Step <ChevronRight size={16} />
             </Button>
@@ -378,7 +402,7 @@ export function CreateDealPage() {
               variant="primary"
               onClick={handleCreate}
               disabled={isProcessing}
-              className="bg-green-600 hover:bg-green-700 focus:ring-green-500 min-w-[160px]"
+              className="bg-[var(--accent-green)] hover:bg-[#059669] focus:ring-[var(--accent-green)] min-w-[160px] text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] border-none"
             >
               {isPending ? (
                 "Confirming..."
@@ -401,20 +425,20 @@ export function CreateDealPage() {
         size="md"
       >
         <div className="text-center py-4">
-          <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[rgba(16,185,129,0.1)] text-[var(--accent-green)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[rgba(16,185,129,0.2)]">
             <Check size={32} />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
             Your Deal is Live
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-[var(--text-secondary)] mb-6">
             Your on-chain transaction was successful. You can now fund the deal
             or invite the seller.
           </p>
 
           <Button
             variant="primary"
-            className="w-full"
+            className="w-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] text-white border-none"
             onClick={() => navigate(`/marketplace`)}
           >
             Go to Marketplace

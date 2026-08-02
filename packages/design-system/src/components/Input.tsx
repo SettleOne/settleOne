@@ -9,6 +9,7 @@ export type InputType =
   | "url"
   | "date"
   | "address"
+  | "tel"
   | "textarea";
 
 export interface InputProps extends Omit<

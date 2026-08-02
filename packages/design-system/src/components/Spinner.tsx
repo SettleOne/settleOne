@@ -1,9 +1,10 @@
 import React from "react";
 
 export interface SpinnerProps {
-  size?: number;
+  size?: number | string;
   color?: string;
   style?: React.CSSProperties;
+  className?: string;
 }
 
 export function Spinner({ size = 24, color = "#6366F1", style }: SpinnerProps) {

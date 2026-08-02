@@ -41,22 +41,21 @@ export function DealLifecycleTimeline({
   }
 
   return (
-    <div className="bg-white border-b border-[var(--border)] overflow-x-auto hide-scrollbar">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 min-w-[800px]">
+    <div className="bg-transparent overflow-x-auto hide-scrollbar pb-2">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-6 pt-6 min-w-[800px]">
         <div className="relative flex items-center justify-between">
           {/* Background line */}
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-200 -z-10 -translate-y-1/2"></div>
+          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-[var(--bg-subtle)] -z-10 -translate-y-1/2"></div>
 
           {/* Active line */}
           <div
-            className="absolute left-0 top-1/2 h-0.5 bg-[var(--accent-blue)] transition-all duration-500 ease-in-out -z-10 -translate-y-1/2"
+            className="absolute left-0 top-1/2 h-0.5 bg-[var(--accent-blue)] transition-all duration-500 ease-in-out -z-10 -translate-y-1/2 shadow-glow"
             style={{ width: `${(activeIndex / (states.length - 1)) * 100}%` }}
           ></div>
 
           {states.map((state, index) => {
             const isCompleted = index < activeIndex;
             const isActive = index === activeIndex;
-            const isFuture = index > activeIndex;
 
             return (
               <div
@@ -67,15 +66,15 @@ export function DealLifecycleTimeline({
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-300 ${
                     isCompleted
-                      ? "bg-[var(--accent-blue)] text-white"
+                      ? "bg-[var(--accent-blue)] text-[var(--bg-base)] shadow-glow"
                       : isActive
-                        ? "bg-[var(--accent-blue)] text-white ring-4 ring-blue-100 shadow-sm"
-                        : "bg-gray-200 border-2 border-white"
+                        ? "bg-[var(--accent-blue)] text-[var(--bg-base)] ring-4 ring-[var(--accent-blue-glow)] shadow-[var(--shadow-glow)]"
+                        : "bg-[var(--bg-subtle)] border-2 border-[var(--bg-card)]"
                   }`}
                 >
                   {isCompleted && <Check size={12} strokeWidth={3} />}
                   {isActive && (
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-[var(--bg-base)] rounded-full animate-pulse"></div>
                   )}
                 </div>
 
@@ -86,7 +85,7 @@ export function DealLifecycleTimeline({
                       ? "text-[var(--text-primary)] font-bold"
                       : isCompleted
                         ? "text-[var(--text-primary)]"
-                        : "text-gray-400"
+                        : "text-[var(--text-muted)]"
                   }`}
                 >
                   {state.label}

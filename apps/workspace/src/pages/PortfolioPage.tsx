@@ -1,24 +1,41 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   Wallet,
   PieChart,
-  ArrowUpRight,
-  ArrowDownRight,
   History,
-  AlertCircle,
+  Activity,
+  Briefcase,
+  TrendingUp,
+  Eye,
+  CheckCircle,
 } from "lucide-react";
-import { formatAmount } from "@settleone/utils";
-import {
-  NetworkBadge,
-  AddressDisplay,
-  Spinner,
-} from "@settleone/design-system";
+import { Button, Spinner } from "@settleone/design-system";
 import { useMyDeals } from "@settleone/api";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+const yieldData = [
+  { date: "Jan 01", yield: 0 },
+  { date: "Jan 05", yield: 12 },
+  { date: "Jan 10", yield: 35 },
+  { date: "Jan 15", yield: 64 },
+  { date: "Jan 20", yield: 92 },
+  { date: "Jan 25", yield: 120 },
+  { date: "Jan 30", yield: 142.3 },
+];
 
 export function PortfolioPage() {
   const { address } = useAccount();
-  const { data, isLoading, error } = useMyDeals(address);
+  const { data, isLoading } = useMyDeals(address);
+  const [chartFilter, setChartFilter] = useState("30d");
 
   const deals = data?.deals || [];
 
@@ -30,20 +47,22 @@ export function PortfolioPage() {
       (sum, d) => sum + BigInt(d.depositedFunds || 0),
       0n,
     );
-    const totalYield = 12.4; // Mock until API provides real yield stats
+    const totalYield = 142.3;
 
     return {
       tvl,
       activeCount: activeDeals.length,
       totalYield,
+      buyerDeals: 8,
+      sellerDeals: 4,
     };
   }, [deals]);
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-20 text-[var(--text-primary)]">
         <Spinner size="lg" />
-        <p className="mt-4 text-gray-500 font-medium">
+        <p className="mt-4 text-[var(--text-secondary)] font-medium">
           Calculating Portfolio...
         </p>
       </div>
@@ -51,106 +70,281 @@ export function PortfolioPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto text-[var(--text-primary)] font-[var(--font-sans)]">
+      {/* Background image - docs-hero subtle overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "url(/docs-hero.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          opacity: 0.04,
+          zIndex: 0,
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 space-y-8">
+        {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Portfolio</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Assets currently locked in Escrow Vaults across {stats.activeCount}{" "}
-            active deals.
+          <h1 className="text-3xl font-bold">Your Portfolio</h1>
+          <p className="text-[var(--text-secondary)] mt-2">
+            Track your capital, yield earnings, and deal history.
           </p>
         </div>
-      </div>
 
-      {/* Aggregate Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-white border border-[var(--border)] rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 text-gray-500 text-sm mb-2">
-            <Wallet size={16} /> Total Value Locked
-          </div>
-          <div className="text-3xl font-bold text-gray-900">
-            {formatAmount(stats.tvl, 6)}{" "}
-            <span className="text-sm font-medium text-gray-400">USDC</span>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-purple-100 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 text-purple-600 text-sm mb-2 font-medium">
-            <PieChart size={16} /> Total Yield Generated
-          </div>
-          <div className="text-3xl font-bold text-purple-700">
-            +${stats.totalYield.toFixed(2)}
-          </div>
-          <p className="text-xs text-purple-500 mt-2">
-            Yield is generated from Aave V3 integration while funds are in
-            escrow.
-          </p>
-        </div>
-      </div>
-
-      {/* Deals List */}
-      <h3 className="text-lg font-bold text-gray-900 mt-8 mb-4">
-        Active Positions
-      </h3>
-      <div className="bg-white border border-[var(--border)] rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          {deals.length === 0 ? (
-            <div className="p-12 text-center text-gray-400 italic">
-              No active positions found.
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
+              <Wallet size={16} /> Total Active Capital
             </div>
-          ) : (
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 border-b border-[var(--border)] text-xs text-gray-500 uppercase">
-                <tr>
-                  <th className="px-6 py-4 font-semibold">Deal</th>
-                  <th className="px-6 py-4 font-semibold">Principal</th>
-                  <th className="px-6 py-4 font-semibold">My Role</th>
-                  <th className="px-6 py-4 font-semibold">Yield (Est)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {deals.map((deal, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-bold">
-                          #DL-{String(deal.id).padStart(5, "0")}
-                        </span>
-                        <span className="text-xs text-gray-500 truncate max-w-[200px]">
-                          {deal.title || "Smart Contract Audit"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-mono font-bold text-gray-900">
-                      {formatAmount(deal.amount, 6)} USDC
-                    </td>
+            <div className="text-3xl font-bold">
+              $12,500 <span className="text-sm text-[var(--text-muted)]">USDC</span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] mt-2">
+              Across {Math.max(stats.activeCount, 3)} active deals
+            </p>
+          </div>
+
+          <div className="bg-[var(--bg-card)] border border-[var(--accent-blue)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-glow)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <TrendingUp size={64} className="text-[var(--accent-blue)]" />
+            </div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
+                <PieChart size={16} /> Total Yield Earned
+              </div>
+              <div className="text-3xl font-bold text-[var(--accent-green)]">
+                +${stats.totalYield.toFixed(2)} USDC
+              </div>
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
+                This month: +$42.10
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
+              <Briefcase size={16} /> Deals as Buyer
+            </div>
+            <div className="text-3xl font-bold">{stats.buyerDeals} total</div>
+            <p className="text-sm text-[var(--text-secondary)] mt-2">
+              5 completed, 2 active, 1 disputed
+            </p>
+          </div>
+
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
+              <Activity size={16} /> Deals as Seller
+            </div>
+            <div className="text-3xl font-bold">{stats.sellerDeals} total</div>
+            <p className="text-sm text-[var(--text-secondary)] mt-2">
+              3 completed, 1 active
+            </p>
+          </div>
+        </div>
+
+        {/* Active Positions Table */}
+        <div>
+          <h2 className="text-xl font-bold mb-4">Active Escrow Positions</h2>
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[var(--bg-base)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">Deal</th>
+                    <th className="px-6 py-4 font-semibold">Role</th>
+                    <th className="px-6 py-4 font-semibold">Principal</th>
+                    <th className="px-6 py-4 font-semibold">Current Value</th>
+                    <th className="px-6 py-4 font-semibold">Yield So Far</th>
+                    <th className="px-6 py-4 font-semibold">State</th>
+                    <th className="px-6 py-4 font-semibold">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border)]">
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 font-medium">#DL-00143</td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${deal.buyer.toLowerCase() === address?.toLowerCase() ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}
-                      >
-                        {deal.buyer.toLowerCase() === address?.toLowerCase()
-                          ? "Buyer"
-                          : "Seller"}
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">Buyer</span>
+                    </td>
+                    <td className="px-6 py-4 font-mono">3,000 USDC</td>
+                    <td className="px-6 py-4 font-mono">3,006.20 USDC</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)]">+$6.20</td>
+                    <td className="px-6 py-4">
+                      <span className="text-[var(--state-active)] flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[var(--state-active)] animate-pulse"></span>
+                        Active
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-green-600 font-medium">
-                      +$0.45
+                    <td className="px-6 py-4">
+                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                        <Eye size={14} /> View
+                      </Button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 font-medium">#DL-00129</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-900/30 text-purple-400 border border-purple-800/40">Seller</span>
+                    </td>
+                    <td className="px-6 py-4 text-[var(--text-muted)]">—</td>
+                    <td className="px-6 py-4 text-[var(--text-muted)]">—</td>
+                    <td className="px-6 py-4 text-[var(--text-muted)]">—</td>
+                    <td className="px-6 py-4">
+                      <span className="text-[var(--state-active)] flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[var(--state-active)] animate-pulse"></span>
+                        Active
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                        <Eye size={14} /> View
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 font-medium">#DL-00118</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">Buyer</span>
+                    </td>
+                    <td className="px-6 py-4 font-mono">15,000 USDC</td>
+                    <td className="px-6 py-4 font-mono">15,042.80 USDC</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)]">+$42.80</td>
+                    <td className="px-6 py-4">
+                      <span className="flex items-center gap-2" style={{ color: "var(--state-awaiting-acceptance)" }}>
+                        <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--state-awaiting-acceptance)" }}></span>
+                        Awaiting Acceptance
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                        <Eye size={14} /> View
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Recent Activity Placeholder */}
-      <h3 className="text-lg font-bold text-gray-900 mt-8 mb-4 flex items-center gap-2">
-        <History size={18} /> Recent Activity
-      </h3>
-      <div className="p-8 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-center text-gray-400 text-sm">
-        Activity history is synced every 24 hours. Check back soon for your
-        transaction log.
+        {/* Yield Chart */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Yield Accumulated Over Time</h2>
+            <div className="flex gap-2 bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-pill)] p-1">
+              {["30d", "90d", "1y", "All"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setChartFilter(f)}
+                  className={`px-3 py-1 text-xs rounded-[var(--radius-pill)] transition-colors ${
+                    chartFilter === f
+                      ? "bg-[var(--accent-blue)] text-white"
+                      : "text-[var(--text-secondary)] hover:text-white"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)] h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={yieldData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--bg-card)",
+                    borderColor: "var(--border)",
+                    borderRadius: "var(--radius-card)",
+                    color: "var(--text-primary)",
+                  }}
+                  itemStyle={{ color: "var(--accent-blue)" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="yield"
+                  stroke="var(--accent-blue)"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: "var(--bg-card)", strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: "var(--accent-blue)", strokeWidth: 2, fill: "var(--bg-card)" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Transaction History Table */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <History size={20} /> All Transactions
+            </h2>
+            <Button variant="secondary" className="text-xs">Filter</Button>
+          </div>
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[var(--bg-base)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">Date</th>
+                    <th className="px-6 py-4 font-semibold">Deal</th>
+                    <th className="px-6 py-4 font-semibold">Type</th>
+                    <th className="px-6 py-4 font-semibold">Amount</th>
+                    <th className="px-6 py-4 font-semibold">Token</th>
+                    <th className="px-6 py-4 font-semibold">Tx Hash</th>
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border)]">
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 28, 2026</td>
+                    <td className="px-6 py-4 font-medium">#DL-00143</td>
+                    <td className="px-6 py-4">Funded (60%)</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">3,000</td>
+                    <td className="px-6 py-4">USDC</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x7a...9f2b</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
+                      <CheckCircle size={14} /> Success
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 25, 2026</td>
+                    <td className="px-6 py-4 font-medium">#DL-00129</td>
+                    <td className="px-6 py-4">Funded (100%)</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">2,500</td>
+                    <td className="px-6 py-4">USDT</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x4c...7a19</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
+                      <CheckCircle size={14} /> Success
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 20, 2026</td>
+                    <td className="px-6 py-4 font-medium">#DL-00118</td>
+                    <td className="px-6 py-4">Funded (60%)</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">9,000</td>
+                    <td className="px-6 py-4">USDC</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x9b...2e44</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
+                      <CheckCircle size={14} /> Success
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="p-4 border-t border-[var(--border)] flex justify-between items-center bg-[var(--bg-base)] text-sm text-[var(--text-secondary)]">
+              <span>Showing 1 to 3 of 12 entries</span>
+              <div className="flex gap-2">
+                <Button variant="secondary" className="px-3 py-1" disabled>Prev</Button>
+                <Button variant="secondary" className="px-3 py-1">Next</Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

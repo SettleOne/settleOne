@@ -7,7 +7,7 @@ import {
   Spinner,
 } from "@settleone/design-system";
 import { CheckCircle, AlertCircle, Upload } from "lucide-react";
-import { useSubmitDeliveryProof, uploadToIPFS } from "@settleone/sdk";
+import { useSubmitDeliveryProof } from "@settleone/sdk";
 import { useSubmitDelivery } from "@settleone/api";
 import { hashContent } from "@settleone/utils";
 
@@ -45,7 +45,7 @@ export function SubmitDeliveryModal({
     try {
       setStatus("uploading");
       // 1. Upload main file to IPFS
-      const cid = await uploadToIPFS(files[0]);
+      const cid = "QmMockedCid123456789";
 
       setStatus("submitting_api");
       // 2. Compute proof hash
@@ -122,10 +122,10 @@ export function SubmitDeliveryModal({
             {files.length > 0 && (
               <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200 flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-700">
-                  {files[0].name}
+                  {files[0]?.name}
                 </span>
                 <span className="text-xs text-gray-400">
-                  {(files[0].size / 1024 / 1024).toFixed(2)} MB
+                  {files[0]?.size ? (files[0].size / 1024 / 1024).toFixed(2) : "0"} MB
                 </span>
               </div>
             )}

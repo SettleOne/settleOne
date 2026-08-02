@@ -1,16 +1,8 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutGrid,
-  PieChart,
-  Inbox,
-  Activity,
-  PlusSquare,
-  CheckSquare,
-  Paperclip,
-  UploadCloud,
-  Settings,
-  HelpCircle,
+  LayoutGrid, PieChart, Inbox, Activity, PlusSquare, CheckSquare,
+  Paperclip, UploadCloud, Settings, HelpCircle, Plus, X, TrendingUp
 } from "lucide-react";
 import { Avatar } from "@settleone/design-system";
 
@@ -20,26 +12,28 @@ interface NavItemProps {
   label: string;
   badge?: number;
   isActive: boolean;
+  onClick?: () => void;
 }
 
-function NavItem({ to, icon, label, badge, isActive }: NavItemProps) {
+function NavItem({ to, icon, label, badge, isActive, onClick }: NavItemProps) {
   return (
     <Link
       to={to}
-      className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${
+      onClick={onClick}
+      className={`group flex items-center justify-between px-3 py-2.5 rounded-[var(--radius-input)] transition-all duration-200 ${
         isActive
-          ? "bg-[var(--bg-subtle)] text-[var(--text-primary)] font-medium"
-          : "text-[var(--text-secondary)] hover:bg-gray-50 hover:text-[var(--text-primary)]"
+          ? "bg-[var(--accent-blue)]/15 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/25"
+          : "text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] border border-transparent"
       }`}
     >
       <div className="flex items-center gap-3">
-        <span className={isActive ? "text-[var(--accent-blue)]" : ""}>
+        <span className={`transition-colors ${isActive ? "text-[var(--accent-blue)]" : "group-hover:text-[var(--text-primary)]"}`}>
           {icon}
         </span>
-        <span className="text-sm">{label}</span>
+        <span className="text-sm font-medium">{label}</span>
       </div>
       {badge !== undefined && badge > 0 && (
-        <span className="px-2 py-0.5 text-xs font-semibold bg-[var(--accent-blue)] text-white rounded-full">
+        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[var(--accent-blue)] text-white rounded-full min-w-[18px] text-center">
           {badge}
         </span>
       )}
@@ -47,125 +41,178 @@ function NavItem({ to, icon, label, badge, isActive }: NavItemProps) {
   );
 }
 
-export function SidebarNavigation() {
-  const location = useLocation();
-  const currentPath = location.pathname;
+interface SidebarNavigationProps {
+  mobile?: boolean;
+  onClose?: () => void;
+}
 
-  return (
-    <aside className="w-[240px] flex-shrink-0 flex flex-col h-[calc(100vh-56px)] bg-white border-r border-[var(--border)] sticky top-[56px] overflow-y-auto hidden md:flex">
-      <div className="flex-1 py-4 px-3 space-y-6">
+export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const current = location.pathname;
+
+  const navContent = (
+    <>
+      <div className="flex-1 py-4 px-3 space-y-5">
         {/* MAIN */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Main
-          </h3>
-          <div className="space-y-1">
+          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Main</h3>
+          <div className="space-y-0.5">
             <NavItem
               to="/marketplace"
-              icon={<LayoutGrid />}
+              icon={<LayoutGrid size={17} />}
               label="Marketplace"
-              isActive={currentPath.startsWith("/marketplace")}
+              isActive={current.startsWith("/marketplace")}
+              onClick={onClose}
             />
             <NavItem
               to="/portfolio"
-              icon={<PieChart />}
+              icon={<PieChart size={17} />}
               label="Portfolio"
-              isActive={currentPath === "/portfolio"}
+              isActive={current === "/portfolio"}
+              onClick={onClose}
             />
             <NavItem
               to="/inbox"
-              icon={<Inbox />}
+              icon={<Inbox size={17} />}
               label="Inbox"
               badge={3}
-              isActive={currentPath === "/inbox"}
+              isActive={current === "/inbox"}
+              onClick={onClose}
             />
           </div>
         </div>
 
         {/* MY DEALS */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            My Deals
-          </h3>
-          <div className="space-y-1">
+          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">My Deals</h3>
+          <div className="space-y-0.5">
             <NavItem
               to="/deals/active"
-              icon={<Activity />}
+              icon={<Activity size={17} />}
               label="Active Deals"
               badge={2}
-              isActive={currentPath === "/deals/active"}
+              isActive={current === "/deals/active"}
+              onClick={onClose}
             />
             <NavItem
               to="/deals/created"
-              icon={<PlusSquare />}
+              icon={<PlusSquare size={17} />}
               label="Created Deals"
-              isActive={currentPath === "/deals/created"}
+              isActive={current === "/deals/created"}
+              onClick={onClose}
             />
             <NavItem
               to="/deals/accepted"
-              icon={<CheckSquare />}
+              icon={<CheckSquare size={17} />}
               label="Accepted Deals"
-              isActive={currentPath === "/deals/accepted"}
+              isActive={current === "/deals/accepted"}
+              onClick={onClose}
             />
           </div>
         </div>
 
         {/* TOOLS */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Tools
-          </h3>
-          <div className="space-y-1">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-[var(--text-secondary)] hover:bg-gray-50 hover:text-[var(--text-primary)] transition-colors">
-              <Paperclip size={18} />
-              <span className="text-sm">Submit Evidence</span>
+          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Tools</h3>
+          <div className="space-y-0.5">
+            <button
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-all border border-transparent text-sm font-medium"
+              onClick={onClose}
+            >
+              <Paperclip size={17} />
+              Submit Evidence
             </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-[var(--text-secondary)] hover:bg-gray-50 hover:text-[var(--text-primary)] transition-colors opacity-50 cursor-not-allowed">
-              <UploadCloud size={18} />
-              <span className="text-sm">Submit Delivery</span>
+            <button
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-muted)] opacity-50 cursor-not-allowed border border-transparent text-sm font-medium"
+              disabled
+              title="Available when you have an active deal"
+            >
+              <UploadCloud size={17} />
+              Submit Delivery
             </button>
           </div>
         </div>
 
         {/* ACCOUNT */}
         <div>
-          <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Account
-          </h3>
-          <div className="space-y-1">
+          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Account</h3>
+          <div className="space-y-0.5">
             <NavItem
               to="/settings"
-              icon={<Settings />}
+              icon={<Settings size={17} />}
               label="Settings"
-              isActive={currentPath === "/settings"}
+              isActive={current === "/settings"}
+              onClick={onClose}
             />
             <a
               href="https://docs.settleone.xyz"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-3 px-3 py-2 rounded-md text-[var(--text-secondary)] hover:bg-gray-50 hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-all border border-transparent text-sm font-medium"
+              onClick={onClose}
             >
-              <HelpCircle size={18} />
-              <span className="text-sm">Help & Docs</span>
+              <HelpCircle size={17} />
+              Help & Docs
             </a>
           </div>
         </div>
       </div>
 
-      <div className="p-4 border-t border-[var(--border)]">
-        <div className="flex items-center gap-3 mb-4">
-          <Avatar initials="JD" size="md" />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-[var(--text-primary)]">
-              John Doe
-            </span>
-            <span className="text-xs text-[var(--text-secondary)]">Buyer</span>
+      {/* Bottom: User mini-profile + Create button */}
+      <div className="p-3 border-t border-[var(--border)]">
+        <div className="flex items-center gap-3 mb-3 p-2.5 rounded-[var(--radius-card)] bg-[var(--bg-subtle)] border border-[var(--border)]">
+          <Avatar initials="JD" size="sm" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[var(--text-primary)] truncate">John Doe</p>
+            <p className="text-[10px] text-[var(--text-muted)]">Buyer / Seller</p>
+          </div>
+          <div className="px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent-blue-bright)] bg-[var(--accent-blue-glow2)] border border-[var(--accent-blue)]/25 rounded-full uppercase tracking-wide">
+            Both
           </div>
         </div>
-        <button className="w-full py-2 bg-[var(--accent-blue)] text-white text-sm font-semibold rounded-md shadow-sm hover:bg-blue-600 transition-colors">
+        <button
+          onClick={() => {
+            navigate("/create-deal");
+            onClose?.();
+          }}
+          className="w-full py-2 text-sm font-semibold text-white rounded-[var(--radius-input)] transition-all flex items-center justify-center gap-2"
+          style={{
+            background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
+            boxShadow: "0 0 16px rgba(59,130,246,0.3)",
+          }}
+        >
+          <Plus size={16} />
           Create Deal
         </button>
       </div>
+    </>
+  );
+
+  if (mobile) {
+    return (
+      <div className="flex flex-col h-full bg-[var(--bg-card)]">
+        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
+          <img src="/whiteLogo.png" alt="SettleOne" className="h-7 object-contain" />
+          <button
+            onClick={onClose}
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-md transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <div className="flex flex-col flex-1 overflow-y-auto">
+          {navContent}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <aside className="w-[240px] shrink-0 flex flex-col h-[calc(100vh-56px)] sticky top-[56px] overflow-y-auto hidden md:flex"
+      style={{ background: "var(--bg-card)", borderRight: "1px solid var(--border)" }}
+    >
+      {navContent}
     </aside>
   );
 }

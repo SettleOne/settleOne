@@ -26,7 +26,7 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
   let subtitle =
     "Funds have been distributed according to the settlement rules.";
   let icon = <DollarSign size={32} />;
-  let iconBg = "bg-green-100 text-green-600";
+  let iconBg = "bg-[var(--state-active)]/20 text-[var(--state-active)] shadow-glow";
 
   let sellerPayout = 0n;
   let buyerRefund = 0n;
@@ -46,22 +46,22 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
     subtitle =
       "This deal was cancelled and funds have been returned to the buyer.";
     icon = <Ban size={32} />;
-    iconBg = "bg-gray-100 text-gray-600";
+    iconBg = "bg-[var(--bg-hover)] text-[var(--text-muted)]";
     buyerRefund = BigInt(deal.depositedFunds);
   }
 
   return (
-    <div className="bg-white border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
-      <div className="px-4 py-3 border-b border-[var(--border)] bg-gray-50 flex items-center gap-2">
+    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
+      <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
         <CheckCircle
           size={16}
           className={
             currentState === DealState.Cancelled
-              ? "text-gray-500"
-              : "text-green-600"
+              ? "text-[var(--text-muted)]"
+              : "text-[var(--state-active)]"
           }
         />
-        <h3 className="font-semibold text-sm">Settlement Summary</h3>
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">Settlement Summary</h3>
       </div>
       <div className="p-6">
         <div className="text-center mb-8">
@@ -70,47 +70,47 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
           >
             {icon}
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <p className="text-gray-500 mt-1">{subtitle}</p>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">{title}</h2>
+          <p className="text-[var(--text-secondary)] mt-1">{subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
               Seller Payout
             </h4>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-[var(--bg-subtle)] p-4 rounded-lg border border-[var(--border)]">
               <div className="flex justify-between items-end mb-2">
                 <AddressDisplay
                   address={deal.seller}
                   showCopy={false}
                   showExternalLink={false}
                 />
-                <span className="text-lg font-bold text-gray-900">
+                <span className="text-lg font-bold text-[var(--text-primary)]">
                   {formatAmount(sellerPayout, 6)} USDC
                 </span>
               </div>
-              <p className="text-xs text-gray-500">Total received by seller</p>
+              <p className="text-xs text-[var(--text-muted)]">Total received by seller</p>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
               Buyer Refund & Yield
             </h4>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-[var(--bg-subtle)] p-4 rounded-lg border border-[var(--border)]">
               <div className="flex justify-between items-end mb-2">
                 <AddressDisplay
                   address={deal.buyer}
                   showCopy={false}
                   showExternalLink={false}
                 />
-                <span className="text-lg font-bold text-green-600 flex items-center gap-1">
+                <span className="text-lg font-bold text-[var(--state-active)] flex items-center gap-1">
                   {formatAmount(buyerRefund, 6)} USDC
                 </span>
               </div>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                Refund + <TrendingUp size={12} className="text-purple-500" />{" "}
+              <p className="text-xs text-[var(--text-muted)] flex items-center gap-1">
+                Refund + <TrendingUp size={12} className="text-[var(--accent-purple)]" />{" "}
                 {yieldEarned} USDC yield
               </p>
             </div>

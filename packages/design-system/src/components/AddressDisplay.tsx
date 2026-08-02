@@ -5,8 +5,11 @@ interface AddressDisplayProps {
   address: string;
   length?: number;
   showCopy?: boolean;
+  copyable?: boolean;
   showLink?: boolean;
+  showExternalLink?: boolean;
   chainExplorerUrl?: string;
+  size?: string;
 }
 
 export function AddressDisplay({

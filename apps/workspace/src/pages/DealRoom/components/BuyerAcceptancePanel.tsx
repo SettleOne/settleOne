@@ -47,18 +47,18 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
   };
 
   return (
-    <div className="bg-white border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
-      <div className="px-4 py-3 border-b border-[var(--border)] bg-gray-50 flex items-center gap-2">
-        <CheckCircle size={16} className="text-gray-500" />
-        <h3 className="font-semibold text-sm">Review & Accept</h3>
+    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
+      <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
+        <CheckCircle size={16} className="text-[var(--text-muted)]" />
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">Review & Accept</h3>
       </div>
       <div className="p-4 space-y-6">
         {!isFullyFunded ? (
-          <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm">
-            <AlertTriangle size={20} className="shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-[var(--state-awaiting-funding)]/10 border border-[var(--state-awaiting-funding)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
+            <AlertTriangle size={20} className="shrink-0 mt-0.5 text-[var(--state-awaiting-funding)]" />
             <div>
               <p className="font-semibold mb-1">Funding Required</p>
-              <p className="text-amber-700">
+              <p className="text-[var(--text-secondary)]">
                 The deal is not yet fully funded. You must deposit the remaining{" "}
                 {formatAmount(
                   BigInt(deal.amount) - BigInt(deal.depositedFunds),
@@ -69,11 +69,11 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
             </div>
           </div>
         ) : (
-          <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-md text-green-800 text-sm">
-            <CheckCircle size={20} className="shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-[var(--state-active)]/10 border border-[var(--state-active)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
+            <CheckCircle size={20} className="shrink-0 mt-0.5 text-[var(--state-active)]" />
             <div>
               <p className="font-semibold mb-1">Escrow Vault Fully Funded</p>
-              <p className="text-green-700">
+              <p className="text-[var(--text-secondary)]">
                 Accepting the delivery will immediately release the funds to the
                 seller and return any accrued yield to you according to the
                 settlement rules.
@@ -83,7 +83,7 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
         )}
 
         {status === "success" ? (
-          <div className="bg-green-50 p-4 rounded-md border border-green-200 text-green-700 text-sm font-medium text-center">
+          <div className="bg-[var(--state-active)]/10 p-4 rounded-md border border-[var(--state-active)]/30 text-[var(--state-active)] text-sm font-medium text-center shadow-sm">
             Action submitted successfully! The deal state will update shortly.
           </div>
         ) : (
@@ -91,10 +91,10 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
             <button
               onClick={handleAccept}
               disabled={!isFullyFunded || status === "submitting"}
-              className={`border rounded-lg p-4 text-center transition-colors ${
+              className={`border rounded-lg p-4 text-center transition-colors bg-[var(--bg-card)] ${
                 !isFullyFunded
-                  ? "bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed"
-                  : "border-gray-200 hover:border-green-400 hover:bg-green-50"
+                  ? "border-[var(--border)] opacity-50 cursor-not-allowed"
+                  : "border-[var(--border)] hover:border-[var(--state-active)] hover:bg-[var(--state-active)]/10"
               }`}
             >
               {status === "submitting" ? (
@@ -102,11 +102,11 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
               ) : (
                 <CheckCircle
                   size={24}
-                  className="text-green-500 mx-auto mb-2"
+                  className={`${!isFullyFunded ? "text-[var(--text-muted)]" : "text-[var(--state-active)]"} mx-auto mb-2`}
                 />
               )}
-              <h4 className="font-semibold text-gray-900">Accept Delivery</h4>
-              <p className="text-xs text-gray-500 mt-1">
+              <h4 className="font-semibold text-[var(--text-primary)]">Accept Delivery</h4>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Release funds to seller and finalize the deal.
               </p>
             </button>
@@ -114,23 +114,23 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
             <button
               onClick={handleRevision}
               disabled={status === "submitting"}
-              className="border border-gray-200 rounded-lg p-4 text-center hover:border-amber-400 hover:bg-amber-50 transition-colors"
+              className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--state-awaiting-funding)] hover:bg-[var(--state-awaiting-funding)]/10 transition-colors"
             >
               {status === "submitting" ? (
                 <Spinner size="sm" className="mx-auto mb-2" />
               ) : (
-                <RefreshCw size={24} className="text-amber-500 mx-auto mb-2" />
+                <RefreshCw size={24} className="text-[var(--state-awaiting-funding)] mx-auto mb-2" />
               )}
-              <h4 className="font-semibold text-gray-900">Request Revision</h4>
-              <p className="text-xs text-gray-500 mt-1">
+              <h4 className="font-semibold text-[var(--text-primary)]">Request Revision</h4>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Send the delivery back to the seller for changes.
               </p>
             </button>
 
-            <div className="border border-gray-200 rounded-lg p-4 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer">
-              <AlertTriangle size={24} className="text-red-500 mx-auto mb-2" />
-              <h4 className="font-semibold text-gray-900">Open Dispute</h4>
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 transition-colors cursor-pointer">
+              <AlertTriangle size={24} className="text-[var(--accent-red)] mx-auto mb-2" />
+              <h4 className="font-semibold text-[var(--text-primary)]">Open Dispute</h4>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Escalate to the Dispute Resolver if terms were violated.
               </p>
             </div>
@@ -138,7 +138,7 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
         )}
 
         {status === "error" && (
-          <p className="text-xs text-red-600 font-medium text-center">
+          <p className="text-xs text-[var(--accent-red)] font-medium text-center">
             Transaction failed. Please check your wallet and try again.
           </p>
         )}
