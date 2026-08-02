@@ -1,21 +1,79 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  PlusSquare, Calendar, Clock, Zap, Eye, Filter, Plus,
-  TrendingUp, DollarSign, CheckCircle, Users, Copy
+  PlusSquare,
+  Calendar,
+  Clock,
+  Zap,
+  Eye,
+  Filter,
+  Plus,
+  TrendingUp,
+  DollarSign,
+  CheckCircle,
+  Users,
+  Copy,
 } from "lucide-react";
 
 function getDealStateStyle(state: string) {
-  const map: Record<string, { color: string; bg: string; border: string; dot: string }> = {
-    AwaitingFunding:         { color: "#fbbf24", bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.3)",  dot: "#f59e0b" },
-    PendingSellerAcceptance: { color: "#60a5fa", bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.3)",  dot: "#3b82f6" },
-    Active:                  { color: "#4ade80", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   dot: "#22c55e" },
-    DeliverySubmitted:       { color: "#a78bfa", bg: "rgba(139,92,246,0.12)",  border: "rgba(139,92,246,0.3)",  dot: "#8b5cf6" },
-    AwaitingAcceptance:      { color: "#22d3ee", bg: "rgba(6,182,212,0.12)",   border: "rgba(6,182,212,0.3)",   dot: "#06b6d4" },
-    Accepted:                { color: "#2dd4bf", bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.3)",  dot: "#14b8a6" },
-    Released:                { color: "#4ade80", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   dot: "#22c55e" },
-    Settled:                 { color: "#94a3b8", bg: "rgba(100,116,139,0.12)", border: "rgba(100,116,139,0.3)", dot: "#64748b" },
-    Cancelled:               { color: "#9ca3af", bg: "rgba(156,163,175,0.12)", border: "rgba(156,163,175,0.3)", dot: "#9ca3af" },
+  const map: Record<
+    string,
+    { color: string; bg: string; border: string; dot: string }
+  > = {
+    AwaitingFunding: {
+      color: "#fbbf24",
+      bg: "rgba(245,158,11,0.12)",
+      border: "rgba(245,158,11,0.3)",
+      dot: "#f59e0b",
+    },
+    PendingSellerAcceptance: {
+      color: "#60a5fa",
+      bg: "rgba(59,130,246,0.12)",
+      border: "rgba(59,130,246,0.3)",
+      dot: "#3b82f6",
+    },
+    Active: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    DeliverySubmitted: {
+      color: "#a78bfa",
+      bg: "rgba(139,92,246,0.12)",
+      border: "rgba(139,92,246,0.3)",
+      dot: "#8b5cf6",
+    },
+    AwaitingAcceptance: {
+      color: "#22d3ee",
+      bg: "rgba(6,182,212,0.12)",
+      border: "rgba(6,182,212,0.3)",
+      dot: "#06b6d4",
+    },
+    Accepted: {
+      color: "#2dd4bf",
+      bg: "rgba(20,184,166,0.12)",
+      border: "rgba(20,184,166,0.3)",
+      dot: "#14b8a6",
+    },
+    Released: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    Settled: {
+      color: "#94a3b8",
+      bg: "rgba(100,116,139,0.12)",
+      border: "rgba(100,116,139,0.3)",
+      dot: "#64748b",
+    },
+    Cancelled: {
+      color: "#9ca3af",
+      bg: "rgba(156,163,175,0.12)",
+      border: "rgba(156,163,175,0.3)",
+      dot: "#9ca3af",
+    },
   };
   return map[state] || map["Settled"]!;
 }
@@ -34,7 +92,7 @@ const MOCK_CREATED_DEALS = [
     chain: "Arbitrum",
     deliveryDeadline: new Date(Date.now() + 1800000 * 10),
     createdAt: new Date(Date.now() - 259200000),
-    yieldSoFar: 6.20,
+    yieldSoFar: 6.2,
   },
   {
     id: 129,
@@ -49,7 +107,7 @@ const MOCK_CREATED_DEALS = [
     chain: "Ethereum",
     deliveryDeadline: new Date(Date.now() + 604800000),
     createdAt: new Date(Date.now() - 86400000),
-    yieldSoFar: 1.50,
+    yieldSoFar: 1.5,
   },
   {
     id: 98,
@@ -64,7 +122,7 @@ const MOCK_CREATED_DEALS = [
     chain: "Arbitrum",
     deliveryDeadline: new Date(Date.now() + 172800000),
     createdAt: new Date(Date.now() - 86400000 * 5),
-    yieldSoFar: 3.80,
+    yieldSoFar: 3.8,
   },
   {
     id: 84,
@@ -79,7 +137,7 @@ const MOCK_CREATED_DEALS = [
     chain: "Ethereum",
     deliveryDeadline: new Date(Date.now() + 86400000 * 2),
     createdAt: new Date(Date.now() - 86400000 * 15),
-    yieldSoFar: 28.50,
+    yieldSoFar: 28.5,
   },
   {
     id: 71,
@@ -94,7 +152,7 @@ const MOCK_CREATED_DEALS = [
     chain: "Arbitrum",
     deliveryDeadline: new Date(Date.now() - 86400000 * 5),
     createdAt: new Date(Date.now() - 86400000 * 45),
-    yieldSoFar: 52.40,
+    yieldSoFar: 52.4,
   },
 ];
 
@@ -102,12 +160,16 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
   const [copied, setCopied] = useState(false);
   const style = getDealStateStyle(deal.stateName);
   const isSoftware = deal.dealType === 0;
-  const progress = deal.amount ? Math.min(100, (deal.depositedFunds / deal.amount) * 100) : 0;
+  const progress = deal.amount
+    ? Math.min(100, (deal.depositedFunds / deal.amount) * 100)
+    : 0;
   const hoursLeft = deal.deliveryDeadline
     ? (deal.deliveryDeadline.getTime() - Date.now()) / 3_600_000
     : null;
   const isExpiringSoon = hoursLeft !== null && hoursLeft < 72 && hoursLeft > 0;
-  const isCompleted = ["Released", "Settled", "Refunded"].includes(deal.stateName);
+  const isCompleted = ["Released", "Settled", "Refunded"].includes(
+    deal.stateName,
+  );
 
   const handleCopy = (e: React.MouseEvent, addr: string) => {
     e.stopPropagation();
@@ -149,9 +211,16 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
       <div className="mb-3">
         <span
           className="text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"
-          style={{ color: style.color, background: style.bg, border: `1px solid ${style.border}` }}
+          style={{
+            color: style.color,
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+          }}
         >
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: style.dot }} />
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
+            style={{ background: style.dot }}
+          />
           {deal.stateName.replace(/([A-Z])/g, " $1").trim()}
         </span>
       </div>
@@ -177,11 +246,17 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
               onClick={(e) => handleCopy(e, deal.seller)}
               className="p-0.5 text-[var(--text-muted)] hover:text-[var(--accent-blue)] transition-colors"
             >
-              {copied ? <span className="text-[var(--accent-green)]">✓</span> : <Copy size={10} />}
+              {copied ? (
+                <span className="text-[var(--accent-green)]">✓</span>
+              ) : (
+                <Copy size={10} />
+              )}
             </button>
           </>
         ) : (
-          <span className="text-[var(--accent-amber)] font-medium">Open — Any seller</span>
+          <span className="text-[var(--accent-amber)] font-medium">
+            Open — Any seller
+          </span>
         )}
       </div>
 
@@ -204,7 +279,12 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${progress}%`,
-            background: progress >= 100 ? "#22c55e" : progress > 0 ? "#f59e0b" : "#374151",
+            background:
+              progress >= 100
+                ? "#22c55e"
+                : progress > 0
+                  ? "#f59e0b"
+                  : "#374151",
           }}
         />
       </div>
@@ -214,19 +294,26 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         <div className="flex items-center gap-1.5">
           <Calendar size={11} className="text-[var(--text-muted)]" />
           <span>
-            Deadline: {deal.deliveryDeadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            Deadline:{" "}
+            {deal.deliveryDeadline.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <Clock size={11} className="text-[var(--text-muted)]" />
-          <span>Created {Math.round((Date.now() - deal.createdAt.getTime()) / 86400000)} days ago</span>
+          <span>
+            Created{" "}
+            {Math.round((Date.now() - deal.createdAt.getTime()) / 86400000)}{" "}
+            days ago
+          </span>
         </div>
         {isExpiringSoon && (
           <div className="flex items-center gap-1 text-[var(--accent-amber)]">
             <Zap size={11} />
-            <span className="font-semibold">
-              Expires soon
-            </span>
+            <span className="font-semibold">Expires soon</span>
           </div>
         )}
       </div>
@@ -242,7 +329,10 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           </span>
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
           className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-blue)] hover:text-[var(--accent-blue-bright)] transition-colors"
         >
           <Eye size={13} />
@@ -257,18 +347,34 @@ export function CreatedDealsPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
 
-  const stateFilters = ["All", "AwaitingFunding", "PendingSellerAcceptance", "Active", "Accepted", "Released", "Settled"];
+  const stateFilters = [
+    "All",
+    "AwaitingFunding",
+    "PendingSellerAcceptance",
+    "Active",
+    "Accepted",
+    "Released",
+    "Settled",
+  ];
 
   const filteredDeals = MOCK_CREATED_DEALS.filter((d) => {
     if (filter !== "All" && d.stateName !== filter) return false;
     return true;
   });
 
-  const activeDeals = MOCK_CREATED_DEALS.filter(d => ["Active", "AwaitingAcceptance", "DeliverySubmitted"].includes(d.stateName)).length;
-  const completedDeals = MOCK_CREATED_DEALS.filter(d => ["Released", "Settled"].includes(d.stateName)).length;
-  const totalCapital = MOCK_CREATED_DEALS.filter(d => !["Released", "Settled", "Cancelled"].includes(d.stateName))
-    .reduce((sum, d) => sum + d.depositedFunds, 0);
-  const totalYield = MOCK_CREATED_DEALS.reduce((sum, d) => sum + (d.yieldSoFar || 0), 0);
+  const activeDeals = MOCK_CREATED_DEALS.filter((d) =>
+    ["Active", "AwaitingAcceptance", "DeliverySubmitted"].includes(d.stateName),
+  ).length;
+  const completedDeals = MOCK_CREATED_DEALS.filter((d) =>
+    ["Released", "Settled"].includes(d.stateName),
+  ).length;
+  const totalCapital = MOCK_CREATED_DEALS.filter(
+    (d) => !["Released", "Settled", "Cancelled"].includes(d.stateName),
+  ).reduce((sum, d) => sum + d.depositedFunds, 0);
+  const totalYield = MOCK_CREATED_DEALS.reduce(
+    (sum, d) => sum + (d.yieldSoFar || 0),
+    0,
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-[var(--text-primary)]">
@@ -301,7 +407,11 @@ export function CreatedDealsPage() {
           <button
             onClick={() => navigate("/marketplace")}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white rounded-[var(--radius-input)] transition-all"
-            style={{ background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)", boxShadow: "0 0 16px rgba(59,130,246,0.3)" }}
+            style={{
+              background:
+                "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
+              boxShadow: "0 0 16px rgba(59,130,246,0.3)",
+            }}
           >
             <Plus size={16} />
             Create New Deal
@@ -315,24 +425,36 @@ export function CreatedDealsPage() {
               <PlusSquare size={14} />
               Total Created
             </div>
-            <div className="text-2xl font-bold">{MOCK_CREATED_DEALS.length}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">lifetime deals</p>
+            <div className="text-2xl font-bold">
+              {MOCK_CREATED_DEALS.length}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              lifetime deals
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--accent-blue)]/30 rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <DollarSign size={14} />
               Capital Locked
             </div>
-            <div className="text-2xl font-bold">${totalCapital.toLocaleString()}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">in active deals</p>
+            <div className="text-2xl font-bold">
+              ${totalCapital.toLocaleString()}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              in active deals
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--accent-green)]/30 rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <TrendingUp size={14} />
               Total Yield
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-green)]">+${totalYield.toFixed(2)}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">earned all-time</p>
+            <div className="text-2xl font-bold text-[var(--accent-green)]">
+              +${totalYield.toFixed(2)}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              earned all-time
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
@@ -340,7 +462,9 @@ export function CreatedDealsPage() {
               Completed
             </div>
             <div className="text-2xl font-bold">{completedDeals}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">{activeDeals} still active</p>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              {activeDeals} still active
+            </p>
           </div>
         </div>
 
@@ -380,15 +504,24 @@ export function CreatedDealsPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)]">
-            <PlusSquare size={48} className="mx-auto text-[var(--text-muted)] mb-4 opacity-40" />
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No deals found</h3>
+            <PlusSquare
+              size={48}
+              className="mx-auto text-[var(--text-muted)] mb-4 opacity-40"
+            />
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+              No deals found
+            </h3>
             <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto mb-6">
-              No deals match the selected filter. Create your first deal to get started.
+              No deals match the selected filter. Create your first deal to get
+              started.
             </p>
             <button
               onClick={() => navigate("/marketplace")}
               className="px-4 py-2 text-sm font-semibold text-white rounded-[var(--radius-input)]"
-              style={{ background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)" }}
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
+              }}
             >
               Browse Marketplace
             </button>

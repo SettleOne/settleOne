@@ -45,7 +45,9 @@ export function DealRoomPage() {
       label: "Details",
       content: (
         <div className="p-6 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm">
-          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Deal Details</h3>
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">
+            Deal Details
+          </h3>
           <p className="text-[var(--text-secondary)] mb-4">
             {deal?.metadataHash || "No description provided."}
           </p>
@@ -55,12 +57,18 @@ export function DealRoomPage() {
               {deal?.dealType === 0 ? "Soft Delivery" : "Hard Delivery"}
             </p>
             <p>
-              <strong className="text-[var(--text-primary)]">Partial Settlement:</strong>{" "}
+              <strong className="text-[var(--text-primary)]">
+                Partial Settlement:
+              </strong>{" "}
               {deal?.partialSettlementAllowed ? "Allowed" : "Not Allowed"}
             </p>
             <p>
-              <strong className="text-[var(--text-primary)]">Created At:</strong>{" "}
-              {deal?.createdAt ? new Date(Number(deal.createdAt) * 1000).toLocaleString() : "-"}
+              <strong className="text-[var(--text-primary)]">
+                Created At:
+              </strong>{" "}
+              {deal?.createdAt
+                ? new Date(Number(deal.createdAt) * 1000).toLocaleString()
+                : "-"}
             </p>
           </div>
         </div>
@@ -71,10 +79,18 @@ export function DealRoomPage() {
       label: "Requirements",
       content: (
         <div className="p-6 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm">
-          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Evidence Requirements</h3>
-          <p className="text-[var(--text-secondary)]">Hash: {deal?.evidenceRequirementsHash || "None"}</p>
-          <h3 className="text-lg font-bold text-[var(--text-primary)] mt-6 mb-4">Settlement Rules</h3>
-          <p className="text-[var(--text-secondary)]">Hash: {deal?.settlementRulesHash || "None"}</p>
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">
+            Evidence Requirements
+          </h3>
+          <p className="text-[var(--text-secondary)]">
+            Hash: {deal?.evidenceRequirementsHash || "None"}
+          </p>
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mt-6 mb-4">
+            Settlement Rules
+          </h3>
+          <p className="text-[var(--text-secondary)]">
+            Hash: {deal?.settlementRulesHash || "None"}
+          </p>
         </div>
       ),
     },
@@ -85,25 +101,33 @@ export function DealRoomPage() {
         <div className="p-6 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm">
           {deal?.termsHash ? (
             <>
-              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">Terms document committed on-chain</h3>
-              <p className="font-mono text-sm text-[var(--text-muted)] mb-4">{deal.termsHash}</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">
+                Terms document committed on-chain
+              </h3>
+              <p className="font-mono text-sm text-[var(--text-muted)] mb-4">
+                {deal.termsHash}
+              </p>
               <button className="px-4 py-2 bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded hover:bg-[var(--bg-hover)] transition-colors">
                 Download Terms
               </button>
             </>
           ) : (
-            <p className="text-[var(--text-secondary)]">No terms document attached.</p>
+            <p className="text-[var(--text-secondary)]">
+              No terms document attached.
+            </p>
           )}
         </div>
       ),
-    }
+    },
   ];
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <Spinner size="lg" />
-        <p className="mt-4 text-[var(--text-muted)] font-medium">Loading Deal Room...</p>
+        <p className="mt-4 text-[var(--text-muted)] font-medium">
+          Loading Deal Room...
+        </p>
       </div>
     );
   }
@@ -114,7 +138,9 @@ export function DealRoomPage() {
         <div className="w-16 h-16 bg-red-900/20 text-[var(--accent-red)] rounded-full flex items-center justify-center mb-4">
           <AlertCircle size={32} />
         </div>
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Deal Not Found</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          Deal Not Found
+        </h2>
         <p className="text-[var(--text-secondary)] max-w-md mx-auto mb-6">
           We couldn't find the deal you're looking for. It might not exist or
           there was an error fetching it from the blockchain.
@@ -132,7 +158,7 @@ export function DealRoomPage() {
   return (
     <div className="flex flex-col -mx-4 md:-mx-6 -mt-4 md:-mt-6">
       <DealRoomHeader deal={deal} />
-      
+
       <div className="overflow-x-auto w-full border-b border-[var(--border)] bg-[var(--bg-card)] pb-4">
         <DealLifecycleTimeline currentState={currentState} />
       </div>
@@ -157,21 +183,34 @@ export function DealRoomPage() {
             </div>
 
             {/* Conditional Panels based on state */}
-            {currentState === DealState.DeliverySubmitted && userRole === "buyer" && (
-              <>
-                <DeliveryVerificationPanel deal={deal} />
-                <BuyerAcceptancePanel deal={deal} />
-              </>
-            )}
+            {currentState === DealState.DeliverySubmitted &&
+              userRole === "buyer" && (
+                <>
+                  <DeliveryVerificationPanel deal={deal} />
+                  <BuyerAcceptancePanel deal={deal} />
+                </>
+              )}
 
-            {[DealState.Active, DealState.DeliverySubmitted, DealState.AwaitingAcceptance, DealState.Accepted, DealState.Disputed, DealState.Released, DealState.Settled].includes(currentState) && (
+            {[
+              DealState.Active,
+              DealState.DeliverySubmitted,
+              DealState.AwaitingAcceptance,
+              DealState.Accepted,
+              DealState.Disputed,
+              DealState.Released,
+              DealState.Settled,
+            ].includes(currentState) && (
               <SubmittedDeliveriesLog dealId={dealId} />
             )}
 
             {[DealState.Disputed, DealState.Settled].includes(currentState) && (
               <div className="p-6 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Dispute Evidence Log</h3>
-                <p className="text-[var(--text-muted)]">No dispute evidence submitted yet.</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">
+                  Dispute Evidence Log
+                </h3>
+                <p className="text-[var(--text-muted)]">
+                  No dispute evidence submitted yet.
+                </p>
               </div>
             )}
 
@@ -184,8 +223,12 @@ export function DealRoomPage() {
                 <SettlementSummaryCard deal={deal} />
                 {currentState === DealState.Settled && (
                   <div className="p-6 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm mt-6">
-                    <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Verdict Record</h3>
-                    <p className="text-[var(--text-muted)]">Verdict details will appear here.</p>
+                    <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">
+                      Verdict Record
+                    </h3>
+                    <p className="text-[var(--text-muted)]">
+                      Verdict details will appear here.
+                    </p>
                   </div>
                 )}
               </>

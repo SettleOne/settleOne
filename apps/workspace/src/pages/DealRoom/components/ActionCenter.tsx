@@ -131,7 +131,9 @@ export function ActionCenter({
           <div className="w-12 h-12 bg-[var(--state-active)]/20 text-[var(--state-active)] rounded-full flex items-center justify-center mx-auto mb-4 shadow-glow">
             <PlayCircle size={24} />
           </div>
-          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">Deal Active</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">
+            Deal Active
+          </h2>
           <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto mb-6">
             Proceed with the work and submit your delivery proof before the
             deadline.
@@ -194,10 +196,19 @@ export function ActionCenter({
             dispute if there are issues.
           </p>
           <div className="flex justify-center gap-3">
-            <Button variant="danger" onClick={() => setDisputeModalOpen(true)} className="border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 bg-transparent">
+            <Button
+              variant="danger"
+              onClick={() => setDisputeModalOpen(true)}
+              className="border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 bg-transparent"
+            >
               Raise Dispute
             </Button>
-            <Button variant="secondary" className="border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] bg-transparent">Request Revision</Button>
+            <Button
+              variant="secondary"
+              className="border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] bg-transparent"
+            >
+              Request Revision
+            </Button>
             <Button
               variant="primary"
               className="bg-[var(--accent-green)] hover:brightness-110 border-none text-[var(--bg-base)] font-bold shadow-[var(--shadow-glow)]"
@@ -243,28 +254,35 @@ export function ActionCenter({
   const renderTerminal = (state: DealState) => {
     let title = "Deal Closed";
     let icon = <CheckCircle size={24} />;
-    let colorClass = "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)]";
+    let colorClass =
+      "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)]";
     let textColor = "text-[var(--text-primary)]";
 
     if (state === DealState.Released) {
       title = "Funds Released";
-      colorClass = "bg-[var(--state-released)]/10 border-[var(--state-released)]/30 text-[var(--state-released)]";
+      colorClass =
+        "bg-[var(--state-released)]/10 border-[var(--state-released)]/30 text-[var(--state-released)]";
     } else if (state === DealState.Refunded) {
       title = "Deal Refunded";
-      colorClass = "bg-[var(--state-refunded)]/10 border-[var(--state-refunded)]/30 text-[var(--state-refunded)]";
+      colorClass =
+        "bg-[var(--state-refunded)]/10 border-[var(--state-refunded)]/30 text-[var(--state-refunded)]";
     } else if (state === DealState.Settled) {
       title = "Deal Settled";
-      colorClass = "bg-[var(--state-settled)]/10 border-[var(--state-settled)]/30 text-[var(--state-settled)]";
+      colorClass =
+        "bg-[var(--state-settled)]/10 border-[var(--state-settled)]/30 text-[var(--state-settled)]";
     } else if (state === DealState.Cancelled) {
       title = "Deal Cancelled";
       icon = <Ban size={24} />;
-      colorClass = "bg-[var(--state-cancelled)]/10 border-[var(--border-light)] text-[var(--state-cancelled)]";
+      colorClass =
+        "bg-[var(--state-cancelled)]/10 border-[var(--border-light)] text-[var(--state-cancelled)]";
     }
 
     const dotColor = colorClass.split(" ")[2] || "text-[var(--text-muted)]";
 
     return (
-      <div className={`${colorClass.split(" ")[0]} ${colorClass.split(" ")[1]} border rounded-lg p-6 text-center shadow-sm`}>
+      <div
+        className={`${colorClass.split(" ")[0]} ${colorClass.split(" ")[1]} border rounded-lg p-6 text-center shadow-sm`}
+      >
         <div
           className={`w-12 h-12 bg-[var(--bg-card)] ${dotColor} rounded-full flex items-center justify-center mx-auto mb-4 shadow-glow`}
         >
@@ -297,8 +315,13 @@ export function ActionCenter({
       ].includes(currentState) && renderTerminal(currentState)}
       {currentState === DealState.None && (
         <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg p-6 text-center shadow-sm">
-          <AlertCircle size={24} className="text-[var(--text-muted)] mx-auto mb-4" />
-          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">Draft State</h2>
+          <AlertCircle
+            size={24}
+            className="text-[var(--text-muted)] mx-auto mb-4"
+          />
+          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">
+            Draft State
+          </h2>
           <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto">
             This deal is currently in draft mode.
           </p>

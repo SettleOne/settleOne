@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, Shield, Chrome, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  Shield,
+  Chrome,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 
 type Tab = "user" | "staff";
 
@@ -76,12 +85,12 @@ export function LoginPage() {
         </div>
 
         {/* Card */}
-        <div
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-modal)] shadow-[var(--shadow-modal)] overflow-hidden animate-fade-in"
-        >
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-modal)] shadow-[var(--shadow-modal)] overflow-hidden animate-fade-in">
           {/* Header */}
           <div className="p-8 pb-0">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Welcome back</h1>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              Welcome back
+            </h1>
             <p className="text-[var(--text-secondary)] text-sm mt-1">
               Sign in to your SettleOne account
             </p>
@@ -204,8 +213,12 @@ export function LoginPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-2 p-3 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-secondary)]">
-                  <Shield size={14} className="mt-0.5 text-[var(--accent-blue)] shrink-0" />
-                  Staff accounts require 2FA. Contact your administrator if you've lost access.
+                  <Shield
+                    size={14}
+                    className="mt-0.5 text-[var(--accent-blue)] shrink-0"
+                  />
+                  Staff accounts require 2FA. Contact your administrator if
+                  you've lost access.
                 </div>
               </>
             )}
@@ -218,14 +231,31 @@ export function LoginPage() {
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
                   </svg>
                   Signing in…
                 </>
+              ) : tab === "staff" ? (
+                "Staff Sign In"
               ) : (
-                tab === "staff" ? "Staff Sign In" : "Sign In"
+                "Sign In"
               )}
             </button>
 
@@ -237,7 +267,9 @@ export function LoginPage() {
                     <div className="w-full border-t border-[var(--border)]" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-3 bg-[var(--bg-card)] text-[var(--text-muted)]">or</span>
+                    <span className="px-3 bg-[var(--bg-card)] text-[var(--text-muted)]">
+                      or
+                    </span>
                   </div>
                 </div>
 

@@ -113,7 +113,9 @@ export function DeliveryVerificationPanel({
               <Key size={20} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--text-primary)]">Sign Delivery Approval</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
+                Sign Delivery Approval
+              </p>
               <p className="text-xs text-[var(--text-muted)]">
                 Your EIP-712 signature will be recorded on-chain as proof of
                 verification.

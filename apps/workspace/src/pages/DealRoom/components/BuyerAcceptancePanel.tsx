@@ -50,12 +50,17 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
     <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
       <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
         <CheckCircle size={16} className="text-[var(--text-muted)]" />
-        <h3 className="font-semibold text-sm text-[var(--text-primary)]">Review & Accept</h3>
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+          Review & Accept
+        </h3>
       </div>
       <div className="p-4 space-y-6">
         {!isFullyFunded ? (
           <div className="flex items-start gap-3 p-4 bg-[var(--state-awaiting-funding)]/10 border border-[var(--state-awaiting-funding)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
-            <AlertTriangle size={20} className="shrink-0 mt-0.5 text-[var(--state-awaiting-funding)]" />
+            <AlertTriangle
+              size={20}
+              className="shrink-0 mt-0.5 text-[var(--state-awaiting-funding)]"
+            />
             <div>
               <p className="font-semibold mb-1">Funding Required</p>
               <p className="text-[var(--text-secondary)]">
@@ -70,7 +75,10 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
           </div>
         ) : (
           <div className="flex items-start gap-3 p-4 bg-[var(--state-active)]/10 border border-[var(--state-active)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
-            <CheckCircle size={20} className="shrink-0 mt-0.5 text-[var(--state-active)]" />
+            <CheckCircle
+              size={20}
+              className="shrink-0 mt-0.5 text-[var(--state-active)]"
+            />
             <div>
               <p className="font-semibold mb-1">Escrow Vault Fully Funded</p>
               <p className="text-[var(--text-secondary)]">
@@ -105,7 +113,9 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
                   className={`${!isFullyFunded ? "text-[var(--text-muted)]" : "text-[var(--state-active)]"} mx-auto mb-2`}
                 />
               )}
-              <h4 className="font-semibold text-[var(--text-primary)]">Accept Delivery</h4>
+              <h4 className="font-semibold text-[var(--text-primary)]">
+                Accept Delivery
+              </h4>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Release funds to seller and finalize the deal.
               </p>
@@ -119,17 +129,27 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
               {status === "submitting" ? (
                 <Spinner size="sm" className="mx-auto mb-2" />
               ) : (
-                <RefreshCw size={24} className="text-[var(--state-awaiting-funding)] mx-auto mb-2" />
+                <RefreshCw
+                  size={24}
+                  className="text-[var(--state-awaiting-funding)] mx-auto mb-2"
+                />
               )}
-              <h4 className="font-semibold text-[var(--text-primary)]">Request Revision</h4>
+              <h4 className="font-semibold text-[var(--text-primary)]">
+                Request Revision
+              </h4>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Send the delivery back to the seller for changes.
               </p>
             </button>
 
             <div className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 transition-colors cursor-pointer">
-              <AlertTriangle size={24} className="text-[var(--accent-red)] mx-auto mb-2" />
-              <h4 className="font-semibold text-[var(--text-primary)]">Open Dispute</h4>
+              <AlertTriangle
+                size={24}
+                className="text-[var(--accent-red)] mx-auto mb-2"
+              />
+              <h4 className="font-semibold text-[var(--text-primary)]">
+                Open Dispute
+              </h4>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
                 Escalate to the Dispute Resolver if terms were violated.
               </p>

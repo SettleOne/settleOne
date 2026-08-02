@@ -14,7 +14,7 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   // Bypassed for development so you can access the Workspace directly!
   return <>{children}</>;
-  
+
   const location = useLocation();
   const { data: user, isLoading, isError } = useUser();
 

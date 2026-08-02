@@ -1,19 +1,65 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  CheckSquare, Calendar, Clock, Eye, Filter,
-  TrendingUp, DollarSign, CheckCircle, Package, Copy
+  CheckSquare,
+  Calendar,
+  Clock,
+  Eye,
+  Filter,
+  TrendingUp,
+  DollarSign,
+  CheckCircle,
+  Package,
+  Copy,
 } from "lucide-react";
 
 function getDealStateStyle(state: string) {
-  const map: Record<string, { color: string; bg: string; border: string; dot: string }> = {
-    Active:            { color: "#4ade80", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   dot: "#22c55e" },
-    DeliverySubmitted: { color: "#a78bfa", bg: "rgba(139,92,246,0.12)",  border: "rgba(139,92,246,0.3)",  dot: "#8b5cf6" },
-    AwaitingAcceptance:{ color: "#22d3ee", bg: "rgba(6,182,212,0.12)",   border: "rgba(6,182,212,0.3)",   dot: "#06b6d4" },
-    Accepted:          { color: "#2dd4bf", bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.3)",  dot: "#14b8a6" },
-    Released:          { color: "#4ade80", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   dot: "#22c55e" },
-    Settled:           { color: "#94a3b8", bg: "rgba(100,116,139,0.12)", border: "rgba(100,116,139,0.3)", dot: "#64748b" },
-    Disputed:          { color: "#f87171", bg: "rgba(239,68,68,0.12)",   border: "rgba(239,68,68,0.3)",   dot: "#ef4444" },
+  const map: Record<
+    string,
+    { color: string; bg: string; border: string; dot: string }
+  > = {
+    Active: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    DeliverySubmitted: {
+      color: "#a78bfa",
+      bg: "rgba(139,92,246,0.12)",
+      border: "rgba(139,92,246,0.3)",
+      dot: "#8b5cf6",
+    },
+    AwaitingAcceptance: {
+      color: "#22d3ee",
+      bg: "rgba(6,182,212,0.12)",
+      border: "rgba(6,182,212,0.3)",
+      dot: "#06b6d4",
+    },
+    Accepted: {
+      color: "#2dd4bf",
+      bg: "rgba(20,184,166,0.12)",
+      border: "rgba(20,184,166,0.3)",
+      dot: "#14b8a6",
+    },
+    Released: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    Settled: {
+      color: "#94a3b8",
+      bg: "rgba(100,116,139,0.12)",
+      border: "rgba(100,116,139,0.3)",
+      dot: "#64748b",
+    },
+    Disputed: {
+      color: "#f87171",
+      bg: "rgba(239,68,68,0.12)",
+      border: "rgba(239,68,68,0.3)",
+      dot: "#ef4444",
+    },
   };
   return map[state] || map["Settled"]!;
 }
@@ -127,9 +173,16 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         </span>
         <span
           className="text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5"
-          style={{ color: style.color, background: style.bg, border: `1px solid ${style.border}` }}
+          style={{
+            color: style.color,
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+          }}
         >
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: style.dot }} />
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
+            style={{ background: style.dot }}
+          />
           {deal.stateName.replace(/([A-Z])/g, " $1").trim()}
         </span>
       </div>
@@ -153,7 +206,11 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           onClick={(e) => handleCopy(e, deal.buyer)}
           className="p-0.5 text-[var(--text-muted)] hover:text-[var(--accent-blue)] transition-colors"
         >
-          {copied ? <span className="text-[var(--accent-green)]">✓</span> : <Copy size={10} />}
+          {copied ? (
+            <span className="text-[var(--accent-green)]">✓</span>
+          ) : (
+            <Copy size={10} />
+          )}
         </button>
       </div>
 
@@ -171,20 +228,33 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         <div className="flex items-center gap-1.5">
           <Calendar size={11} className="text-[var(--text-muted)]" />
           <span>
-            Deadline: {deal.deliveryDeadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            Deadline:{" "}
+            {deal.deliveryDeadline.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </span>
           {!isCompleted && daysLeft !== null && daysLeft > 0 && (
-            <span className={`font-semibold ${daysLeft < 3 ? "text-[var(--accent-amber)]" : "text-[var(--text-muted)]"}`}>
+            <span
+              className={`font-semibold ${daysLeft < 3 ? "text-[var(--accent-amber)]" : "text-[var(--text-muted)]"}`}
+            >
               · {daysLeft}d left
             </span>
           )}
           {isOverdue && (
-            <span className="font-semibold text-[var(--accent-red)]">· Overdue</span>
+            <span className="font-semibold text-[var(--accent-red)]">
+              · Overdue
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1.5">
           <Clock size={11} className="text-[var(--text-muted)]" />
-          <span>Accepted {Math.round((Date.now() - deal.acceptedAt.getTime()) / 86400000)} days ago</span>
+          <span>
+            Accepted{" "}
+            {Math.round((Date.now() - deal.acceptedAt.getTime()) / 86400000)}{" "}
+            days ago
+          </span>
         </div>
       </div>
 
@@ -199,7 +269,10 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           </span>
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
           className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-blue)] hover:text-[var(--accent-blue-bright)] transition-colors"
         >
           <Eye size={13} />
@@ -214,19 +287,32 @@ export function AcceptedDealsPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
 
-  const stateFilters = ["All", "Active", "DeliverySubmitted", "AwaitingAcceptance", "Released", "Settled"];
+  const stateFilters = [
+    "All",
+    "Active",
+    "DeliverySubmitted",
+    "AwaitingAcceptance",
+    "Released",
+    "Settled",
+  ];
 
   const filteredDeals = MOCK_ACCEPTED_DEALS.filter((d) => {
     if (filter !== "All" && d.stateName !== filter) return false;
     return true;
   });
 
-  const activeDeals = MOCK_ACCEPTED_DEALS.filter(d => !["Released", "Settled"].includes(d.stateName)).length;
-  const completedDeals = MOCK_ACCEPTED_DEALS.filter(d => ["Released", "Settled"].includes(d.stateName)).length;
-  const totalEarnings = MOCK_ACCEPTED_DEALS.filter(d => ["Released", "Settled"].includes(d.stateName))
-    .reduce((sum, d) => sum + d.myEarnings, 0);
-  const pendingEarnings = MOCK_ACCEPTED_DEALS.filter(d => !["Released", "Settled"].includes(d.stateName))
-    .reduce((sum, d) => sum + d.myEarnings, 0);
+  const activeDeals = MOCK_ACCEPTED_DEALS.filter(
+    (d) => !["Released", "Settled"].includes(d.stateName),
+  ).length;
+  const completedDeals = MOCK_ACCEPTED_DEALS.filter((d) =>
+    ["Released", "Settled"].includes(d.stateName),
+  ).length;
+  const totalEarnings = MOCK_ACCEPTED_DEALS.filter((d) =>
+    ["Released", "Settled"].includes(d.stateName),
+  ).reduce((sum, d) => sum + d.myEarnings, 0);
+  const pendingEarnings = MOCK_ACCEPTED_DEALS.filter(
+    (d) => !["Released", "Settled"].includes(d.stateName),
+  ).reduce((sum, d) => sum + d.myEarnings, 0);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-[var(--text-primary)]">
@@ -247,7 +333,10 @@ export function AcceptedDealsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="p-2 bg-[var(--accent-teal)]/15 rounded-lg" style={{ color: "var(--accent-teal)" }}>
+              <div
+                className="p-2 bg-[var(--accent-teal)]/15 rounded-lg"
+                style={{ color: "var(--accent-teal)" }}
+              >
                 <CheckSquare size={22} />
               </div>
               <h1 className="text-2xl font-bold">Accepted Deals</h1>
@@ -265,15 +354,21 @@ export function AcceptedDealsPage() {
               <CheckSquare size={14} />
               Total Accepted
             </div>
-            <div className="text-2xl font-bold">{MOCK_ACCEPTED_DEALS.length}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">lifetime deals</p>
+            <div className="text-2xl font-bold">
+              {MOCK_ACCEPTED_DEALS.length}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              lifetime deals
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <Package size={14} />
               In Progress
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-blue)]">{activeDeals}</div>
+            <div className="text-2xl font-bold text-[var(--accent-blue)]">
+              {activeDeals}
+            </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">active now</p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--accent-green)]/30 rounded-[var(--radius-card)] p-4">
@@ -281,16 +376,24 @@ export function AcceptedDealsPage() {
               <DollarSign size={14} />
               Earned
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-green)]">${totalEarnings.toLocaleString()}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">settled USDC</p>
+            <div className="text-2xl font-bold text-[var(--accent-green)]">
+              ${totalEarnings.toLocaleString()}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              settled USDC
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--accent-amber)]/30 rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <TrendingUp size={14} />
               Pending
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-amber)]">${pendingEarnings.toLocaleString()}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">awaiting release</p>
+            <div className="text-2xl font-bold text-[var(--accent-amber)]">
+              ${pendingEarnings.toLocaleString()}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              awaiting release
+            </p>
           </div>
         </div>
 
@@ -330,15 +433,23 @@ export function AcceptedDealsPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)]">
-            <CheckSquare size={48} className="mx-auto text-[var(--text-muted)] mb-4 opacity-40" />
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No accepted deals</h3>
+            <CheckSquare
+              size={48}
+              className="mx-auto text-[var(--text-muted)] mb-4 opacity-40"
+            />
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+              No accepted deals
+            </h3>
             <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto mb-6">
               Browse the marketplace and find deals you can accept as a seller.
             </p>
             <button
               onClick={() => navigate("/marketplace")}
               className="px-4 py-2 text-sm font-semibold text-white rounded-[var(--radius-input)]"
-              style={{ background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)" }}
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
+              }}
             >
               Browse Marketplace
             </button>

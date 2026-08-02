@@ -125,7 +125,10 @@ export function SubmitDeliveryModal({
                   {files[0]?.name}
                 </span>
                 <span className="text-xs text-gray-400">
-                  {files[0]?.size ? (files[0].size / 1024 / 1024).toFixed(2) : "0"} MB
+                  {files[0]?.size
+                    ? (files[0].size / 1024 / 1024).toFixed(2)
+                    : "0"}{" "}
+                  MB
                 </span>
               </div>
             )}

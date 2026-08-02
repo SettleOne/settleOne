@@ -47,7 +47,9 @@ export function ActivityFeed({ dealId }: ActivityFeedProps) {
       <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Activity size={16} className="text-[var(--text-muted)]" />
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">Activity Feed</h3>
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+            Activity Feed
+          </h3>
         </div>
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
@@ -74,9 +76,13 @@ export function ActivityFeed({ dealId }: ActivityFeedProps) {
                   <span className="text-sm font-semibold text-[var(--text-primary)]">
                     {event.title}
                   </span>
-                  <span className="text-xs text-[var(--text-muted)]">{event.time}</span>
+                  <span className="text-xs text-[var(--text-muted)]">
+                    {event.time}
+                  </span>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] mb-1.5">{event.desc}</p>
+                <p className="text-xs text-[var(--text-secondary)] mb-1.5">
+                  {event.desc}
+                </p>
 
                 {event.txHash && (
                   <div className="flex items-center gap-2 text-[10px] font-mono text-[var(--text-muted)]">

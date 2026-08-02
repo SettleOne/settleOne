@@ -7,6 +7,7 @@ import { LayoutGrid, PieChart, Inbox, Activity, User } from "lucide-react";
 export function AppShell() {
   const [isCommandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,15 +20,23 @@ export function AppShell() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col" style={{ fontFamily: "var(--font-sans)" }}>
+    <div
+      className="min-h-screen bg-[var(--bg-base)] flex flex-col"
+      style={{ fontFamily: "var(--font-sans)" }}
+    >
       <TopNavigationBar
-        onSearchClick={() => setCommandPaletteOpen(true)}
-        onMenuClick={() => setMobileSidebarOpen(true)}
+        onMenuClick={() => {
+          if (window.innerWidth < 640) {
+            setMobileSidebarOpen(true);
+          } else {
+            setSidebarOpen(!isSidebarOpen);
+          }
+        }}
       />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
-        <SidebarNavigation />
+        {isSidebarOpen && <SidebarNavigation />}
 
         {/* Mobile sidebar overlay */}
         {isMobileSidebarOpen && (
@@ -40,7 +49,10 @@ export function AppShell() {
               className="absolute left-0 top-0 bottom-0 w-[280px] bg-[var(--bg-card)] border-r border-[var(--border)] shadow-[var(--shadow-modal)] animate-slide-in"
               onClick={(e) => e.stopPropagation()}
             >
-              <SidebarNavigation mobile onClose={() => setMobileSidebarOpen(false)} />
+              <SidebarNavigation
+                mobile
+                onClose={() => setMobileSidebarOpen(false)}
+              />
             </div>
           </div>
         )}
@@ -51,7 +63,8 @@ export function AppShell() {
           style={{ paddingBottom: "60px" }} // space for mobile bottom tab bar
         >
           {/* Deal room uses full width, others get padding */}
-          {location.pathname.startsWith("/marketplace/") && location.pathname !== "/marketplace" ? (
+          {location.pathname.startsWith("/marketplace/") &&
+          location.pathname !== "/marketplace" ? (
             <Outlet />
           ) : (
             <div className="p-4 md:p-6 max-w-[1280px] mx-auto w-full flex-1">
@@ -73,7 +86,9 @@ export function AppShell() {
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={`flex-1 flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors relative ${
-                isActive ? "text-[var(--accent-blue)]" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                isActive
+                  ? "text-[var(--accent-blue)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               }`}
             >
               {isActive && (
@@ -105,8 +120,16 @@ export function AppShell() {
           >
             <div className="p-4 border-b border-[var(--border)] flex items-center gap-3">
               <span className="text-[var(--text-secondary)]">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
                 </svg>
               </span>
               <input
@@ -119,7 +142,9 @@ export function AppShell() {
                 onClick={() => setCommandPaletteOpen(false)}
                 className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-[var(--bg-subtle)] border border-[var(--border)] rounded">ESC</kbd>
+                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-[var(--bg-subtle)] border border-[var(--border)] rounded">
+                  ESC
+                </kbd>
               </button>
             </div>
             <div className="p-2">
@@ -137,15 +162,23 @@ export function AppShell() {
                   className="w-full text-left px-3 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors flex items-center gap-3"
                   onClick={() => setCommandPaletteOpen(false)}
                 >
-                  <span className="w-6 h-6 flex items-center justify-center bg-[var(--bg-subtle)] rounded text-xs">{item.icon}</span>
+                  <span className="w-6 h-6 flex items-center justify-center bg-[var(--bg-subtle)] rounded text-xs">
+                    {item.icon}
+                  </span>
                   {item.label}
                 </button>
               ))}
             </div>
             <div className="px-4 py-3 border-t border-[var(--border)] flex items-center gap-4 text-xs text-[var(--text-muted)]">
-              <span><kbd className="font-mono">↑↓</kbd> navigate</span>
-              <span><kbd className="font-mono">↵</kbd> select</span>
-              <span><kbd className="font-mono">ESC</kbd> close</span>
+              <span>
+                <kbd className="font-mono">↑↓</kbd> navigate
+              </span>
+              <span>
+                <kbd className="font-mono">↵</kbd> select
+              </span>
+              <span>
+                <kbd className="font-mono">ESC</kbd> close
+              </span>
             </div>
           </div>
         </div>

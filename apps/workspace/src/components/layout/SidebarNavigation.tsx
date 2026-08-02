@@ -1,10 +1,20 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutGrid, PieChart, Inbox, Activity, PlusSquare, CheckSquare,
-  Paperclip, UploadCloud, Settings, HelpCircle, Plus, X, TrendingUp
+  LayoutGrid,
+  PieChart,
+  Inbox,
+  Activity,
+  PlusSquare,
+  CheckSquare,
+  Paperclip,
+  UploadCloud,
+  Settings,
+  HelpCircle,
+  AlertCircle,
+  ShieldAlert,
+  X,
 } from "lucide-react";
-import { Avatar } from "@settleone/design-system";
 
 interface NavItemProps {
   to: string;
@@ -20,20 +30,22 @@ function NavItem({ to, icon, label, badge, isActive, onClick }: NavItemProps) {
     <Link
       to={to}
       onClick={onClick}
-      className={`group flex items-center justify-between px-3 py-2.5 rounded-[var(--radius-input)] transition-all duration-200 ${
+      className={`group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
         isActive
-          ? "bg-[var(--accent-blue)]/15 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/25"
-          : "text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] border border-transparent"
+          ? "bg-gradient-to-r from-blue-500/15 to-cyan-400/5 text-cyan-300 border border-blue-500/20 shadow-[inset_0_0_20px_rgba(59,130,246,0.05)]"
+          : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
       }`}
     >
       <div className="flex items-center gap-3">
-        <span className={`transition-colors ${isActive ? "text-[var(--accent-blue)]" : "group-hover:text-[var(--text-primary)]"}`}>
+        <span
+          className={`transition-all duration-300 ${isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" : "text-slate-500 group-hover:text-cyan-200 group-hover:scale-110"}`}
+        >
           {icon}
         </span>
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-bold tracking-wide">{label}</span>
       </div>
       {badge !== undefined && badge > 0 && (
-        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[var(--accent-blue)] text-white rounded-full min-w-[18px] text-center">
+        <span className="px-2 py-0.5 text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(6,182,212,0.5)]">
           {badge}
         </span>
       )}
@@ -48,160 +60,183 @@ interface SidebarNavigationProps {
 
 export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
   const location = useLocation();
-  const navigate = useNavigate();
   const current = location.pathname;
 
   const navContent = (
-    <>
-      <div className="flex-1 py-4 px-3 space-y-5">
-        {/* MAIN */}
-        <div>
-          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Main</h3>
-          <div className="space-y-0.5">
-            <NavItem
-              to="/marketplace"
-              icon={<LayoutGrid size={17} />}
-              label="Marketplace"
-              isActive={current.startsWith("/marketplace")}
-              onClick={onClose}
-            />
-            <NavItem
-              to="/portfolio"
-              icon={<PieChart size={17} />}
-              label="Portfolio"
-              isActive={current === "/portfolio"}
-              onClick={onClose}
-            />
-            <NavItem
-              to="/inbox"
-              icon={<Inbox size={17} />}
-              label="Inbox"
-              badge={3}
-              isActive={current === "/inbox"}
-              onClick={onClose}
-            />
-          </div>
-        </div>
-
-        {/* MY DEALS */}
-        <div>
-          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">My Deals</h3>
-          <div className="space-y-0.5">
-            <NavItem
-              to="/deals/active"
-              icon={<Activity size={17} />}
-              label="Active Deals"
-              badge={2}
-              isActive={current === "/deals/active"}
-              onClick={onClose}
-            />
-            <NavItem
-              to="/deals/created"
-              icon={<PlusSquare size={17} />}
-              label="Created Deals"
-              isActive={current === "/deals/created"}
-              onClick={onClose}
-            />
-            <NavItem
-              to="/deals/accepted"
-              icon={<CheckSquare size={17} />}
-              label="Accepted Deals"
-              isActive={current === "/deals/accepted"}
-              onClick={onClose}
-            />
-          </div>
-        </div>
-
-        {/* TOOLS */}
-        <div>
-          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Tools</h3>
-          <div className="space-y-0.5">
-            <button
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-all border border-transparent text-sm font-medium"
-              onClick={onClose}
-            >
-              <Paperclip size={17} />
-              Submit Evidence
-            </button>
-            <button
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-muted)] opacity-50 cursor-not-allowed border border-transparent text-sm font-medium"
-              disabled
-              title="Available when you have an active deal"
-            >
-              <UploadCloud size={17} />
-              Submit Delivery
-            </button>
-          </div>
-        </div>
-
-        {/* ACCOUNT */}
-        <div>
-          <h3 className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Account</h3>
-          <div className="space-y-0.5">
-            <NavItem
-              to="/settings"
-              icon={<Settings size={17} />}
-              label="Settings"
-              isActive={current === "/settings"}
-              onClick={onClose}
-            />
-            <a
-              href="https://docs.settleone.xyz"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-all border border-transparent text-sm font-medium"
-              onClick={onClose}
-            >
-              <HelpCircle size={17} />
-              Help & Docs
-            </a>
-          </div>
+    <div className="flex-1 py-6 px-4 space-y-8">
+      {/* MAIN */}
+      <div>
+        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+          Main
+        </h3>
+        <div className="space-y-1">
+          <NavItem
+            to="/marketplace"
+            icon={<LayoutGrid size={18} />}
+            label="Marketplace"
+            isActive={current.startsWith("/marketplace")}
+            onClick={onClose}
+          />
+          <NavItem
+            to="/portfolio"
+            icon={<PieChart size={18} />}
+            label="Portfolio"
+            isActive={current === "/portfolio"}
+            onClick={onClose}
+          />
+          <NavItem
+            to="/inbox"
+            icon={<Inbox size={18} />}
+            label="Inbox"
+            badge={3}
+            isActive={current === "/inbox"}
+            onClick={onClose}
+          />
         </div>
       </div>
 
-      {/* Bottom: User mini-profile + Create button */}
-      <div className="p-3 border-t border-[var(--border)]">
-        <div className="flex items-center gap-3 mb-3 p-2.5 rounded-[var(--radius-card)] bg-[var(--bg-subtle)] border border-[var(--border)]">
-          <Avatar initials="JD" size="sm" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-[var(--text-primary)] truncate">John Doe</p>
-            <p className="text-[10px] text-[var(--text-muted)]">Buyer / Seller</p>
-          </div>
-          <div className="px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent-blue-bright)] bg-[var(--accent-blue-glow2)] border border-[var(--accent-blue)]/25 rounded-full uppercase tracking-wide">
-            Both
-          </div>
+      {/* MY DEALS */}
+      <div>
+        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+          My Deals
+        </h3>
+        <div className="space-y-1">
+          <NavItem
+            to="/deals/active"
+            icon={<Activity size={18} />}
+            label="Active Deals"
+            badge={2}
+            isActive={current === "/deals/active"}
+            onClick={onClose}
+          />
+          <NavItem
+            to="/deals/created"
+            icon={<PlusSquare size={18} />}
+            label="Created Deals"
+            isActive={current === "/deals/created"}
+            onClick={onClose}
+          />
+          <NavItem
+            to="/deals/accepted"
+            icon={<CheckSquare size={18} />}
+            label="Accepted Deals"
+            isActive={current === "/deals/accepted"}
+            onClick={onClose}
+          />
+          <NavItem
+            to="/deals/disputed"
+            icon={<AlertCircle size={18} />}
+            label="Disputed Deals"
+            isActive={current === "/deals/disputed"}
+            onClick={onClose}
+          />
         </div>
-        <button
-          onClick={() => {
-            navigate("/create-deal");
-            onClose?.();
-          }}
-          className="w-full py-2 text-sm font-semibold text-white rounded-[var(--radius-input)] transition-all flex items-center justify-center gap-2"
-          style={{
-            background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
-            boxShadow: "0 0 16px rgba(59,130,246,0.3)",
-          }}
-        >
-          <Plus size={16} />
-          Create Deal
-        </button>
       </div>
-    </>
+
+      {/* TOOLS */}
+      <div>
+        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+          Tools
+        </h3>
+        <div className="space-y-1">
+          <button
+            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+            onClick={onClose}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
+                <Paperclip size={18} />
+              </span>
+              <span className="text-sm font-bold tracking-wide">
+                Submit Evidence
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+            onClick={onClose}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
+                <UploadCloud size={18} />
+              </span>
+              <span className="text-sm font-bold tracking-wide">
+                Submit Delivery
+              </span>
+            </div>
+          </button>
+
+          <button
+            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-rose-400/80 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/20"
+            onClick={onClose}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-rose-500/70 group-hover:text-rose-400 group-hover:scale-110 transition-all duration-300">
+                <ShieldAlert size={18} />
+              </span>
+              <span className="text-sm font-bold tracking-wide">
+                Raise Dispute
+              </span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* ACCOUNT */}
+      <div>
+        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+          Account
+        </h3>
+        <div className="space-y-1">
+          <NavItem
+            to="/settings"
+            icon={<Settings size={18} />}
+            label="Settings"
+            isActive={current === "/settings"}
+            onClick={onClose}
+          />
+          <a
+            href="https://docs.settleone.xyz"
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+            onClick={onClose}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
+                <HelpCircle size={18} />
+              </span>
+              <span className="text-sm font-bold tracking-wide">
+                Help & Docs
+              </span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
   );
 
   if (mobile) {
     return (
-      <div className="flex flex-col h-full bg-[var(--bg-card)]">
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <img src="/whiteLogo.png" alt="SettleOne" className="h-7 object-contain" />
+      <div
+        className="flex flex-col h-full backdrop-blur-xl border-r border-white/5"
+        style={{ background: "rgba(5, 10, 20, 0.95)" }}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-white/5">
+          <img
+            src="/whiteLogo.png"
+            alt="SettleOne"
+            className="h-8 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+          />
           <button
             onClick={onClose}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-md transition-colors"
+            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 overflow-y-auto hide-scrollbar">
           {navContent}
         </div>
       </div>
@@ -209,8 +244,13 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
   }
 
   return (
-    <aside className="w-[240px] shrink-0 flex flex-col h-[calc(100vh-56px)] sticky top-[56px] overflow-y-auto hidden md:flex"
-      style={{ background: "var(--bg-card)", borderRight: "1px solid var(--border)" }}
+    <aside
+      className="w-[260px] shrink-0 flex flex-col h-[calc(100vh-76px)] sticky top-[76px] overflow-y-auto hidden lg:flex backdrop-blur-2xl transition-all duration-300"
+      style={{
+        background: "rgba(10, 15, 30, 0.4)",
+        borderRight: "1px solid rgba(255,255,255,0.05)",
+        boxShadow: "10px 0 30px -10px rgba(0,0,0,0.5)",
+      }}
     >
       {navContent}
     </aside>

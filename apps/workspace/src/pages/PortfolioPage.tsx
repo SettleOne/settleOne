@@ -100,7 +100,8 @@ export function PortfolioPage() {
               <Wallet size={16} /> Total Active Capital
             </div>
             <div className="text-3xl font-bold">
-              $12,500 <span className="text-sm text-[var(--text-muted)]">USDC</span>
+              $12,500{" "}
+              <span className="text-sm text-[var(--text-muted)]">USDC</span>
             </div>
             <p className="text-sm text-[var(--text-secondary)] mt-2">
               Across {Math.max(stats.activeCount, 3)} active deals
@@ -166,11 +167,15 @@ export function PortfolioPage() {
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
                     <td className="px-6 py-4 font-medium">#DL-00143</td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">Buyer</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">
+                        Buyer
+                      </span>
                     </td>
                     <td className="px-6 py-4 font-mono">3,000 USDC</td>
                     <td className="px-6 py-4 font-mono">3,006.20 USDC</td>
-                    <td className="px-6 py-4 text-[var(--accent-green)]">+$6.20</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)]">
+                      +$6.20
+                    </td>
                     <td className="px-6 py-4">
                       <span className="text-[var(--state-active)] flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-[var(--state-active)] animate-pulse"></span>
@@ -178,7 +183,10 @@ export function PortfolioPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                      <Button
+                        variant="secondary"
+                        className="flex gap-2 items-center text-xs py-1 px-3"
+                      >
                         <Eye size={14} /> View
                       </Button>
                     </td>
@@ -186,7 +194,9 @@ export function PortfolioPage() {
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
                     <td className="px-6 py-4 font-medium">#DL-00129</td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-900/30 text-purple-400 border border-purple-800/40">Seller</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-900/30 text-purple-400 border border-purple-800/40">
+                        Seller
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-[var(--text-muted)]">—</td>
                     <td className="px-6 py-4 text-[var(--text-muted)]">—</td>
@@ -198,7 +208,10 @@ export function PortfolioPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                      <Button
+                        variant="secondary"
+                        className="flex gap-2 items-center text-xs py-1 px-3"
+                      >
                         <Eye size={14} /> View
                       </Button>
                     </td>
@@ -206,19 +219,34 @@ export function PortfolioPage() {
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
                     <td className="px-6 py-4 font-medium">#DL-00118</td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">Buyer</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/40">
+                        Buyer
+                      </span>
                     </td>
                     <td className="px-6 py-4 font-mono">15,000 USDC</td>
                     <td className="px-6 py-4 font-mono">15,042.80 USDC</td>
-                    <td className="px-6 py-4 text-[var(--accent-green)]">+$42.80</td>
+                    <td className="px-6 py-4 text-[var(--accent-green)]">
+                      +$42.80
+                    </td>
                     <td className="px-6 py-4">
-                      <span className="flex items-center gap-2" style={{ color: "var(--state-awaiting-acceptance)" }}>
-                        <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--state-awaiting-acceptance)" }}></span>
+                      <span
+                        className="flex items-center gap-2"
+                        style={{ color: "var(--state-awaiting-acceptance)" }}
+                      >
+                        <span
+                          className="w-2 h-2 rounded-full animate-pulse"
+                          style={{
+                            background: "var(--state-awaiting-acceptance)",
+                          }}
+                        ></span>
                         Awaiting Acceptance
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <Button variant="secondary" className="flex gap-2 items-center text-xs py-1 px-3">
+                      <Button
+                        variant="secondary"
+                        className="flex gap-2 items-center text-xs py-1 px-3"
+                      >
                         <Eye size={14} /> View
                       </Button>
                     </td>
@@ -252,9 +280,25 @@ export function PortfolioPage() {
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)] h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={yieldData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--border)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="date"
+                  stroke="var(--text-secondary)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="var(--text-secondary)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val) => `$${val}`}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "var(--bg-card)",
@@ -270,7 +314,12 @@ export function PortfolioPage() {
                   stroke="var(--accent-blue)"
                   strokeWidth={3}
                   dot={{ r: 4, fill: "var(--bg-card)", strokeWidth: 2 }}
-                  activeDot={{ r: 6, stroke: "var(--accent-blue)", strokeWidth: 2, fill: "var(--bg-card)" }}
+                  activeDot={{
+                    r: 6,
+                    stroke: "var(--accent-blue)",
+                    strokeWidth: 2,
+                    fill: "var(--bg-card)",
+                  }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -283,7 +332,9 @@ export function PortfolioPage() {
             <h2 className="text-xl font-bold flex items-center gap-2">
               <History size={20} /> All Transactions
             </h2>
-            <Button variant="secondary" className="text-xs">Filter</Button>
+            <Button variant="secondary" className="text-xs">
+              Filter
+            </Button>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
             <div className="overflow-x-auto">
@@ -301,34 +352,52 @@ export function PortfolioPage() {
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 28, 2026</td>
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">
+                      Jan 28, 2026
+                    </td>
                     <td className="px-6 py-4 font-medium">#DL-00143</td>
                     <td className="px-6 py-4">Funded (60%)</td>
-                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">3,000</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">
+                      3,000
+                    </td>
                     <td className="px-6 py-4">USDC</td>
-                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x7a...9f2b</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">
+                      0x7a...9f2b
+                    </td>
                     <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
                       <CheckCircle size={14} /> Success
                     </td>
                   </tr>
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 25, 2026</td>
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">
+                      Jan 25, 2026
+                    </td>
                     <td className="px-6 py-4 font-medium">#DL-00129</td>
                     <td className="px-6 py-4">Funded (100%)</td>
-                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">2,500</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">
+                      2,500
+                    </td>
                     <td className="px-6 py-4">USDT</td>
-                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x4c...7a19</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">
+                      0x4c...7a19
+                    </td>
                     <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
                       <CheckCircle size={14} /> Success
                     </td>
                   </tr>
                   <tr className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="px-6 py-4 text-[var(--text-secondary)]">Jan 20, 2026</td>
+                    <td className="px-6 py-4 text-[var(--text-secondary)]">
+                      Jan 20, 2026
+                    </td>
                     <td className="px-6 py-4 font-medium">#DL-00118</td>
                     <td className="px-6 py-4">Funded (60%)</td>
-                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">9,000</td>
+                    <td className="px-6 py-4 font-mono text-[var(--text-primary)]">
+                      9,000
+                    </td>
                     <td className="px-6 py-4">USDC</td>
-                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">0x9b...2e44</td>
+                    <td className="px-6 py-4 font-mono text-[var(--accent-blue)] cursor-pointer hover:underline">
+                      0x9b...2e44
+                    </td>
                     <td className="px-6 py-4 text-[var(--accent-green)] flex items-center gap-1">
                       <CheckCircle size={14} /> Success
                     </td>
@@ -339,8 +408,12 @@ export function PortfolioPage() {
             <div className="p-4 border-t border-[var(--border)] flex justify-between items-center bg-[var(--bg-base)] text-sm text-[var(--text-secondary)]">
               <span>Showing 1 to 3 of 12 entries</span>
               <div className="flex gap-2">
-                <Button variant="secondary" className="px-3 py-1" disabled>Prev</Button>
-                <Button variant="secondary" className="px-3 py-1">Next</Button>
+                <Button variant="secondary" className="px-3 py-1" disabled>
+                  Prev
+                </Button>
+                <Button variant="secondary" className="px-3 py-1">
+                  Next
+                </Button>
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ import { SignupPage } from "./pages/SignupPage";
 // Pages
 import { MarketplacePage } from "./pages/MarketplacePage";
 import { DealRoomPage } from "./pages/DealRoomPage";
-import { CreateDealPage } from "./pages/CreateDealPage";
+
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { AuthCallback } from "./pages/AuthCallback";
@@ -49,7 +49,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/marketplace" replace />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace/:id" element={<DealRoomPage />} />
-            <Route path="/create-deal" element={<CreateDealPage />} />
+
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/inbox" element={<InboxPage />} />
@@ -63,9 +63,16 @@ export default function App() {
             path="/unauthorized"
             element={
               <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[var(--bg-base)]">
-                <div className="text-6xl font-bold text-[var(--accent-red)]">403</div>
-                <p className="text-[var(--text-secondary)] text-lg">Unauthorized access</p>
-                <a href="/login" className="text-[var(--accent-blue)] hover:underline font-medium">
+                <div className="text-6xl font-bold text-[var(--accent-red)]">
+                  403
+                </div>
+                <p className="text-[var(--text-secondary)] text-lg">
+                  Unauthorized access
+                </p>
+                <a
+                  href="/login"
+                  className="text-[var(--accent-blue)] hover:underline font-medium"
+                >
                   Return to login
                 </a>
               </div>
@@ -76,8 +83,13 @@ export default function App() {
             element={
               <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[var(--bg-base)]">
                 <div className="text-6xl font-bold gradient-text">404</div>
-                <p className="text-[var(--text-secondary)] text-lg">Page not found</p>
-                <a href="/marketplace" className="text-[var(--accent-blue)] hover:underline font-medium">
+                <p className="text-[var(--text-secondary)] text-lg">
+                  Page not found
+                </p>
+                <a
+                  href="/marketplace"
+                  className="text-[var(--accent-blue)] hover:underline font-medium"
+                >
                   Go to Marketplace
                 </a>
               </div>

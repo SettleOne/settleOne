@@ -25,7 +25,9 @@ export function IntelligencePanels({ deal }: IntelligencePanelsProps) {
       <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
           <DollarSign size={16} className="text-[var(--text-muted)]" />
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">Deal Economics</h3>
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+            Deal Economics
+          </h3>
         </div>
         <div className="p-4 space-y-3 text-sm">
           <div className="flex justify-between items-center">
@@ -72,7 +74,9 @@ export function IntelligencePanels({ deal }: IntelligencePanelsProps) {
       <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
           <ShieldAlert size={16} className="text-[var(--text-muted)]" />
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">Key Deadlines</h3>
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+            Key Deadlines
+          </h3>
         </div>
         <div className="p-4 space-y-4">
           <div>
@@ -97,7 +101,9 @@ export function IntelligencePanels({ deal }: IntelligencePanelsProps) {
       <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
           <Users size={16} className="text-[var(--text-muted)]" />
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">Participants</h3>
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+            Participants
+          </h3>
         </div>
         <div className="p-4 space-y-4">
           <div className="flex items-start gap-3">
@@ -121,7 +127,9 @@ export function IntelligencePanels({ deal }: IntelligencePanelsProps) {
                   <p className="text-sm font-medium italic text-[var(--text-muted)] mb-1">
                     Open Marketplace
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">Any seller can accept</p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Any seller can accept
+                  </p>
                 </>
               ) : (
                 <AddressDisplay

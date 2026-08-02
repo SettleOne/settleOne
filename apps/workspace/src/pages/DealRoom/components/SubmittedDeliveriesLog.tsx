@@ -30,7 +30,10 @@ export function SubmittedDeliveriesLog({
   if (error) {
     return (
       <div className="p-8 text-center bg-[var(--accent-red)]/10 rounded-lg border border-[var(--accent-red)]/30">
-        <AlertCircle className="mx-auto text-[var(--accent-red)] mb-2" size={24} />
+        <AlertCircle
+          className="mx-auto text-[var(--accent-red)] mb-2"
+          size={24}
+        />
         <p className="text-sm text-[var(--accent-red)]">
           Error loading deliveries. Please try again later.
         </p>
@@ -53,7 +56,9 @@ export function SubmittedDeliveriesLog({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold text-[var(--text-primary)]">Submitted Deliveries Log</h3>
+      <h3 className="text-lg font-bold text-[var(--text-primary)]">
+        Submitted Deliveries Log
+      </h3>
       {deliveries.map((delivery, idx) => (
         <div
           key={delivery.id || idx}

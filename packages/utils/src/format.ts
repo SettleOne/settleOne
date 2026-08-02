@@ -13,7 +13,9 @@ export function formatAmount(
   const fraction = amount % divisor;
   const fractionStr = fraction.toString().padStart(decimals, "0").slice(0, 2);
   const formatted = whole.toLocaleString("en-US");
-  return symbol ? `${formatted}.${fractionStr} ${symbol}` : `${formatted}.${fractionStr}`;
+  return symbol
+    ? `${formatted}.${fractionStr} ${symbol}`
+    : `${formatted}.${fractionStr}`;
 }
 
 export function formatTimestamp(ts: bigint | number): string {

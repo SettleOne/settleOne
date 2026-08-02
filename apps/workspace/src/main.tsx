@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig } from "@settleone/sdk/src/config";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -16,7 +16,15 @@ createRoot(document.getElementById("root")!).render(
     <ErrorBoundary>
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
+          <RainbowKitProvider
+            theme={darkTheme({
+              accentColor: "#0ea5e9",
+              accentColorForeground: "white",
+              borderRadius: "large",
+              fontStack: "system",
+              overlayBlur: "small",
+            })}
+          >
             <App />
           </RainbowKitProvider>
         </QueryClientProvider>

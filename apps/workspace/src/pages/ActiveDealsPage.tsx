@@ -1,19 +1,66 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Activity, Calendar, Clock, Copy, Zap, Eye, Filter,
-  TrendingUp, DollarSign, CheckCircle, AlertCircle
+  Activity,
+  Calendar,
+  Clock,
+  Copy,
+  Zap,
+  Eye,
+  Filter,
+  TrendingUp,
+  DollarSign,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 
 function getDealStateStyle(state: string) {
-  const map: Record<string, { color: string; bg: string; border: string; dot: string }> = {
-    AwaitingFunding:         { color: "#fbbf24", bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.3)",  dot: "#f59e0b" },
-    PendingSellerAcceptance: { color: "#60a5fa", bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.3)",  dot: "#3b82f6" },
-    Active:                  { color: "#4ade80", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   dot: "#22c55e" },
-    DeliverySubmitted:       { color: "#a78bfa", bg: "rgba(139,92,246,0.12)",  border: "rgba(139,92,246,0.3)",  dot: "#8b5cf6" },
-    AwaitingAcceptance:      { color: "#22d3ee", bg: "rgba(6,182,212,0.12)",   border: "rgba(6,182,212,0.3)",   dot: "#06b6d4" },
-    Accepted:                { color: "#2dd4bf", bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.3)",  dot: "#14b8a6" },
-    Disputed:                { color: "#f87171", bg: "rgba(239,68,68,0.12)",   border: "rgba(239,68,68,0.3)",   dot: "#ef4444" },
+  const map: Record<
+    string,
+    { color: string; bg: string; border: string; dot: string }
+  > = {
+    AwaitingFunding: {
+      color: "#fbbf24",
+      bg: "rgba(245,158,11,0.12)",
+      border: "rgba(245,158,11,0.3)",
+      dot: "#f59e0b",
+    },
+    PendingSellerAcceptance: {
+      color: "#60a5fa",
+      bg: "rgba(59,130,246,0.12)",
+      border: "rgba(59,130,246,0.3)",
+      dot: "#3b82f6",
+    },
+    Active: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    DeliverySubmitted: {
+      color: "#a78bfa",
+      bg: "rgba(139,92,246,0.12)",
+      border: "rgba(139,92,246,0.3)",
+      dot: "#8b5cf6",
+    },
+    AwaitingAcceptance: {
+      color: "#22d3ee",
+      bg: "rgba(6,182,212,0.12)",
+      border: "rgba(6,182,212,0.3)",
+      dot: "#06b6d4",
+    },
+    Accepted: {
+      color: "#2dd4bf",
+      bg: "rgba(20,184,166,0.12)",
+      border: "rgba(20,184,166,0.3)",
+      dot: "#14b8a6",
+    },
+    Disputed: {
+      color: "#f87171",
+      bg: "rgba(239,68,68,0.12)",
+      border: "rgba(239,68,68,0.3)",
+      dot: "#ef4444",
+    },
   };
   return map[state] || map["Active"]!;
 }
@@ -34,7 +81,7 @@ const MOCK_ACTIVE_DEALS = [
     chain: "Arbitrum",
     deliveryDeadline: new Date(Date.now() + 1800000 * 10),
     createdAt: new Date(Date.now() - 259200000),
-    yieldSoFar: 6.20,
+    yieldSoFar: 6.2,
   },
   {
     id: 129,
@@ -51,7 +98,7 @@ const MOCK_ACTIVE_DEALS = [
     chain: "Ethereum",
     deliveryDeadline: new Date(Date.now() + 604800000),
     createdAt: new Date(Date.now() - 86400000),
-    yieldSoFar: 1.50,
+    yieldSoFar: 1.5,
   },
   {
     id: 101,
@@ -85,7 +132,7 @@ const MOCK_ACTIVE_DEALS = [
     chain: "Arbitrum",
     deliveryDeadline: new Date(Date.now() + 172800000),
     createdAt: new Date(Date.now() - 86400000 * 5),
-    yieldSoFar: 3.80,
+    yieldSoFar: 3.8,
   },
 ];
 
@@ -93,7 +140,9 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
   const [copied, setCopied] = useState(false);
   const style = getDealStateStyle(deal.stateName);
   const isSoftware = deal.dealType === 0;
-  const progress = deal.amount ? Math.min(100, (deal.depositedFunds / deal.amount) * 100) : 0;
+  const progress = deal.amount
+    ? Math.min(100, (deal.depositedFunds / deal.amount) * 100)
+    : 0;
   const hoursLeft = deal.deliveryDeadline
     ? (deal.deliveryDeadline.getTime() - Date.now()) / 3_600_000
     : null;
@@ -115,7 +164,10 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
       <div
         className="absolute top-4 right-4 text-[10px] font-bold px-2 py-0.5 rounded-full"
         style={{
-          background: deal.role === "Buyer" ? "rgba(59,130,246,0.15)" : "rgba(139,92,246,0.15)",
+          background:
+            deal.role === "Buyer"
+              ? "rgba(59,130,246,0.15)"
+              : "rgba(139,92,246,0.15)",
           color: deal.role === "Buyer" ? "#60a5fa" : "#a78bfa",
           border: `1px solid ${deal.role === "Buyer" ? "rgba(59,130,246,0.3)" : "rgba(139,92,246,0.3)"}`,
         }}
@@ -145,9 +197,16 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
       <div className="flex items-center gap-2 mb-3">
         <span
           className="text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5"
-          style={{ color: style.color, background: style.bg, border: `1px solid ${style.border}` }}
+          style={{
+            color: style.color,
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+          }}
         >
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: style.dot }} />
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
+            style={{ background: style.dot }}
+          />
           {deal.stateName.replace(/([A-Z])/g, " $1").trim()}
         </span>
       </div>
@@ -179,7 +238,12 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${progress}%`,
-            background: progress >= 100 ? "#22c55e" : progress > 0 ? "#f59e0b" : "#374151",
+            background:
+              progress >= 100
+                ? "#22c55e"
+                : progress > 0
+                  ? "#f59e0b"
+                  : "#374151",
           }}
         />
       </div>
@@ -189,18 +253,30 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         <div className="flex items-center gap-1.5">
           <Calendar size={11} className="text-[var(--text-muted)]" />
           <span>
-            Deadline: {deal.deliveryDeadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            Deadline:{" "}
+            {deal.deliveryDeadline.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <Clock size={11} className="text-[var(--text-muted)]" />
-          <span>Created {Math.round((Date.now() - deal.createdAt.getTime()) / 86400000)} days ago</span>
+          <span>
+            Created{" "}
+            {Math.round((Date.now() - deal.createdAt.getTime()) / 86400000)}{" "}
+            days ago
+          </span>
         </div>
         {isExpiringSoon && (
           <div className="flex items-center gap-1 text-[var(--accent-amber)]">
             <Zap size={11} />
             <span className="font-semibold">
-              Expires in {hoursLeft! > 24 ? `${Math.floor(hoursLeft! / 24)}d ${Math.floor(hoursLeft! % 24)}h` : `${Math.floor(hoursLeft!)}h`}
+              Expires in{" "}
+              {hoursLeft! > 24
+                ? `${Math.floor(hoursLeft! / 24)}d ${Math.floor(hoursLeft! % 24)}h`
+                : `${Math.floor(hoursLeft!)}h`}
             </span>
           </div>
         )}
@@ -217,7 +293,10 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           </span>
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
           className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-blue)] hover:text-[var(--accent-blue-bright)] transition-colors"
         >
           <Eye size={13} />
@@ -233,7 +312,14 @@ export function ActiveDealsPage() {
   const [filter, setFilter] = useState("All");
   const [roleFilter, setRoleFilter] = useState("All");
 
-  const stateFilters = ["All", "Active", "PendingSellerAcceptance", "DeliverySubmitted", "AwaitingAcceptance", "Disputed"];
+  const stateFilters = [
+    "All",
+    "Active",
+    "PendingSellerAcceptance",
+    "DeliverySubmitted",
+    "AwaitingAcceptance",
+    "Disputed",
+  ];
   const roleFilters = ["All", "Buyer", "Seller"];
 
   const filteredDeals = MOCK_ACTIVE_DEALS.filter((d) => {
@@ -242,8 +328,14 @@ export function ActiveDealsPage() {
     return true;
   });
 
-  const totalCapital = filteredDeals.reduce((sum, d) => sum + d.depositedFunds, 0);
-  const totalYield = filteredDeals.reduce((sum, d) => sum + (d.yieldSoFar || 0), 0);
+  const totalCapital = filteredDeals.reduce(
+    (sum, d) => sum + d.depositedFunds,
+    0,
+  );
+  const totalYield = filteredDeals.reduce(
+    (sum, d) => sum + (d.yieldSoFar || 0),
+    0,
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-[var(--text-primary)]">
@@ -283,22 +375,30 @@ export function ActiveDealsPage() {
               Total Active
             </div>
             <div className="text-2xl font-bold">{MOCK_ACTIVE_DEALS.length}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">ongoing deals</p>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              ongoing deals
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <DollarSign size={14} />
               Capital Locked
             </div>
-            <div className="text-2xl font-bold">${totalCapital.toLocaleString()}</div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">USDC equivalent</p>
+            <div className="text-2xl font-bold">
+              ${totalCapital.toLocaleString()}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              USDC equivalent
+            </p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--accent-green)]/30 rounded-[var(--radius-card)] p-4">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
               <TrendingUp size={14} />
               Yield Accruing
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-green)]">+${totalYield.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-[var(--accent-green)]">
+              +${totalYield.toFixed(2)}
+            </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">so far</p>
           </div>
           <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
@@ -307,9 +407,17 @@ export function ActiveDealsPage() {
               Needs Action
             </div>
             <div className="text-2xl font-bold text-[var(--accent-amber)]">
-              {MOCK_ACTIVE_DEALS.filter(d => d.stateName === "AwaitingAcceptance" || d.stateName === "PendingSellerAcceptance").length}
+              {
+                MOCK_ACTIVE_DEALS.filter(
+                  (d) =>
+                    d.stateName === "AwaitingAcceptance" ||
+                    d.stateName === "PendingSellerAcceptance",
+                ).length
+              }
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-1">require review</p>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              require review
+            </p>
           </div>
         </div>
 
@@ -367,15 +475,24 @@ export function ActiveDealsPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)]">
-            <Activity size={48} className="mx-auto text-[var(--text-muted)] mb-4 opacity-40" />
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No active deals</h3>
+            <Activity
+              size={48}
+              className="mx-auto text-[var(--text-muted)] mb-4 opacity-40"
+            />
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+              No active deals
+            </h3>
             <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto">
-              You don't have any deals matching the current filter. Try adjusting your filters or create a new deal.
+              You don't have any deals matching the current filter. Try
+              adjusting your filters or create a new deal.
             </p>
             <button
               onClick={() => navigate("/marketplace")}
               className="mt-6 px-4 py-2 text-sm font-semibold text-white rounded-[var(--radius-input)] transition-all"
-              style={{ background: "linear-gradient(135deg, var(--accent-blue), #06b6d4)" }}
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
+              }}
             >
               Browse Marketplace
             </button>

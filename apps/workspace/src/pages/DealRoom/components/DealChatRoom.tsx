@@ -14,7 +14,10 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
   const [message, setMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages = [], isLoading } = { data: { messages: [] }, isLoading: false } as any;
+  const { data: messages = [], isLoading } = {
+    data: { messages: [] },
+    isLoading: false,
+  } as any;
   const { mutate: sendMessage } = useSendMessage();
 
   useEffect(() => {
@@ -32,7 +35,9 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
   return (
     <div className="flex flex-col h-[500px] bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center justify-between">
-        <h3 className="font-semibold text-sm text-[var(--text-primary)]">Private Deal Chat</h3>
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+          Private Deal Chat
+        </h3>
         <span className="text-xs text-[var(--state-active)] bg-[var(--state-active)]/20 px-2 py-0.5 rounded-full font-medium flex items-center gap-1.5 shadow-glow">
           <span className="w-1.5 h-1.5 bg-[var(--state-active)] rounded-full animate-pulse"></span>{" "}
           Encrypted

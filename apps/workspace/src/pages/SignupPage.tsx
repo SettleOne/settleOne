@@ -1,18 +1,32 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowRight, RefreshCw, Chrome
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  CheckCircle,
+  ArrowRight,
+  RefreshCw,
+  Chrome,
 } from "lucide-react";
 
 type Step = 1 | 2 | 3;
 
 function PasswordStrengthBar({ password }: { password: string }) {
-  const strength = password.length === 0
-    ? 0
-    : password.length < 6 ? 1
-    : password.length < 8 ? 2
-    : /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password) ? 4
-    : 3;
+  const strength =
+    password.length === 0
+      ? 0
+      : password.length < 6
+        ? 1
+        : password.length < 8
+          ? 2
+          : /[A-Z]/.test(password) &&
+              /[0-9]/.test(password) &&
+              /[^A-Za-z0-9]/.test(password)
+            ? 4
+            : 3;
 
   const labels = ["", "Weak", "Fair", "Good", "Strong"];
   const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
@@ -63,7 +77,9 @@ function OtpInput({ onComplete }: { onComplete: (otp: string) => void }) {
       {otp.map((v, i) => (
         <input
           key={i}
-          ref={(el) => { inputs.current[i] = el; }}
+          ref={(el) => {
+            inputs.current[i] = el;
+          }}
           type="text"
           maxLength={1}
           value={v}
@@ -148,7 +164,10 @@ export function SignupPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)" }}
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)",
+          }}
         />
       </div>
 
@@ -156,7 +175,11 @@ export function SignupPage() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link to="/">
-            <img src="/whiteLogo.png" alt="SettleOne" className="h-10 object-contain hover:opacity-80 transition-opacity" />
+            <img
+              src="/whiteLogo.png"
+              alt="SettleOne"
+              className="h-10 object-contain hover:opacity-80 transition-opacity"
+            />
           </Link>
         </div>
 
@@ -176,7 +199,10 @@ export function SignupPage() {
               {s < 3 && (
                 <div
                   className="h-0.5 w-12 rounded-full transition-all duration-300"
-                  style={{ background: step > s ? "var(--accent-blue)" : "var(--border)" }}
+                  style={{
+                    background:
+                      step > s ? "var(--accent-blue)" : "var(--border)",
+                  }}
                 />
               )}
             </React.Fragment>
@@ -205,7 +231,10 @@ export function SignupPage() {
                     Full Name
                   </label>
                   <div className="relative">
-                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <User
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                    />
                     <input
                       type="text"
                       value={fullName}
@@ -222,7 +251,10 @@ export function SignupPage() {
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <Mail
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                    />
                     <input
                       type="email"
                       value={email}
@@ -239,7 +271,10 @@ export function SignupPage() {
                     Password
                   </label>
                   <div className="relative">
-                    <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <Lock
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                    />
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
@@ -264,7 +299,10 @@ export function SignupPage() {
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <Lock
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                    />
                     <input
                       type={showConfirm ? "text" : "password"}
                       value={confirmPassword}
@@ -289,12 +327,29 @@ export function SignupPage() {
                   className="w-full py-2.5 bg-[var(--accent-blue)] text-white font-semibold text-sm rounded-[var(--radius-input)] hover:bg-[var(--accent-blue-hover)] transition-all shadow-[var(--shadow-glow)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
                   ) : (
-                    <>Continue <ArrowRight size={16} /></>
+                    <>
+                      Continue <ArrowRight size={16} />
+                    </>
                   )}
                 </button>
 
@@ -303,7 +358,9 @@ export function SignupPage() {
                     <div className="w-full border-t border-[var(--border)]" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-3 bg-[var(--bg-card)] text-[var(--text-muted)]">or</span>
+                    <span className="px-3 bg-[var(--bg-card)] text-[var(--text-muted)]">
+                      or
+                    </span>
                   </div>
                 </div>
 
@@ -318,7 +375,10 @@ export function SignupPage() {
 
                 <p className="text-center text-sm text-[var(--text-secondary)]">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-[var(--accent-blue)] hover:text-[var(--accent-blue-bright)] font-medium transition-colors">
+                  <Link
+                    to="/login"
+                    className="text-[var(--accent-blue)] hover:text-[var(--accent-blue-bright)] font-medium transition-colors"
+                  >
                     Sign in
                   </Link>
                 </p>
@@ -334,16 +394,32 @@ export function SignupPage() {
               </div>
               <h2 className="text-xl font-bold mb-1">Check your email</h2>
               <p className="text-[var(--text-secondary)] text-sm mb-6">
-                We sent a 6-digit code to <strong className="text-[var(--text-primary)]">{email}</strong>
+                We sent a 6-digit code to{" "}
+                <strong className="text-[var(--text-primary)]">{email}</strong>
               </p>
 
               <OtpInput onComplete={handleOtpComplete} />
 
               {isLoading && (
                 <div className="mt-4 flex items-center justify-center gap-2 text-[var(--text-secondary)] text-sm">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
                   </svg>
                   Verifying…
                 </div>
@@ -351,7 +427,12 @@ export function SignupPage() {
 
               <div className="mt-6 text-sm text-[var(--text-secondary)]">
                 {countdown > 0 ? (
-                  <span>Resend in <span className="text-[var(--text-primary)] font-mono">{countdown}s</span></span>
+                  <span>
+                    Resend in{" "}
+                    <span className="text-[var(--text-primary)] font-mono">
+                      {countdown}s
+                    </span>
+                  </span>
                 ) : (
                   <button
                     onClick={() => {
@@ -380,8 +461,11 @@ export function SignupPage() {
               </div>
               <h2 className="text-2xl font-bold mb-2">Account Created!</h2>
               <p className="text-[var(--text-secondary)] text-sm mb-8">
-                Welcome to SettleOne, <strong className="text-[var(--text-primary)]">{fullName}</strong>.
-                Your account is ready to use.
+                Welcome to SettleOne,{" "}
+                <strong className="text-[var(--text-primary)]">
+                  {fullName}
+                </strong>
+                . Your account is ready to use.
               </p>
               <button
                 onClick={() => navigate("/marketplace")}

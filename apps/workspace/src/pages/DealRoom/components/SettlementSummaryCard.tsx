@@ -26,7 +26,8 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
   let subtitle =
     "Funds have been distributed according to the settlement rules.";
   let icon = <DollarSign size={32} />;
-  let iconBg = "bg-[var(--state-active)]/20 text-[var(--state-active)] shadow-glow";
+  let iconBg =
+    "bg-[var(--state-active)]/20 text-[var(--state-active)] shadow-glow";
 
   let sellerPayout = 0n;
   let buyerRefund = 0n;
@@ -61,7 +62,9 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
               : "text-[var(--state-active)]"
           }
         />
-        <h3 className="font-semibold text-sm text-[var(--text-primary)]">Settlement Summary</h3>
+        <h3 className="font-semibold text-sm text-[var(--text-primary)]">
+          Settlement Summary
+        </h3>
       </div>
       <div className="p-6">
         <div className="text-center mb-8">
@@ -70,7 +73,9 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
           >
             {icon}
           </div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">{title}</h2>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+            {title}
+          </h2>
           <p className="text-[var(--text-secondary)] mt-1">{subtitle}</p>
         </div>
 
@@ -90,7 +95,9 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
                   {formatAmount(sellerPayout, 6)} USDC
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">Total received by seller</p>
+              <p className="text-xs text-[var(--text-muted)]">
+                Total received by seller
+              </p>
             </div>
           </div>
 
@@ -110,7 +117,8 @@ export function SettlementSummaryCard({ deal }: SettlementSummaryCardProps) {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-                Refund + <TrendingUp size={12} className="text-[var(--accent-purple)]" />{" "}
+                Refund +{" "}
+                <TrendingUp size={12} className="text-[var(--accent-purple)]" />{" "}
                 {yieldEarned} USDC yield
               </p>
             </div>
