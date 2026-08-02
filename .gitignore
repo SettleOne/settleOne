@@ -6,3 +6,9 @@ dist/
 .env.local
 .env*.local
 *.tsbuildinfo
+*dist/
+*.turbo/
+*node_modules/
+*.env
+*.next/
+SETTLEONE_FRONTEND_SCRIPT.txt
