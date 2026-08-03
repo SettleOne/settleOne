@@ -14,54 +14,44 @@ interface ChatMessagesResponse {
 }
 
 export function useChatMessages(dealId: string | undefined) {
-  return useInfiniteQuery({
+  return useQuery({
     queryKey: ["chat", dealId],
-    queryFn: ({ pageParam }) =>
-      apiClient<ChatMessagesResponse>(`/deals/${dealId}/chat`, {
-        params: { cursor: pageParam as string | undefined },
-      }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) =>
-      lastPage.hasMore ? lastPage.cursor : undefined,
+    queryFn: () =>
+      apiClient<{ messages: any[]; nextCursor: string | null }>(
+        `/chat/${dealId}/messages`,
+      ),
     enabled: !!dealId,
+    refetchInterval: 10000, // Poll until Socket.io is wired
   });
 }
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: ({
-      dealId,
-      content,
-      attachmentUrl,
-      attachmentName,
-    }: {
-      dealId: string;
-      content: string;
-      attachmentUrl?: string;
-      attachmentName?: string;
-    }) =>
-      apiClient<ChatMessage>(`/deals/${dealId}/chat`, {
+    mutationFn: ({ dealId, content }: { dealId: string; content: string }) =>
+      apiClient<any>(`/chat/${dealId}/messages`, {
         method: "POST",
-        body: JSON.stringify({ content, attachmentUrl, attachmentName }),
+        body: JSON.stringify({ content }),
       }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["chat", variables.dealId] });
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["chat", vars.dealId] });
     },
   });
 }
 
 export function useMarkMessagesRead() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: ({ dealId }: { dealId: string }) =>
-      apiClient<void>(`/deals/${dealId}/chat/read`, {
+    mutationFn: ({
+      dealId,
+      messageIds,
+    }: {
+      dealId: string;
+      messageIds?: string[];
+    }) =>
+      apiClient<{ updated: number }>(`/chat/${dealId}/messages/read`, {
         method: "POST",
+        body: JSON.stringify({ messageIds }),
       }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["chat", variables.dealId] });
-    },
   });
 }

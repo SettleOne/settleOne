@@ -14,6 +14,9 @@ import {
   Upload,
   Trash2,
 } from "lucide-react";
+import { useChainId, useAccount } from "wagmi";
+import { useCreateDeal } from "@settleone/sdk";
+import { apiClient } from "@settleone/api";
 
 interface CreateDealModalProps {
   isOpen: boolean;
@@ -92,11 +95,75 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const categories =
     form.dealType === "software" ? SOFTWARE_CATEGORIES : HARDWARE_CATEGORIES;
 
+  const chainId = useChainId();
+  const { address } = useAccount();
+  const {
+    createDeal,
+    isPending: isTxPending,
+    isSuccess: isTxSuccess,
+  } = useCreateDeal(chainId);
+
+  React.useEffect(() => {
+    if (isTxSuccess) {
+      setIsSuccess(true);
+      setIsPending(false);
+    }
+  }, [isTxSuccess]);
+
   const handleCreate = async () => {
     setIsPending(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsPending(false);
-    setIsSuccess(true);
+    try {
+      // 1. POST /deals to backend
+      const result = await apiClient<any>("/deals", {
+        method: "POST",
+        body: JSON.stringify({
+          title: form.name,
+          description: form.description,
+          sellerAddress: form.sellerAddress,
+          amount: form.amount,
+          token: form.token,
+          dealType: form.dealType,
+          chain: form.chain,
+        }),
+      });
+
+      // 2. call on-chain
+      createDeal({
+        buyer:
+          (address as `0x${string}`) ||
+          "0x0000000000000000000000000000000000000000",
+        seller:
+          (form.sellerAddress as `0x${string}`) ||
+          "0x0000000000000000000000000000000000000000",
+        token: "0x0000000000000000000000000000000000000000", // Default to USDC/placeholder address
+        amount: BigInt(form.amount || "0"),
+        deliveryDeadline: BigInt(
+          new Date(form.deliveryDeadline || Date.now()).getTime() / 1000,
+        ),
+        disputeWindow: BigInt(Number(form.disputeWindow) * 86400),
+        acceptanceWindow: BigInt(Number(form.acceptanceWindow) * 86400),
+        sellerAcceptanceWindowSecs: BigInt(Number(form.sellerWindow) * 86400),
+        dealType: form.dealType === "software" ? 0 : 1, // 0=Software, 1=Hardware
+        partialSettlementAllowed: form.partialSettlement,
+        termsHash:
+          result.hashes?.termsHash ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        metadataHash:
+          result.hashes?.metadataHash ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        evidenceRequirementsHash:
+          result.hashes?.evidenceHash ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        settlementRulesHash:
+          result.hashes?.rulesHash ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        verifier: "0x0000000000000000000000000000000000000000", // Default
+        disputeResolver: "0x0000000000000000000000000000000000000000", // Default
+      });
+    } catch (err) {
+      console.error(err);
+      setIsPending(false);
+    }
   };
 
   const charCount = form.name.length;

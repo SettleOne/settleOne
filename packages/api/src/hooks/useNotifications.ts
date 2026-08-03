@@ -26,28 +26,43 @@ export function useUnreadCount() {
 
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (notificationId: string) =>
-      apiClient<void>(`/notifications/${notificationId}/read`, {
+      apiClient<{ updated: number }>("/notifications/read", {
         method: "POST",
+        body: JSON.stringify({ notificationIds: [notificationId] }),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      }),
   });
 }
 
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: () =>
-      apiClient<void>("/notifications/read-all", {
+      apiClient<{ updated: number }>("/notifications/read", {
         method: "POST",
+        body: JSON.stringify({ notificationIds: [] }),
+        // empty = mark all
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      }),
+  });
+}
+
+export function useDeleteNotification() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<void>(`/notifications/${id}`, { method: "DELETE" }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      }),
   });
 }

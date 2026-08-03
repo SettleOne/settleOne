@@ -5,6 +5,8 @@ import { Avatar, AddressDisplay, Spinner } from "@settleone/design-system";
 import { useSendMessage } from "@settleone/api";
 import { formatRelativeTime } from "@settleone/utils";
 
+import { useChatSocket } from "@settleone/api";
+
 interface DealChatRoomProps {
   dealId: bigint | undefined;
 }
@@ -14,10 +16,15 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
   const [message, setMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages = [], isLoading } = {
-    data: { messages: [] },
-    isLoading: false,
-  } as any;
+  const token = localStorage.getItem("so_access_token");
+  const {
+    messages,
+    sendMessage: emitMessage,
+    sendTyping,
+    typingUsers,
+    markRead,
+  } = useChatSocket(dealId?.toString(), token);
+  const isLoading = false;
   const { mutate: sendMessage } = useSendMessage();
 
   useEffect(() => {

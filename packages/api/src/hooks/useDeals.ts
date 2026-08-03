@@ -1,54 +1,55 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../client";
-import type { Deal } from "@settleone/types";
 
 interface DealsResponse {
-  deals: Deal[];
-  total: number;
-  page: number;
-  pageSize: number;
+  deals: any[];
+  nextCursor: string | null;
 }
 
 interface DealsParams {
-  page?: number;
-  pageSize?: number;
-  state?: number;
-  role?: "buyer" | "seller";
-  address?: string;
+  limit?: number;
+  cursor?: string;
+  state?: string;
+  dealType?: string;
+  category?: string;
+  search?: string;
+  chainId?: number;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+  [key: string]: string | number | boolean | undefined;
 }
 
 export function useDeals(params: DealsParams = {}) {
   return useQuery({
     queryKey: ["deals", params],
-    queryFn: () =>
-      apiClient<DealsResponse>("/deals", {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize,
-          state: params.state,
-          role: params.role,
-          address: params.address,
-        },
-      }),
+    queryFn: () => apiClient<DealsResponse>("/deals", { params }),
   });
 }
 
-export function useMyDeals(
-  address: string | undefined,
-  params: Omit<DealsParams, "address"> = {},
-) {
+export function useMyCreatedDeals(params: DealsParams = {}) {
   return useQuery({
-    queryKey: ["myDeals", address, params],
-    queryFn: () =>
-      apiClient<DealsResponse>("/deals", {
-        params: {
-          address,
-          page: params.page,
-          pageSize: params.pageSize,
-          state: params.state,
-          role: params.role,
-        },
-      }),
-    enabled: !!address,
+    queryKey: ["myCreatedDeals", params],
+    queryFn: () => apiClient<DealsResponse>("/deals/my/created", { params }),
+  });
+}
+
+export function useMyAcceptedDeals(params: DealsParams = {}) {
+  return useQuery({
+    queryKey: ["myAcceptedDeals", params],
+    queryFn: () => apiClient<DealsResponse>("/deals/my/accepted", { params }),
+  });
+}
+
+export function useActiveDeals(params: DealsParams = {}) {
+  return useQuery({
+    queryKey: ["activeDeals", params],
+    queryFn: () => apiClient<DealsResponse>("/deals/active", { params }),
+  });
+}
+
+export function useMyDeals(params: DealsParams = {}) {
+  return useQuery({
+    queryKey: ["myDeals", params],
+    queryFn: () => apiClient<DealsResponse>("/deals/my/created", { params }),
   });
 }

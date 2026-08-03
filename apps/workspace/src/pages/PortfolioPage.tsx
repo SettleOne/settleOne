@@ -34,7 +34,7 @@ const yieldData = [
 
 export function PortfolioPage() {
   const { address } = useAccount();
-  const { data, isLoading } = useMyDeals(address);
+  const { data, isLoading } = useMyDeals({});
   const [chartFilter, setChartFilter] = useState("30d");
 
   const deals = data?.deals || [];

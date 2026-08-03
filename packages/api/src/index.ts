@@ -2,11 +2,29 @@
 export { apiClient, ApiError, setAuthToken, clearAuthToken } from "./client";
 
 // Hooks
-export { useDeals, useMyDeals } from "./hooks/useDeals";
+export {
+  useDealFiles,
+  useUploadFile,
+  useFileDownloadUrl,
+} from "./hooks/useFiles";
+export {
+  useSocket,
+  useDealRoomSocket,
+  useChatSocket,
+  useNotificationSocket,
+} from "./hooks/useSocket";
+export {
+  useDeals,
+  useMyDeals,
+  useMyCreatedDeals,
+  useMyAcceptedDeals,
+  useActiveDeals,
+} from "./hooks/useDeals";
 export {
   useDeal,
   useCreateDealMutation,
-  useUpdateDealStatus,
+  useDealActivity,
+  useDealPayout,
 } from "./hooks/useDeal";
 export { useDeliveries, useSubmitDelivery } from "./hooks/useDeliveries";
 export { useEvidence, useSubmitEvidence } from "./hooks/useEvidence";

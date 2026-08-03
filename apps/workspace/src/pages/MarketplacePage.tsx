@@ -13,89 +13,100 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button, Spinner } from "@settleone/design-system";
-import { useDeals } from "@settleone/api";
+import { useDeals, usePortfolio } from "@settleone/api";
+import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
 
 // ── Inline enhanced DealCard ────────────────────────────────────
-function getDealStateStyle(state: string) {
+function getDealStateStyle(state: number) {
   const map: Record<
-    string,
+    number,
     { color: string; bg: string; border: string; dot: string }
   > = {
-    AwaitingFunding: {
+    [DealState.AwaitingFunding]: {
       color: "#fbbf24",
       bg: "rgba(245,158,11,0.12)",
       border: "rgba(245,158,11,0.3)",
       dot: "#f59e0b",
     },
-    PendingSellerAcceptance: {
+    [DealState.PendingSellerAcceptance]: {
       color: "#60a5fa",
       bg: "rgba(59,130,246,0.12)",
       border: "rgba(59,130,246,0.3)",
       dot: "#3b82f6",
     },
-    Active: {
+    [DealState.Active]: {
       color: "#4ade80",
       bg: "rgba(34,197,94,0.12)",
       border: "rgba(34,197,94,0.3)",
       dot: "#22c55e",
     },
-    DeliverySubmitted: {
+    [DealState.DeliverySubmitted]: {
       color: "#a78bfa",
       bg: "rgba(139,92,246,0.12)",
       border: "rgba(139,92,246,0.3)",
       dot: "#8b5cf6",
     },
-    AwaitingAcceptance: {
+    [DealState.AwaitingAcceptance]: {
       color: "#22d3ee",
       bg: "rgba(6,182,212,0.12)",
       border: "rgba(6,182,212,0.3)",
       dot: "#06b6d4",
     },
-    Accepted: {
+    [DealState.Accepted]: {
       color: "#2dd4bf",
       bg: "rgba(20,184,166,0.12)",
       border: "rgba(20,184,166,0.3)",
       dot: "#14b8a6",
     },
-    Disputed: {
+    [DealState.Disputed]: {
       color: "#f87171",
       bg: "rgba(239,68,68,0.12)",
       border: "rgba(239,68,68,0.3)",
       dot: "#ef4444",
     },
-    Released: {
+    [DealState.Released]: {
       color: "#4ade80",
       bg: "rgba(34,197,94,0.12)",
       border: "rgba(34,197,94,0.3)",
       dot: "#22c55e",
     },
-    Refunded: {
-      color: "#fbbf24",
-      bg: "rgba(245,158,11,0.12)",
-      border: "rgba(245,158,11,0.3)",
-      dot: "#f59e0b",
-    },
-    Settled: {
-      color: "#94a3b8",
-      bg: "rgba(100,116,139,0.12)",
-      border: "rgba(100,116,139,0.3)",
-      dot: "#64748b",
-    },
-    Cancelled: {
+    [DealState.Refunded]: {
       color: "#9ca3af",
       bg: "rgba(156,163,175,0.12)",
       border: "rgba(156,163,175,0.3)",
       dot: "#9ca3af",
     },
+    [DealState.Settled]: {
+      color: "#94a3b8",
+      bg: "rgba(100,116,139,0.12)",
+      border: "rgba(100,116,139,0.3)",
+      dot: "#64748b",
+    },
   };
-  return map[state] || map["Settled"]!;
+  return map[state] || map[DealState.Settled]!;
+}
+
+function getDealStateLabel(state: number) {
+  const map: Record<number, string> = {
+    [DealState.AwaitingFunding]: "Awaiting Funding",
+    [DealState.PendingSellerAcceptance]: "Pending Acceptance",
+    [DealState.Active]: "Active",
+    [DealState.DeliverySubmitted]: "Delivery Submitted",
+    [DealState.AwaitingAcceptance]: "Awaiting Buyer Acceptance",
+    [DealState.Accepted]: "Accepted",
+    [DealState.Disputed]: "Disputed",
+    [DealState.Released]: "Released",
+    [DealState.Refunded]: "Refunded",
+    [DealState.Settled]: "Settled",
+  };
+  return map[state] || "Unknown";
 }
 
 function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
   const [copied, setCopied] = useState(false);
-  const stateKey = deal.stateName || "Active";
+  const stateKey = deal.state || DealState.Active;
   const style = getDealStateStyle(stateKey);
   const isSoftware = deal.dealType === 0 || deal.dealType === "SoftDelivery";
   const deadline = deal.deliveryDeadline
@@ -122,7 +133,6 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
       onClick={onClick}
       className="group relative bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[var(--border-light)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_0_1px_rgba(59,130,246,0.15)]"
     >
-      {/* Top row: badges */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex flex-wrap gap-1.5">
           <span
@@ -134,13 +144,7 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
           >
             {isSoftware ? "Software" : "Hardware"}
           </span>
-          {deal.category && (
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)] uppercase tracking-wide">
-              {deal.category}
-            </span>
-          )}
         </div>
-        {/* State badge */}
         <span
           className="text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap"
           style={{
@@ -153,21 +157,18 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
             className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
             style={{ background: style.dot }}
           />
-          {stateKey.replace(/([A-Z])/g, " $1").trim()}
+          {getDealStateLabel(stateKey)}
         </span>
       </div>
 
-      {/* Deal name */}
       <h3 className="font-bold text-[var(--text-primary)] text-[15px] leading-snug line-clamp-2 mb-1">
         {deal.title || deal.name || `Deal #${deal.id}`}
       </h3>
 
-      {/* Deal ID */}
       <p className="text-xs text-[var(--text-muted)] font-mono mb-3">
         #{String(deal.id).padStart(5, "0")}
       </p>
 
-      {/* Buyer */}
       <div className="flex items-center gap-1.5 mb-3 text-xs text-[var(--text-secondary)]">
         <span className="text-[var(--text-muted)]">Creator:</span>
         <span className="font-mono text-[var(--text-primary)]">
@@ -187,7 +188,6 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         </button>
       </div>
 
-      {/* Amount */}
       <div className="mb-3">
         <span className="text-xl font-bold text-[var(--text-primary)]">
           {deal.amount
@@ -204,7 +204,6 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         )}
       </div>
 
-      {/* Progress bar */}
       {deal.amount && (
         <div className="w-full h-1 bg-[var(--bg-subtle)] rounded-full mb-3 overflow-hidden">
           <div
@@ -222,7 +221,6 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         </div>
       )}
 
-      {/* Timeline */}
       <div className="space-y-1 mb-4 text-xs text-[var(--text-secondary)]">
         {deadline && (
           <div className="flex items-center gap-1.5">
@@ -260,130 +258,20 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
         )}
       </div>
 
-      {/* Bottom row */}
       <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-0.5 rounded-full border border-[var(--border)]">
             {deal.chain || "Arbitrum"}
-          </span>
-          <span className="text-[10px] font-medium text-[var(--accent-blue-bright)] bg-[var(--accent-blue-glow2)] px-2 py-0.5 rounded-full border border-[var(--accent-blue)]/20">
-            {deal.token || "USDC"}
           </span>
         </div>
         <span className="text-xs font-semibold text-[var(--accent-blue)] group-hover:text-[var(--accent-blue-bright)] transition-colors">
           View Deal →
         </span>
       </div>
-
-      {/* Accept Deal button on hover (for open deals) */}
-      {(stateKey === "AwaitingFunding" ||
-        stateKey === "PendingSellerAcceptance") && (
-        <div className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick();
-            }}
-            className="w-full py-1.5 text-xs font-semibold text-white rounded-[var(--radius-input)] transition-all"
-            style={{ background: "linear-gradient(135deg, #3b82f6, #06b6d4)" }}
-          >
-            Accept Deal
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
-// ── Mock data (if no backend) ───────────────────────────────────
-const MOCK_DEALS = [
-  {
-    id: 143,
-    title: "Smart Contract Audit for DeFi Protocol",
-    dealType: 0,
-    category: "Smart Contract Audit",
-    stateName: "Active",
-    buyer: "0xabcdef1234567890abcdef1234567890abcdef12",
-    amount: 5000000000n,
-    depositedFunds: 3000000000n,
-    token: "USDC",
-    chain: "Arbitrum",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 1800000),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 259200),
-  },
-  {
-    id: 129,
-    title: "React Dashboard UI Development",
-    dealType: 0,
-    category: "Web Development",
-    stateName: "PendingSellerAcceptance",
-    buyer: "0xba987654321fedcba987654321fedcba9876543",
-    amount: 2500000000n,
-    depositedFunds: 2500000000n,
-    token: "USDT",
-    chain: "Ethereum",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 604800),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 86400),
-  },
-  {
-    id: 118,
-    title: "Industrial Electronics Manufacturing Batch",
-    dealType: 1,
-    category: "Electronics",
-    stateName: "AwaitingFunding",
-    buyer: "0x1122334455667788990011223344556677889900",
-    amount: 15000000000n,
-    depositedFunds: 0n,
-    token: "USDC",
-    chain: "Polygon",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 2592000),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 172800),
-  },
-  {
-    id: 101,
-    title: "Mobile App — iOS & Android",
-    dealType: 0,
-    category: "Mobile App",
-    stateName: "DeliverySubmitted",
-    buyer: "0xaabb11223344556677889900aabb112233445566",
-    amount: 8000000000n,
-    depositedFunds: 8000000000n,
-    token: "DAI",
-    chain: "Base",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 86400 * 5),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 86400 * 10),
-  },
-  {
-    id: 98,
-    title: "Backend API Integration & Cloud Deployment",
-    dealType: 0,
-    category: "Backend/API",
-    stateName: "AwaitingAcceptance",
-    buyer: "0xccdd99887766554433221100ccdd998877665544",
-    amount: 3200000000n,
-    depositedFunds: 3200000000n,
-    token: "USDC",
-    chain: "Arbitrum",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 172800),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 86400 * 5),
-  },
-  {
-    id: 84,
-    title: "Custom Office Furniture Set — 50 Units",
-    dealType: 1,
-    category: "Furniture",
-    stateName: "Accepted",
-    buyer: "0xeeff00112233445566778899eeff001122334455",
-    amount: 22000000000n,
-    depositedFunds: 22000000000n,
-    token: "USDC",
-    chain: "Ethereum",
-    deliveryDeadline: BigInt(Math.floor(Date.now() / 1000) + 86400 * 2),
-    createdAt: BigInt(Math.floor(Date.now() / 1000) - 86400 * 15),
-  },
-];
-
-// ── Status filter options ───────────────────────────────────────
 const STATUS_FILTERS = [
   "All",
   "Open",
@@ -412,13 +300,30 @@ export function MarketplacePage() {
   const [activeTab, setActiveTab] = useState("All Deals");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { data, isLoading } = useDeals({});
-  const deals: any[] = data?.deals?.length ? data.deals : MOCK_DEALS;
+  const { data, isLoading } = useDeals({
+    state:
+      activeTab === "Open"
+        ? "AwaitingFunding,PendingSellerAcceptance"
+        : activeTab === "Active"
+          ? "Active"
+          : activeTab === "Accepted"
+            ? "Accepted"
+            : activeTab === "Completed"
+              ? "Released,Settled"
+              : activeTab === "Expired"
+                ? "Expired,Cancelled"
+                : undefined,
+    search: searchQuery || undefined,
+    limit: 20,
+  });
+
+  const deals = data?.deals || [];
+  const { data: portfolioData } = usePortfolio();
 
   const filteredDeals = deals.filter((d: any) => {
     if (
       searchQuery &&
-      !(d.title || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
       !String(d.id).includes(searchQuery)
     )
       return false;
@@ -706,7 +611,7 @@ export function MarketplacePage() {
                 <DealCard
                   key={deal.id}
                   deal={deal}
-                  onClick={() => navigate(`/marketplace/${deal.id}`)}
+                  onClick={() => navigate(`/deal/${deal.id}`)}
                 />
               ))}
             </div>

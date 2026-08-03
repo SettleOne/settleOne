@@ -1,46 +1,15 @@
 import React from "react";
 import { Activity, Wallet, PlayCircle, MessageSquare } from "lucide-react";
 import { AddressDisplay } from "@settleone/design-system";
+import { useDealActivity } from "@settleone/api";
 
 interface ActivityFeedProps {
   dealId: bigint | undefined;
 }
 
 export function ActivityFeed({ dealId }: ActivityFeedProps) {
-  const events = [
-    {
-      id: 1,
-      type: "message",
-      icon: <MessageSquare size={14} />,
-      color: "bg-[var(--bg-hover)] text-[var(--text-secondary)]",
-      title: "New message",
-      desc: "Seller sent a message in chat.",
-      time: "10:42 AM",
-      date: "Jan 10, 2026",
-    },
-    {
-      id: 2,
-      type: "funded",
-      icon: <Wallet size={14} />,
-      color: "bg-[var(--state-active)]/20 text-[var(--state-active)]",
-      title: "Deal Funded",
-      desc: "Buyer deposited funds into the Vault.",
-      time: "09:15 AM",
-      date: "Jan 5, 2026",
-      txHash: "0xabc...def",
-    },
-    {
-      id: 3,
-      type: "created",
-      icon: <PlayCircle size={14} />,
-      color: "bg-[var(--accent-blue)]/20 text-[var(--accent-blue)]",
-      title: "Deal Created",
-      desc: `Deal #DL-${String(dealId || 0).padStart(5, "0")} initialized.`,
-      time: "14:30 PM",
-      date: "Jan 1, 2026",
-      txHash: "0x123...456",
-    },
-  ];
+  const { data, isLoading } = useDealActivity(dealId?.toString());
+  const events = data?.logs || [];
 
   return (
     <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6 h-full flex flex-col min-h-[400px]">
@@ -64,7 +33,7 @@ export function ActivityFeed({ dealId }: ActivityFeedProps) {
 
       <div className="p-4 flex-1 overflow-y-auto">
         <div className="relative border-l border-[var(--border)] ml-3 space-y-6 pb-4">
-          {events.map((event) => (
+          {events.map((event: any) => (
             <div key={event.id} className="relative pl-6">
               <div
                 className={`absolute -left-[11px] top-0.5 w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[var(--bg-card)] shadow-sm ${event.color}`}

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useChainId } from "wagmi";
+import { useAcceptDeal, useRejectDeal, useCancelDeal } from "@settleone/sdk";
 import { DealState } from "@settleone/types";
 import {
   AlertCircle,
@@ -30,6 +32,13 @@ export function ActionCenter({
   userRole,
   deal,
 }: ActionCenterProps) {
+  const chainId = useChainId();
+  const { acceptDeal, isPending: isAccepting } = useAcceptDeal(chainId);
+  const { rejectDeal, isPending: isRejecting } = useRejectDeal(chainId);
+  const { cancelDeal, isPending: isCanceling } = useCancelDeal(chainId);
+
+  const getDealId = () => BigInt(deal?.onChainId || deal?.id || 0);
+
   const [isFundModalOpen, setFundModalOpen] = useState(false);
   const [isDeliveryModalOpen, setDeliveryModalOpen] = useState(false);
   const [isDisputeModalOpen, setDisputeModalOpen] = useState(false);
@@ -53,7 +62,13 @@ export function ActionCenter({
             seller to accept.
           </p>
           <div className="flex justify-center gap-3">
-            <Button variant="secondary">Cancel Deal</Button>
+            <Button
+              variant="secondary"
+              onClick={() => cancelDeal(getDealId())}
+              disabled={isCanceling}
+            >
+              Cancel Deal
+            </Button>
             <Button variant="primary" onClick={() => setFundModalOpen(true)}>
               Fund Deal
             </Button>
@@ -95,12 +110,16 @@ export function ActionCenter({
             <Button
               variant="danger"
               className="bg-transparent border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10"
+              onClick={() => rejectDeal(getDealId())}
+              disabled={isRejecting}
             >
               Reject Deal
             </Button>
             <Button
               variant="primary"
               className="bg-[var(--accent-green)] hover:brightness-110 border-none text-[var(--bg-base)] font-bold shadow-[var(--shadow-glow)]"
+              onClick={() => acceptDeal(getDealId())}
+              disabled={isAccepting}
             >
               Accept Deal
             </Button>
@@ -346,10 +365,9 @@ export function ActionCenter({
       <DisputeModal
         isOpen={isDisputeModalOpen}
         onClose={() => setDisputeModalOpen(false)}
-        onSubmit={(reason, files) => {
-          console.log("Dispute", reason, files);
-          setDisputeModalOpen(false);
-        }}
+        dealId={
+          deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)
+        }
       />
     </div>
   );

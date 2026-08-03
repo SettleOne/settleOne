@@ -24,11 +24,29 @@ interface PortfolioActivity {
   volume: string;
 }
 
-export function usePortfolio(address: string | undefined) {
+export function usePortfolio() {
   return useQuery({
-    queryKey: ["portfolio", address],
-    queryFn: () => apiClient<PortfolioSummary>(`/portfolio/${address}`),
-    enabled: !!address,
+    queryKey: ["portfolio"],
+    queryFn: () => apiClient<any>("/portfolio/summary"),
+  });
+}
+
+export function usePortfolioTransactions(
+  params: {
+    limit?: number;
+    cursor?: string;
+  } = {},
+) {
+  return useQuery({
+    queryKey: ["portfolioTransactions", params],
+    queryFn: () => apiClient<any>("/portfolio/transactions", { params }),
+  });
+}
+
+export function useYieldChart(params: { days?: number } = {}) {
+  return useQuery({
+    queryKey: ["yieldChart", params],
+    queryFn: () => apiClient<any>("/portfolio/yield-chart", { params }),
   });
 }
 

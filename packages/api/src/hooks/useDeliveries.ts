@@ -17,26 +17,25 @@ export function useDeliveries(dealId: string | undefined) {
 
 export function useSubmitDelivery() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       dealId,
       proofHash,
       cid,
+      notes,
     }: {
       dealId: string;
       proofHash: string;
       cid: string;
+      notes?: string;
     }) =>
-      apiClient<{ id: string }>(`/deals/${dealId}/deliveries`, {
+      apiClient<{ delivery: any; proofHash: string }>("/deliveries", {
         method: "POST",
-        body: JSON.stringify({ proofHash, cid }),
+        body: JSON.stringify({ dealId, proofHash, cid, notes }),
       }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["deliveries", variables.dealId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["deliveries", vars.dealId] });
+      queryClient.invalidateQueries({ queryKey: ["deal", vars.dealId] });
     },
   });
 }

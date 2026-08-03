@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAccount, useChainId } from "wagmi";
 import { DealState } from "@settleone/types";
 import { useGetDeal } from "@settleone/sdk";
+import { useDeal } from "@settleone/api";
 import { DealRoomHeader } from "./DealRoom/components/DealRoomHeader";
 import { DealLifecycleTimeline } from "./DealRoom/components/DealLifecycleTimeline";
 import { IntelligencePanels } from "./DealRoom/components/IntelligencePanels";
@@ -22,15 +23,13 @@ import { AlertCircle } from "lucide-react";
 // DisputeEvidenceLog and VerdictRecord are conditional below.
 
 export function DealRoomPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const { data: deal, isLoading, isError, refetch } = useDeal(id);
+
   const chainId = useChainId();
   const { address } = useAccount();
 
   const dealId = id ? BigInt(id) : undefined;
-
-  const { data: deal, isLoading, error, refetch } = useGetDeal(chainId, dealId);
-
-  const currentState = deal?.state ?? DealState.None;
 
   const userRole = useMemo(() => {
     if (!deal || !address) return "none";
@@ -38,6 +37,8 @@ export function DealRoomPage() {
     if (deal.seller.toLowerCase() === address.toLowerCase()) return "seller";
     return "none";
   }, [deal, address]);
+
+  const currentState = deal?.state ?? DealState.AwaitingFunding;
 
   const dealInfoTabs = [
     {
@@ -132,7 +133,7 @@ export function DealRoomPage() {
     );
   }
 
-  if (error || !deal) {
+  if (isError || !deal) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-6">
         <div className="w-16 h-16 bg-red-900/20 text-[var(--accent-red)] rounded-full flex items-center justify-center mb-4">

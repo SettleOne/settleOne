@@ -16,49 +16,57 @@ export function useDeal(dealId: string | undefined) {
 }
 
 interface CreateDealPayload {
-  buyer: string;
-  seller: string;
-  token: string;
-  amount: string;
-  deliveryDeadline: number;
-  disputeWindow: number;
-  acceptanceWindow: number;
-  sellerAcceptanceWindowSecs: number;
-  dealType: number;
-  partialSettlementAllowed: boolean;
-  termsHash: string;
-  metadataHash: string;
+  name: string;
+  description: string;
+  category: string;
+  dealType: "SoftDelivery" | "HardDelivery";
   chainId: number;
+  tokenAddress: string;
+  amount: string;
+  sellerAddress?: string;
+  verifierAddress?: string;
+  resolverAddress?: string;
+  partialSettlementAllowed: boolean;
+  sellerAcceptanceWindowSeconds: number;
+  acceptanceWindowSeconds: number;
+  disputeWindowSeconds: number;
+  deliveryDeadlineTimestamp: number;
+  termsText?: string;
+  evidenceRequirements?: string;
+  settlementRules?: string;
 }
 
 export function useCreateDealMutation() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (payload: CreateDealPayload) =>
-      apiClient<{ id: string; dealId: string }>("/deals", {
+      apiClient<{ deal: any; hashes: any }>("/deals", {
         method: "POST",
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deals"] });
-      queryClient.invalidateQueries({ queryKey: ["myDeals"] });
+      queryClient.invalidateQueries({ queryKey: ["myCreatedDeals"] });
     },
   });
 }
 
-export function useUpdateDealStatus() {
-  const queryClient = useQueryClient();
+export function useDealActivity(dealId: string | undefined) {
+  return useQuery({
+    queryKey: ["dealActivity", dealId],
+    queryFn: () =>
+      apiClient<{ logs: any[]; nextCursor: string | null }>(
+        `/deals/${dealId}/activity`,
+      ),
+    enabled: !!dealId,
+    refetchInterval: 30000,
+  });
+}
 
-  return useMutation({
-    mutationFn: ({ dealId, status }: { dealId: string; status: string }) =>
-      apiClient<void>(`/deals/${dealId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
-      queryClient.invalidateQueries({ queryKey: ["deals"] });
-    },
+export function useDealPayout(dealId: string | undefined) {
+  return useQuery({
+    queryKey: ["dealPayout", dealId],
+    queryFn: () => apiClient<any>(`/deals/${dealId}/payout`),
+    enabled: !!dealId,
   });
 }
