@@ -158,7 +158,15 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="group relative bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[var(--border-light)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_0_1px_rgba(59,130,246,0.15)]"
+      className="group relative rounded-[var(--radius-card)] p-5 cursor-pointer animate-card-enter card-hover"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(14,25,45,0.78) 0%, rgba(10,18,32,0.68) 100%)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        boxShadow:
+          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}
     >
       {/* Role Badge */}
       <div
@@ -343,70 +351,129 @@ export function ActiveDealsPage() {
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/docs-hero.jpg)",
+          backgroundImage: "url(/blockchain-bg.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center top",
-          opacity: 0.03,
+          opacity: 0.045,
           zIndex: 0,
         }}
       />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 animate-fade-in">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="p-2 bg-[var(--accent-blue)]/15 rounded-lg text-[var(--accent-blue)]">
-                <Activity size={22} />
+              <div
+                className="p-2.5 rounded-xl text-[var(--accent-blue)]"
+                style={{
+                  background: "rgba(59,130,246,0.12)",
+                  border: "1px solid rgba(59,130,246,0.2)",
+                }}
+              >
+                <Activity size={20} />
               </div>
-              <h1 className="text-2xl font-bold">Active Deals</h1>
+              <h1 className="text-2xl font-black tracking-tight">
+                <span className="gradient-text">Active Deals</span>
+              </h1>
             </div>
-            <p className="text-sm text-[var(--text-muted)] ml-11">
+            <p className="text-sm text-[var(--text-muted)] ml-12">
               Deals you are currently participating in as buyer or seller
             </p>
           </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
-              <Activity size={14} />
-              Total Active
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 stagger-children">
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-4 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            }}
+          >
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2 font-semibold uppercase tracking-wider">
+              <Activity size={13} className="text-blue-400" /> Total Active
             </div>
-            <div className="text-2xl font-bold">{MOCK_ACTIVE_DEALS.length}</div>
+            <div
+              className="text-2xl font-black"
+              style={{
+                background: "linear-gradient(135deg, white, #60a5fa)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {MOCK_ACTIVE_DEALS.length}
+            </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">
               ongoing deals
             </p>
           </div>
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
-              <DollarSign size={14} />
-              Capital Locked
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-4 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+              animationDelay: "60ms",
+            }}
+          >
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2 font-semibold uppercase tracking-wider">
+              <DollarSign size={13} className="text-green-400" /> Capital Locked
             </div>
-            <div className="text-2xl font-bold">
+            <div
+              className="text-2xl font-black"
+              style={{
+                background: "linear-gradient(135deg, white, #22c55e)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               ${totalCapital.toLocaleString()}
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">
               USDC equivalent
             </p>
           </div>
-          <div className="bg-[var(--bg-card)] border border-[var(--accent-green)]/30 rounded-[var(--radius-card)] p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
-              <TrendingUp size={14} />
-              Yield Accruing
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-4 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(4,20,12,0.8), rgba(3,15,9,0.75))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(34,197,94,0.15)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+              animationDelay: "120ms",
+            }}
+          >
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2 font-semibold uppercase tracking-wider">
+              <TrendingUp size={13} className="text-green-400" /> Yield Accruing
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-green)]">
+            <div className="text-2xl font-black text-[var(--accent-green)]">
               +${totalYield.toFixed(2)}
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">so far</p>
           </div>
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2">
-              <AlertCircle size={14} />
-              Needs Action
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-4 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+              animationDelay: "180ms",
+            }}
+          >
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-2 font-semibold uppercase tracking-wider">
+              <AlertCircle size={13} className="text-amber-400" /> Needs Action
             </div>
-            <div className="text-2xl font-bold text-[var(--accent-amber)]">
+            <div className="text-2xl font-black text-[var(--accent-amber)]">
               {
                 MOCK_ACTIVE_DEALS.filter(
                   (d) =>
@@ -422,7 +489,14 @@ export function ActiveDealsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 mb-6 space-y-3">
+        <div
+          className="rounded-[var(--radius-card)] p-4 mb-6 space-y-3"
+          style={{
+            background: "rgba(10,18,32,0.6)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.05)",
+          }}
+        >
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] font-medium">
               <Filter size={13} />

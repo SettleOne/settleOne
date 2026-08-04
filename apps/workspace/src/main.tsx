@@ -8,8 +8,10 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import App from "./App";
 import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { hydrateAuthToken } from "@settleone/api";
 
 const queryClient = new QueryClient();
+hydrateAuthToken();
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

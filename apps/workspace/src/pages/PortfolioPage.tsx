@@ -71,14 +71,22 @@ export function PortfolioPage() {
 
   return (
     <div className="max-w-6xl mx-auto text-[var(--text-primary)] font-[var(--font-sans)]">
-      {/* Background image - docs-hero subtle overlay */}
+      {/* Background */}
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/docs-hero.jpg)",
+          backgroundImage: "url(/blockchain-bg.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center top",
-          opacity: 0.04,
+          opacity: 0.05,
+          zIndex: 0,
+        }}
+      />
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 40% at 30% 0%, rgba(59,130,246,0.06) 0%, transparent 70%)",
           zIndex: 0,
         }}
       />
@@ -86,38 +94,78 @@ export function PortfolioPage() {
       {/* Content */}
       <div className="relative z-10 space-y-8">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Your Portfolio</h1>
+        <div className="animate-fade-in">
+          <h1 className="text-3xl font-black tracking-tight">
+            <span className="gradient-text">Your Portfolio</span>
+          </h1>
           <p className="text-[var(--text-secondary)] mt-2">
             Track your capital, yield earnings, and deal history.
           </p>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
-            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
-              <Wallet size={16} /> Total Active Capital
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 stagger-children">
+          {/* Total Capital */}
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-6 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow:
+                "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+            }}
+          >
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-xs font-semibold mb-3 uppercase tracking-wider">
+              <Wallet size={14} className="text-blue-400" /> Total Active
+              Capital
             </div>
-            <div className="text-3xl font-bold">
-              $12,500{" "}
-              <span className="text-sm text-[var(--text-muted)]">USDC</span>
+            <div className="text-3xl font-black tracking-tight">
+              <span
+                style={{
+                  background: "linear-gradient(135deg, white, #60a5fa)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                $12,500
+              </span>{" "}
+              <span className="text-sm font-normal text-[var(--text-muted)]">
+                USDC
+              </span>
             </div>
             <p className="text-sm text-[var(--text-secondary)] mt-2">
               Across {Math.max(stats.activeCount, 3)} active deals
             </p>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--accent-blue)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-glow)] relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <TrendingUp size={64} className="text-[var(--accent-blue)]" />
+          {/* Yield Card */}
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-6 relative overflow-hidden card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(6,40,20,0.7), rgba(4,20,14,0.8))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(34,197,94,0.2)",
+              boxShadow:
+                "0 4px 24px rgba(0,0,0,0.5), 0 0 30px rgba(34,197,94,0.06), inset 0 1px 0 rgba(34,197,94,0.06)",
+              animationDelay: "60ms",
+            }}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-8 pointer-events-none">
+              <TrendingUp size={64} style={{ color: "rgba(34,197,94,0.15)" }} />
             </div>
             <div className="relative z-10">
-              <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
-                <PieChart size={16} /> Total Yield Earned
+              <div className="flex items-center gap-2 text-[var(--text-secondary)] text-xs font-semibold mb-3 uppercase tracking-wider">
+                <PieChart size={14} className="text-green-400" /> Total Yield
+                Earned
               </div>
-              <div className="text-3xl font-bold text-[var(--accent-green)]">
-                +${stats.totalYield.toFixed(2)} USDC
+              <div className="text-3xl font-black tracking-tight text-[var(--accent-green)]">
+                +${stats.totalYield.toFixed(2)}{" "}
+                <span className="text-sm font-normal text-[var(--text-muted)]">
+                  USDC
+                </span>
               </div>
               <p className="text-sm text-[var(--text-secondary)] mt-2">
                 This month: +$42.10
@@ -125,21 +173,71 @@ export function PortfolioPage() {
             </div>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
-            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
-              <Briefcase size={16} /> Deals as Buyer
+          {/* Buyer Deals */}
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-6 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow:
+                "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+              animationDelay: "120ms",
+            }}
+          >
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-xs font-semibold mb-3 uppercase tracking-wider">
+              <Briefcase size={14} className="text-cyan-400" /> Deals as Buyer
             </div>
-            <div className="text-3xl font-bold">{stats.buyerDeals} total</div>
+            <div className="text-3xl font-black tracking-tight">
+              <span
+                style={{
+                  background: "linear-gradient(135deg, white, #22d3ee)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {stats.buyerDeals}
+              </span>
+              <span className="text-base font-normal text-[var(--text-muted)] ml-1">
+                total
+              </span>
+            </div>
             <p className="text-sm text-[var(--text-secondary)] mt-2">
               5 completed, 2 active, 1 disputed
             </p>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)]">
-            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm mb-3">
-              <Activity size={16} /> Deals as Seller
+          {/* Seller Deals */}
+          <div
+            className="animate-card-enter rounded-[var(--radius-card)] p-6 card-hover"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(14,25,45,0.8), rgba(10,18,32,0.7))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow:
+                "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+              animationDelay: "180ms",
+            }}
+          >
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-xs font-semibold mb-3 uppercase tracking-wider">
+              <Activity size={14} className="text-purple-400" /> Deals as Seller
             </div>
-            <div className="text-3xl font-bold">{stats.sellerDeals} total</div>
+            <div className="text-3xl font-black tracking-tight">
+              <span
+                style={{
+                  background: "linear-gradient(135deg, white, #a78bfa)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {stats.sellerDeals}
+              </span>
+              <span className="text-base font-normal text-[var(--text-muted)] ml-1">
+                total
+              </span>
+            </div>
             <p className="text-sm text-[var(--text-secondary)] mt-2">
               3 completed, 1 active
             </p>
@@ -148,8 +246,20 @@ export function PortfolioPage() {
 
         {/* Active Positions Table */}
         <div>
-          <h2 className="text-xl font-bold mb-4">Active Escrow Positions</h2>
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
+          <h2 className="text-xl font-bold mb-4 gradient-text inline-block">
+            Active Escrow Positions
+          </h2>
+          <div
+            className="rounded-[var(--radius-card)] overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(12,20,36,0.85), rgba(8,14,26,0.8))",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              boxShadow:
+                "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
+            }}
+          >
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead className="bg-[var(--bg-base)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">

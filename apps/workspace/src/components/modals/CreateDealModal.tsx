@@ -17,6 +17,7 @@ import {
 import { useChainId, useAccount } from "wagmi";
 import { useCreateDeal } from "@settleone/sdk";
 import { apiClient } from "@settleone/api";
+import { useRequireWallet } from "../../hooks/useRequireWallet";
 
 interface CreateDealModalProps {
   isOpen: boolean;
@@ -103,80 +104,83 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     isSuccess: isTxSuccess,
   } = useCreateDeal(chainId);
 
+  const { requireWallet, WalletPromptModal } = useRequireWallet();
+
   React.useEffect(() => {
-    if (isTxSuccess) {
-      setIsSuccess(true);
-      setIsPending(false);
-    }
-  }, [isTxSuccess]);
+    // Note: Success state typically handled by transaction status
+  }, []);
 
-  const handleCreate = async () => {
-    setIsPending(true);
-    try {
-      // 1. POST /deals to backend
-      const result = await apiClient<any>("/deals", {
-        method: "POST",
-        body: JSON.stringify({
-          title: form.name,
-          description: form.description,
-          sellerAddress: form.sellerAddress,
-          amount: form.amount,
-          token: form.token,
-          dealType: form.dealType,
-          chain: form.chain,
-        }),
-      });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    requireWallet(async () => {
+      setErrorMessage("");
+      setIsPending(true);
+      try {
+        // 1. POST /deals to backend
+        const result = await apiClient<any>("/deals", {
+          method: "POST",
+          body: JSON.stringify({
+            title: form.name,
+            description: form.description,
+            sellerAddress: form.sellerAddress,
+            amount: form.amount,
+            token: form.token,
+            dealType: form.dealType,
+            chain: form.chain,
+          }),
+        });
 
-      // 2. call on-chain
-      createDeal({
-        buyer:
-          (address as `0x${string}`) ||
-          "0x0000000000000000000000000000000000000000",
-        seller:
-          (form.sellerAddress as `0x${string}`) ||
-          "0x0000000000000000000000000000000000000000",
-        token: "0x0000000000000000000000000000000000000000", // Default to USDC/placeholder address
-        amount: BigInt(form.amount || "0"),
-        deliveryDeadline: BigInt(
-          new Date(form.deliveryDeadline || Date.now()).getTime() / 1000,
-        ),
-        disputeWindow: BigInt(Number(form.disputeWindow) * 86400),
-        acceptanceWindow: BigInt(Number(form.acceptanceWindow) * 86400),
-        sellerAcceptanceWindowSecs: BigInt(Number(form.sellerWindow) * 86400),
-        dealType: form.dealType === "software" ? 0 : 1, // 0=Software, 1=Hardware
-        partialSettlementAllowed: form.partialSettlement,
-        termsHash:
-          result.hashes?.termsHash ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-        metadataHash:
-          result.hashes?.metadataHash ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-        evidenceRequirementsHash:
-          result.hashes?.evidenceHash ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-        settlementRulesHash:
-          result.hashes?.rulesHash ||
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-        verifier: "0x0000000000000000000000000000000000000000", // Default
-        disputeResolver: "0x0000000000000000000000000000000000000000", // Default
-      });
-    } catch (err) {
-      console.error(err);
-      setIsPending(false);
-    }
+        // 2. call on-chain
+        createDeal({
+          buyer:
+            (address as `0x${string}`) ||
+            "0x0000000000000000000000000000000000000000",
+          seller:
+            (form.sellerAddress as `0x${string}`) ||
+            "0x0000000000000000000000000000000000000000",
+          token: "0x0000000000000000000000000000000000000000",
+          amount: BigInt(form.amount || "0"),
+          deliveryDeadline: BigInt(
+            new Date(form.deliveryDeadline || Date.now()).getTime() / 1000,
+          ),
+          disputeWindow: BigInt(Number(form.disputeWindow) * 86400),
+          acceptanceWindow: BigInt(Number(form.acceptanceWindow) * 86400),
+          sellerAcceptanceWindowSecs: BigInt(Number(form.sellerWindow) * 86400),
+          dealType: form.dealType === "software" ? 0 : 1,
+          partialSettlementAllowed: form.partialSettlement,
+          termsHash:
+            result.hashes?.termsHash ||
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          metadataHash:
+            result.hashes?.metadataHash ||
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          evidenceRequirementsHash:
+            result.hashes?.evidenceHash ||
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          settlementRulesHash:
+            result.hashes?.rulesHash ||
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          verifier: "0x0000000000000000000000000000000000000000",
+          disputeResolver: "0x0000000000000000000000000000000000000000",
+        });
+        setIsSuccess(true);
+      } catch (err: any) {
+        console.error(err);
+        setErrorMessage(err.message || "Failed to create deal");
+        setIsPending(false);
+      }
+    });
   };
 
   const charCount = form.name.length;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)" }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
+    <>
+      <WalletPromptModal />
       <div
-        className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-modal)] shadow-[var(--shadow-modal)] w-full max-w-[680px] max-h-[90vh] flex flex-col animate-fade-in"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)" }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)] shrink-0">
@@ -920,7 +924,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
               </button>
             ) : (
               <button
-                onClick={handleCreate}
+                onClick={handleSubmit}
                 disabled={isPending}
                 className="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] rounded-[var(--radius-input)] transition-all shadow-[var(--shadow-glow)] disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -957,6 +961,6 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

@@ -14,41 +14,118 @@ import {
   AlertCircle,
   ShieldAlert,
   X,
+  ExternalLink,
 } from "lucide-react";
 
 interface NavItemProps {
-  to: string;
+  to?: string;
   icon: React.ReactNode;
   label: string;
   badge?: number;
   isActive: boolean;
   onClick?: () => void;
+  danger?: boolean;
+  asButton?: boolean;
 }
 
-function NavItem({ to, icon, label, badge, isActive, onClick }: NavItemProps) {
-  return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className={`group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
-        isActive
-          ? "bg-gradient-to-r from-blue-500/15 to-cyan-400/5 text-cyan-300 border border-blue-500/20 shadow-[inset_0_0_20px_rgba(59,130,246,0.05)]"
-          : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
-      }`}
-    >
-      <div className="flex items-center gap-3">
+function NavItem({
+  to,
+  icon,
+  label,
+  badge,
+  isActive,
+  onClick,
+  danger,
+  asButton,
+}: NavItemProps) {
+  const cls = `
+    group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl
+    transition-all duration-200 cursor-pointer select-none
+    ${
+      isActive
+        ? "text-white"
+        : danger
+          ? "text-rose-400/80 hover:text-rose-300"
+          : "text-[var(--text-secondary)] hover:text-white"
+    }
+  `;
+
+  const activeStyle = isActive
+    ? {
+        background:
+          "linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(6,182,212,0.08) 100%)",
+        border: "1px solid rgba(59,130,246,0.2)",
+        boxShadow:
+          "0 2px 12px rgba(59,130,246,0.1), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }
+    : danger
+      ? {
+          background: "transparent",
+          border: "1px solid transparent",
+        }
+      : {
+          background: "transparent",
+          border: "1px solid transparent",
+        };
+
+  const hoverStyle = {
+    style: activeStyle,
+  };
+
+  const inner = (
+    <>
+      {isActive && (
+        <div
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
+          style={{
+            background: "linear-gradient(180deg, #3b82f6, #06b6d4)",
+            boxShadow: "0 0 8px rgba(59,130,246,0.8)",
+          }}
+        />
+      )}
+      <div className="flex items-center gap-3 pl-1">
         <span
-          className={`transition-all duration-300 ${isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" : "text-slate-500 group-hover:text-cyan-200 group-hover:scale-110"}`}
+          className="transition-all duration-200 flex-shrink-0"
+          style={{
+            color: isActive
+              ? "#93c5fd"
+              : danger
+                ? "rgba(251,113,133,0.7)"
+                : undefined,
+            filter: isActive
+              ? "drop-shadow(0 0 6px rgba(96,165,250,0.5))"
+              : "none",
+          }}
         >
           {icon}
         </span>
-        <span className="text-sm font-bold tracking-wide">{label}</span>
+        <span className="text-sm font-semibold tracking-wide">{label}</span>
       </div>
       {badge !== undefined && badge > 0 && (
-        <span className="px-2 py-0.5 text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full min-w-[20px] text-center shadow-[0_0_10px_rgba(6,182,212,0.5)]">
+        <span
+          className="px-2 py-0.5 text-[10px] font-black text-white rounded-full min-w-[20px] text-center flex-shrink-0"
+          style={{
+            background: "linear-gradient(135deg, #2563eb, #06b6d4)",
+            boxShadow: "0 0 10px rgba(6,182,212,0.4)",
+          }}
+        >
           {badge}
         </span>
       )}
+    </>
+  );
+
+  if (asButton) {
+    return (
+      <button className={cls} style={hoverStyle.style} onClick={onClick}>
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <Link to={to!} onClick={onClick} className={cls} style={hoverStyle.style}>
+      {inner}
     </Link>
   );
 }
@@ -63,30 +140,30 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
   const current = location.pathname;
 
   const navContent = (
-    <div className="flex-1 py-6 px-4 space-y-8">
+    <div className="flex-1 py-5 px-3 space-y-7">
       {/* MAIN */}
       <div>
-        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+        <p className="px-3.5 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2 opacity-70">
           Main
-        </h3>
-        <div className="space-y-1">
+        </p>
+        <div className="space-y-0.5">
           <NavItem
             to="/marketplace"
-            icon={<LayoutGrid size={18} />}
+            icon={<LayoutGrid size={17} />}
             label="Marketplace"
             isActive={current.startsWith("/marketplace")}
             onClick={onClose}
           />
           <NavItem
             to="/portfolio"
-            icon={<PieChart size={18} />}
+            icon={<PieChart size={17} />}
             label="Portfolio"
             isActive={current === "/portfolio"}
             onClick={onClose}
           />
           <NavItem
             to="/inbox"
-            icon={<Inbox size={18} />}
+            icon={<Inbox size={17} />}
             label="Inbox"
             badge={3}
             isActive={current === "/inbox"}
@@ -97,13 +174,13 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
 
       {/* MY DEALS */}
       <div>
-        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+        <p className="px-3.5 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2 opacity-70">
           My Deals
-        </h3>
-        <div className="space-y-1">
+        </p>
+        <div className="space-y-0.5">
           <NavItem
             to="/deals/active"
-            icon={<Activity size={18} />}
+            icon={<Activity size={17} />}
             label="Active Deals"
             badge={2}
             isActive={current === "/deals/active"}
@@ -111,21 +188,21 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
           />
           <NavItem
             to="/deals/created"
-            icon={<PlusSquare size={18} />}
+            icon={<PlusSquare size={17} />}
             label="Created Deals"
             isActive={current === "/deals/created"}
             onClick={onClose}
           />
           <NavItem
             to="/deals/accepted"
-            icon={<CheckSquare size={18} />}
+            icon={<CheckSquare size={17} />}
             label="Accepted Deals"
             isActive={current === "/deals/accepted"}
             onClick={onClose}
           />
           <NavItem
             to="/deals/disputed"
-            icon={<AlertCircle size={18} />}
+            icon={<AlertCircle size={17} />}
             label="Disputed Deals"
             isActive={current === "/deals/disputed"}
             onClick={onClose}
@@ -135,63 +212,44 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
 
       {/* TOOLS */}
       <div>
-        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+        <p className="px-3.5 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2 opacity-70">
           Tools
-        </h3>
-        <div className="space-y-1">
-          <button
-            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+        </p>
+        <div className="space-y-0.5">
+          <NavItem
+            asButton
+            icon={<Paperclip size={17} />}
+            label="Submit Evidence"
+            isActive={false}
             onClick={onClose}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
-                <Paperclip size={18} />
-              </span>
-              <span className="text-sm font-bold tracking-wide">
-                Submit Evidence
-              </span>
-            </div>
-          </button>
-
-          <button
-            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+          />
+          <NavItem
+            asButton
+            icon={<UploadCloud size={17} />}
+            label="Submit Delivery"
+            isActive={false}
             onClick={onClose}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
-                <UploadCloud size={18} />
-              </span>
-              <span className="text-sm font-bold tracking-wide">
-                Submit Delivery
-              </span>
-            </div>
-          </button>
-
-          <button
-            className="w-full group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-rose-400/80 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/20"
+          />
+          <NavItem
+            asButton
+            icon={<ShieldAlert size={17} />}
+            label="Raise Dispute"
+            isActive={false}
+            danger
             onClick={onClose}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-rose-500/70 group-hover:text-rose-400 group-hover:scale-110 transition-all duration-300">
-                <ShieldAlert size={18} />
-              </span>
-              <span className="text-sm font-bold tracking-wide">
-                Raise Dispute
-              </span>
-            </div>
-          </button>
+          />
         </div>
       </div>
 
       {/* ACCOUNT */}
       <div>
-        <h3 className="px-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-3 opacity-60">
+        <p className="px-3.5 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.15em] mb-2 opacity-70">
           Account
-        </h3>
-        <div className="space-y-1">
+        </p>
+        <div className="space-y-0.5">
           <NavItem
             to="/settings"
-            icon={<Settings size={18} />}
+            icon={<Settings size={17} />}
             label="Settings"
             isActive={current === "/settings"}
             onClick={onClose}
@@ -200,17 +258,22 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
             href="https://docs.settleone.xyz"
             target="_blank"
             rel="noreferrer"
-            className="group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-[var(--text-secondary)] hover:bg-white/5 hover:text-white border border-transparent hover:border-white/10"
+            className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[var(--text-secondary)] hover:text-white transition-all duration-200"
+            style={{ border: "1px solid transparent" }}
             onClick={onClose}
           >
-            <div className="flex items-center gap-3">
-              <span className="text-slate-500 group-hover:text-cyan-200 group-hover:scale-110 transition-all duration-300">
-                <HelpCircle size={18} />
+            <div className="flex items-center gap-3 pl-1">
+              <span className="transition-all duration-200">
+                <HelpCircle size={17} />
               </span>
-              <span className="text-sm font-bold tracking-wide">
+              <span className="text-sm font-semibold tracking-wide">
                 Help & Docs
               </span>
             </div>
+            <ExternalLink
+              size={12}
+              className="opacity-40 group-hover:opacity-70"
+            />
           </a>
         </div>
       </div>
@@ -220,20 +283,28 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
   if (mobile) {
     return (
       <div
-        className="flex flex-col h-full backdrop-blur-xl border-r border-white/5"
-        style={{ background: "rgba(5, 10, 20, 0.95)" }}
+        className="flex flex-col h-full"
+        style={{
+          background: "rgba(4, 8, 16, 0.97)",
+          backdropFilter: "blur(24px)",
+        }}
       >
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
+        <div
+          className="flex items-center justify-between p-5"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+        >
           <img
             src="/whiteLogo.png"
             alt="SettleOne"
-            className="h-8 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+            className="h-7 object-contain"
+            style={{ filter: "drop-shadow(0 0 12px rgba(96,165,250,0.3))" }}
           />
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+            className="p-2 text-[var(--text-muted)] hover:text-white rounded-xl transition-all hover:bg-white/5"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
         <div className="flex flex-col flex-1 overflow-y-auto hide-scrollbar">
@@ -245,13 +316,17 @@ export function SidebarNavigation({ mobile, onClose }: SidebarNavigationProps) {
 
   return (
     <aside
-      className="w-[260px] shrink-0 flex flex-col h-[calc(100vh-76px)] sticky top-[76px] overflow-y-auto hidden lg:flex backdrop-blur-2xl transition-all duration-300"
-      style={{
-        background: "rgba(10, 15, 30, 0.4)",
-        borderRight: "1px solid rgba(255,255,255,0.05)",
-        boxShadow: "10px 0 30px -10px rgba(0,0,0,0.5)",
-      }}
+      className="w-[260px] shrink-0 flex flex-col h-[calc(100vh-56px)] sticky top-[56px] overflow-y-auto hidden lg:flex glass-sidebar"
+      style={{ transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)" }}
     >
+      {/* Subtle top glow inside sidebar */}
+      <div
+        className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 70%)",
+        }}
+      />
       {navContent}
     </aside>
   );

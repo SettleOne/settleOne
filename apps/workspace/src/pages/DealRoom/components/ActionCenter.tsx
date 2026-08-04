@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useChainId } from "wagmi";
 import { useAcceptDeal, useRejectDeal, useCancelDeal } from "@settleone/sdk";
+import { useRequireWallet } from "../../../hooks/useRequireWallet";
 import { DealState } from "@settleone/types";
 import {
   AlertCircle,
@@ -37,6 +38,8 @@ export function ActionCenter({
   const { rejectDeal, isPending: isRejecting } = useRejectDeal(chainId);
   const { cancelDeal, isPending: isCanceling } = useCancelDeal(chainId);
 
+  const { requireWallet, WalletPromptModal } = useRequireWallet();
+
   const getDealId = () => BigInt(deal?.onChainId || deal?.id || 0);
 
   const [isFundModalOpen, setFundModalOpen] = useState(false);
@@ -64,7 +67,7 @@ export function ActionCenter({
           <div className="flex justify-center gap-3">
             <Button
               variant="secondary"
-              onClick={() => cancelDeal(getDealId())}
+              onClick={() => requireWallet(() => cancelDeal(getDealId()))}
               disabled={isCanceling}
             >
               Cancel Deal
@@ -110,7 +113,7 @@ export function ActionCenter({
             <Button
               variant="danger"
               className="bg-transparent border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10"
-              onClick={() => rejectDeal(getDealId())}
+              onClick={() => requireWallet(() => rejectDeal(getDealId()))}
               disabled={isRejecting}
             >
               Reject Deal
@@ -118,7 +121,7 @@ export function ActionCenter({
             <Button
               variant="primary"
               className="bg-[var(--accent-green)] hover:brightness-110 border-none text-[var(--bg-base)] font-bold shadow-[var(--shadow-glow)]"
-              onClick={() => acceptDeal(getDealId())}
+              onClick={() => requireWallet(() => acceptDeal(getDealId()))}
               disabled={isAccepting}
             >
               Accept Deal
@@ -316,59 +319,62 @@ export function ActionCenter({
   };
 
   return (
-    <div className="mb-6">
-      {currentState === DealState.AwaitingFunding && renderAwaitingFunding()}
-      {currentState === DealState.PendingSellerAcceptance &&
-        renderPendingSellerAcceptance()}
-      {currentState === DealState.Active && renderActive()}
-      {currentState === DealState.DeliverySubmitted &&
-        renderDeliverySubmitted()}
-      {currentState === DealState.AwaitingAcceptance &&
-        renderAwaitingAcceptance()}
-      {currentState === DealState.Disputed && renderDisputed()}
-      {[
-        DealState.Released,
-        DealState.Refunded,
-        DealState.Settled,
-        DealState.Cancelled,
-      ].includes(currentState) && renderTerminal(currentState)}
-      {currentState === DealState.None && (
-        <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg p-6 text-center shadow-sm">
-          <AlertCircle
-            size={24}
-            className="text-[var(--text-muted)] mx-auto mb-4"
-          />
-          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">
-            Draft State
-          </h2>
-          <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto">
-            This deal is currently in draft mode.
-          </p>
-        </div>
-      )}
+    <>
+      <WalletPromptModal />
+      <div className="mb-6">
+        {currentState === DealState.AwaitingFunding && renderAwaitingFunding()}
+        {currentState === DealState.PendingSellerAcceptance &&
+          renderPendingSellerAcceptance()}
+        {currentState === DealState.Active && renderActive()}
+        {currentState === DealState.DeliverySubmitted &&
+          renderDeliverySubmitted()}
+        {currentState === DealState.AwaitingAcceptance &&
+          renderAwaitingAcceptance()}
+        {currentState === DealState.Disputed && renderDisputed()}
+        {[
+          DealState.Released,
+          DealState.Refunded,
+          DealState.Settled,
+          DealState.Cancelled,
+        ].includes(currentState) && renderTerminal(currentState)}
+        {currentState === DealState.None && (
+          <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg p-6 text-center shadow-sm">
+            <AlertCircle
+              size={24}
+              className="text-[var(--text-muted)] mx-auto mb-4"
+            />
+            <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">
+              Draft State
+            </h2>
+            <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto">
+              This deal is currently in draft mode.
+            </p>
+          </div>
+        )}
 
-      {/* Modals */}
-      <FundDealModal
-        isOpen={isFundModalOpen}
-        onClose={() => setFundModalOpen(false)}
-        dealId={deal?.id ? BigInt(deal.id as any) : 0n}
-        tokenAddress={(deal?.token as any) || "0x"}
-        tokenSymbol={(deal?.token as any) || "USDC"}
-        decimals={6}
-        requiredAmount={deal?.amount ? BigInt(deal.amount as any) : 0n}
-      />
-      <SubmitDeliveryModal
-        dealId={deal?.id as unknown as bigint}
-        isOpen={isDeliveryModalOpen}
-        onClose={() => setDeliveryModalOpen(false)}
-      />
-      <DisputeModal
-        isOpen={isDisputeModalOpen}
-        onClose={() => setDisputeModalOpen(false)}
-        dealId={
-          deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)
-        }
-      />
-    </div>
+        {/* Modals */}
+        <FundDealModal
+          isOpen={isFundModalOpen}
+          onClose={() => setFundModalOpen(false)}
+          dealId={deal?.id ? BigInt(deal.id as any) : 0n}
+          tokenAddress={(deal?.token as any) || "0x"}
+          tokenSymbol={(deal?.token as any) || "USDC"}
+          decimals={6}
+          requiredAmount={deal?.amount ? BigInt(deal.amount as any) : 0n}
+        />
+        <SubmitDeliveryModal
+          dealId={deal?.id as unknown as bigint}
+          isOpen={isDeliveryModalOpen}
+          onClose={() => setDeliveryModalOpen(false)}
+        />
+        <DisputeModal
+          isOpen={isDisputeModalOpen}
+          onClose={() => setDisputeModalOpen(false)}
+          dealId={
+            deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)
+          }
+        />
+      </div>
+    </>
   );
 }

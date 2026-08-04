@@ -131,7 +131,15 @@ function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="group relative bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[var(--border-light)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_0_1px_rgba(59,130,246,0.15)]"
+      className="group relative rounded-[var(--radius-card)] p-5 cursor-pointer animate-card-enter card-hover"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(14,25,45,0.75) 0%, rgba(10,18,32,0.65) 100%)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        boxShadow:
+          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex flex-wrap gap-1.5">
@@ -341,72 +349,99 @@ export function MarketplacePage() {
   return (
     <>
       <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* Base Texture Background */}
+        {/* Marketplace Background */}
         <div
           className="fixed inset-0 pointer-events-none"
           style={{
-            backgroundImage: "url(/hero-bg.jpg)",
+            backgroundImage: "url(/marketplace-hero-bg.jpg)",
             backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.04,
+            backgroundPosition: "center top",
+            opacity: 0.055,
             zIndex: 0,
           }}
         />
-
-        {/* Silver Logo Watermark Overlay */}
         <div
-          className="fixed inset-0 pointer-events-none mix-blend-plus-lighter"
+          className="fixed inset-0 pointer-events-none"
           style={{
-            backgroundImage: "url(/silverLogo.png)",
-            backgroundSize: "120%", // Massively enlarged to fit throughout
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.03, // Very subtle integration
-            filter: "blur(2px)",
+            background:
+              "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59,130,246,0.07) 0%, transparent 70%)",
             zIndex: 0,
           }}
         />
         <div className="relative z-10">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 animate-fade-in">
             <div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-                Marketplace
+              <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
+                <span className="gradient-text">Marketplace</span>
               </h1>
-              <p className="text-sm text-[var(--text-muted)] mt-0.5">
+              <p className="text-sm text-[var(--text-muted)] mt-1">
                 Discover and participate in on-chain deals
               </p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white rounded-[var(--radius-input)] transition-all"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--accent-blue), #06b6d4)",
-                boxShadow: "0 0 16px rgba(59,130,246,0.3)",
-              }}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all btn-primary"
             >
-              <Plus size={16} />
+              <Plus size={15} />
               Create Deal
             </button>
           </div>
 
           {/* Quick Statistics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 relative z-10 stagger-children">
             {[
-              { label: "Total Deals Created", value: "1,248" },
-              { label: "Total Yield Generated", value: "$4.2M" },
-              { label: "Successfully Executed", value: "1,180" },
-              { label: "Active Deals", value: "342" },
+              {
+                label: "Total Deals",
+                value: "1,248",
+                icon: "📋",
+                color: "#3b82f6",
+              },
+              {
+                label: "Yield Generated",
+                value: "$4.2M",
+                icon: "💰",
+                color: "#22c55e",
+              },
+              {
+                label: "Completed",
+                value: "1,180",
+                icon: "✅",
+                color: "#06b6d4",
+              },
+              {
+                label: "Active Now",
+                value: "342",
+                icon: "⚡",
+                color: "#8b5cf6",
+              },
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-[var(--bg-card)]/50 backdrop-blur-lg border border-[var(--border)] rounded-[var(--radius-card)] p-5 flex flex-col items-center justify-center text-center shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(6,182,212,0.2)] hover:border-[var(--accent-blue)]/40 hover:bg-[var(--bg-card)]/70"
+                className="animate-card-enter rounded-[var(--radius-card)] p-5 flex flex-col items-center justify-center text-center card-hover"
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(14,25,45,0.8) 0%, rgba(10,18,32,0.7) 100%)",
+                  backdropFilter: "blur(20px)",
+                  border: `1px solid rgba(255,255,255,0.06)`,
+                  boxShadow:
+                    "0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  animationDelay: `${i * 60}ms`,
+                }}
               >
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-blue-200 to-cyan-400 drop-shadow-md">
+                <span className="text-2xl mb-1">{stat.icon}</span>
+                <span
+                  className="text-2xl font-black"
+                  style={{
+                    background: `linear-gradient(135deg, white, ${stat.color})`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
                   {stat.value}
                 </span>
-                <span className="text-[10px] text-[var(--text-secondary)] mt-2 uppercase tracking-widest font-bold">
+                <span className="text-[9px] text-[var(--text-muted)] mt-1.5 uppercase tracking-[0.12em] font-bold">
                   {stat.label}
                 </span>
               </div>
@@ -414,7 +449,14 @@ export function MarketplacePage() {
           </div>
 
           {/* Filter & Search Bar */}
-          <div className="sticky top-0 z-20 bg-[var(--bg-base)]/90 backdrop-blur-md border-b border-[var(--border)] pb-4 mb-4 space-y-3">
+          <div
+            className="sticky top-0 z-20 pb-4 mb-4 space-y-3"
+            style={{
+              background: "rgba(4, 8, 16, 0.85)",
+              backdropFilter: "blur(20px)",
+              borderBottom: "1px solid rgba(255,255,255,0.04)",
+            }}
+          >
             <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
               {/* Status filters */}
               <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">

@@ -23,11 +23,36 @@ export function ProfilePage() {
   const [role, setRole] = useState<"buyer" | "seller" | "both">("both");
 
   return (
-    <div className="max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-8 text-[var(--text-primary)] font-[var(--font-sans)]">
+    <div className="max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-8 text-[var(--text-primary)] font-[var(--font-sans)] animate-fade-in">
       {/* Left Panel: Profile Card */}
       <div className="w-full md:w-80 shrink-0">
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] overflow-hidden">
-          <div className="h-24 bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] relative">
+        <div
+          className="rounded-[var(--radius-card)] overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(160deg, rgba(14,25,45,0.85), rgba(8,14,26,0.9))",
+            backdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow:
+              "0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+          }}
+        >
+          <div
+            className="h-28 relative overflow-hidden"
+            style={{
+              backgroundImage:
+                "url(/blockchain-bg.jpg), linear-gradient(135deg, #1d4ed8, #7c3aed)",
+              backgroundSize: "cover, cover",
+              backgroundPosition: "center, center",
+            }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(59,130,246,0.7) 0%, rgba(139,92,246,0.6) 100%)",
+              }}
+            />
             <div className="absolute -bottom-10 left-6">
               <div className="relative group cursor-pointer">
                 <Avatar
@@ -105,7 +130,17 @@ export function ProfilePage() {
           ))}
         </div>
 
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)] min-h-[400px]">
+        <div
+          className="rounded-[var(--radius-card)] p-6 min-h-[400px]"
+          style={{
+            background:
+              "linear-gradient(160deg, rgba(12,22,40,0.85), rgba(8,14,26,0.8))",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            boxShadow:
+              "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}
+        >
           {activeTab === "account" && (
             <div className="space-y-6">
               <h3 className="text-xl font-bold mb-4">Account Information</h3>

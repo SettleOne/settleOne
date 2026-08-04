@@ -7,7 +7,9 @@ export const SUPPORTED_CHAINS = [arbitrumSepolia, sepolia];
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SettleOne",
-  projectId: "YOUR_PROJECT_ID", // Placeholder for WalletConnect Cloud Project ID
+  projectId:
+    (import.meta as any).env?.VITE_WALLETCONNECT_PROJECT_ID ??
+    "YOUR_WALLETCONNECT_PROJECT_ID",
   chains: [arbitrumSepolia, sepolia],
   transports: {
     [arbitrumSepolia.id]: http(),

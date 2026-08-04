@@ -12,6 +12,8 @@ import {
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Avatar } from "@settleone/design-system";
 import { CreateDealModal } from "../modals/CreateDealModal";
+import { useAccount, useSignMessage } from "wagmi";
+import { apiClient } from "@settleone/api";
 
 interface TopNavigationBarProps {
   onMenuClick?: () => void;
@@ -23,6 +25,36 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
   const [showProfile, setShowProfile] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  const { address, isConnected } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const linkedRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (isConnected && address && linkedRef.current !== address) {
+      const linkWallet = async () => {
+        try {
+          const { nonce } = await apiClient<{ nonce: string }>(
+            "/user/me/wallets/nonce",
+            {
+              method: "POST",
+              body: JSON.stringify({ address }),
+            },
+          );
+          const signature = await signMessageAsync({ message: nonce });
+          await apiClient("/user/me/wallets/verify", {
+            method: "POST",
+            body: JSON.stringify({ address, signature }),
+          });
+          linkedRef.current = address;
+        } catch (err) {
+          console.warn("Wallet linking skipped:", err);
+          linkedRef.current = address;
+        }
+      };
+      linkWallet();
+    }
+  }, [isConnected, address]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

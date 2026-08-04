@@ -92,7 +92,7 @@ export function AuthModal({
         // Staff login — uses email + password + TOTP
         const result = await staffLogin(email, password, twoFACode);
         storeAuthResult(result.accessToken, result.user.role);
-        redirectAfterAuth(result.user.role);
+        redirectAfterAuth(result.accessToken, result.user.role);
       } else {
         const result = await loginUser(email, password);
         if ("requiresStaffAuth" in result && result.requiresStaffAuth) {
@@ -105,7 +105,7 @@ export function AuthModal({
           return;
         }
         storeAuthResult(result.accessToken, result.user.role);
-        redirectAfterAuth(result.user.role);
+        redirectAfterAuth(result.accessToken, result.user.role);
       }
     } catch (err: any) {
       setError(err.message ?? "Login failed. Please try again.");
@@ -1162,8 +1162,10 @@ export function AuthModal({
               <button
                 id="signup-go-workspace"
                 onClick={() => {
+                  const accessToken =
+                    localStorage.getItem("so_access_token") ?? "accessToken";
                   const role = localStorage.getItem("so_user_role") ?? "user";
-                  redirectAfterAuth(role);
+                  redirectAfterAuth(accessToken, role);
                 }}
                 style={{
                   width: "100%",

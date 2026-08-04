@@ -3,7 +3,7 @@ const BASE_URL =
     ? process.env.NEXT_PUBLIC_API_URL
     : typeof import.meta !== "undefined"
       ? (import.meta as any).env?.VITE_API_URL
-      : undefined) || "http://localhost:3001/api";
+      : undefined) || "http://localhost:4000/api/v1";
 
 // Memory-based token storage for XSS protection
 let authToken: string | null = null;
@@ -77,4 +77,18 @@ export function setAuthToken(token: string): void {
 
 export function clearAuthToken(): void {
   authToken = null;
+}
+
+export function persistAuthToken(token: string): void {
+  authToken = token;
+  if (typeof window !== "undefined") {
+    localStorage.setItem("so_access_token", token);
+  }
+}
+
+export function hydrateAuthToken(): void {
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("so_access_token");
+    if (stored) authToken = stored;
+  }
 }

@@ -39,11 +39,11 @@ const OPERATIONS_URL =
  * - Normal users  → Workspace app
  * - Staff / Admin → Operations app
  */
-export function redirectAfterAuth(role: string): void {
+export function redirectAfterAuth(token: string, role: string): void {
   if (isStaffRole(role)) {
-    window.location.href = OPERATIONS_URL;
+    window.location.href = `${OPERATIONS_URL}/auth/callback?token=${token}`;
   } else {
-    window.location.href = WORKSPACE_URL;
+    window.location.href = `${WORKSPACE_URL}/auth/callback?token=${token}`;
   }
 }
 
