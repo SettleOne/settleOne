@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "./components/layout/AppShell";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { LoginPage } from "./pages/LoginPage";
-import { SignupPage } from "./pages/SignupPage";
+// import { LoginPage } from "./pages/LoginPage";
+// import { SignupPage } from "./pages/SignupPage";
 
 // Pages
 import { MarketplacePage } from "./pages/MarketplacePage";
@@ -34,8 +34,8 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Auth routes (unprotected) */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          {/* <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} /> */}
           <Route path="/auth/callback" element={<AuthCallback />} />
 
           {/* Protected workspace routes */}

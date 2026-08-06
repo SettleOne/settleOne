@@ -35,14 +35,14 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
       const linkWallet = async () => {
         try {
           const { nonce } = await apiClient<{ nonce: string }>(
-            "/user/me/wallets/nonce",
+            "/users/me/wallets/nonce",
             {
               method: "POST",
               body: JSON.stringify({ address }),
             },
           );
           const signature = await signMessageAsync({ message: nonce });
-          await apiClient("/user/me/wallets/verify", {
+          await apiClient("/users/me/wallets/verify", {
             method: "POST",
             body: JSON.stringify({ address, signature }),
           });

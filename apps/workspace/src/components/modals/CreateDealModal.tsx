@@ -54,6 +54,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [createdId, setCreatedId] = useState("DL-00144");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Form state
   const [form, setForm] = useState({

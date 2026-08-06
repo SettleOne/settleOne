@@ -1,5 +1,5 @@
 // Client
-export { apiClient, ApiError, setAuthToken, clearAuthToken } from "./client";
+export { apiClient, ApiError, setAuthToken, clearAuthToken , persistAuthToken, hydrateAuthToken } from "./client";
 
 // Hooks
 export {
