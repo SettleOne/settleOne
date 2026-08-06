@@ -1,5 +1,7 @@
 const BASE_URL =
-  (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_API_URL : typeof import.meta !== "undefined"
+  (typeof process !== "undefined" && process.env
+    ? process.env.NEXT_PUBLIC_API_URL
+    : typeof import.meta !== "undefined"
       ? (import.meta as any).env?.VITE_API_URL
       : undefined) || "http://localhost:4000/api/v1";
 

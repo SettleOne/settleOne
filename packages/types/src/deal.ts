@@ -106,18 +106,36 @@ export interface Delivery {
   status: string;
 }
 
+export interface UserWallet {
+  address: `0x${string}`;
+  isPrimary: boolean;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
-  name: string;
-  role: string;
-  walletAddress?: `0x${string}`;
-  avatarUrl?: string;
+  name?: string;
   organization?: string;
   location?: string;
   timezone?: string;
-  phone?: string;
+  bio?: string;
+  website?: string;
+  telegram?: string;
+  discord?: string;
+  xTwitter?: string;
+  linkedin?: string;
+  github?: string;
+  farcaster?: string;
+  preferredChain?: string[];
+  preferredTokens?: string[];
+  avatarUrl?: string;
+  role: string;
+  isActive: boolean;
+  isBanned: boolean;
+  totpEnabled: boolean;
   createdAt: string;
+  updatedAt: string;
+  wallets: UserWallet[];
 }
 
 export interface ChatMessage {
