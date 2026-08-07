@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, setAuthToken, clearAuthToken } from "../client";
 
 interface AuthResponse {
@@ -82,3 +82,49 @@ export function useNonce() {
       }),
   });
 }
+
+export const useRequestEmailChange = () => {
+  return useMutation({
+    mutationFn: (data: { currentPassword: string; newEmail: string }) =>
+      apiClient("/auth/change-email", { method: "POST", body: data }),
+  });
+};
+
+export const useVerifyEmailChange = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { newEmail: string; code: string }) =>
+      apiClient("/auth/change-email/verify", { method: "POST", body: data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (data: any) =>
+      apiClient("/auth/change-password", { method: "POST", body: data }),
+  });
+};
+
+export const useSessions = () => {
+  return useQuery({
+    queryKey: ["sessions"],
+    queryFn: () =>
+      apiClient("/auth/sessions", { method: "GET" }).then(
+        (res) => res.sessions,
+      ),
+  });
+};
+
+export const useRevokeSession = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient(`/auth/sessions/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sessions"] });
+    },
+  });
+};

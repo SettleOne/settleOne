@@ -98,7 +98,11 @@ export const SUPPORTED_TOKENS = [
     name: "WBTC",
     logo: "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=040",
   }, // standard btc fallback
-  { id: "SETL", name: "SETL", logo: "/setl-logo.png" }, // from public folder
+  {
+    id: "SETL",
+    name: "SETL",
+    logo: "/logocoin1.jpg",
+  },
   {
     id: "Sepolia ETH",
     name: "Sepolia ETH",

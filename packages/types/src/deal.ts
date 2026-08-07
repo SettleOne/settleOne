@@ -111,6 +111,12 @@ export interface UserWallet {
   isPrimary: boolean;
 }
 
+export interface Sessions {
+  deviceInfo?: string;
+  ipAddress?: string;
+  createdAt?: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -136,6 +142,7 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: string;
   wallets: UserWallet[];
+  sessions: Sessions[];
 }
 
 export interface ChatMessage {
