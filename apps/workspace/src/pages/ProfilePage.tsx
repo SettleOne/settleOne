@@ -24,7 +24,7 @@ import {
   SUPPORTED_TOKENS,
 } from "../lib/constants";
 import { Avatar, Input, Button } from "@settleone/design-system";
-import { useUser, useUpdateProfile } from "@settleone/api";
+import { useUser, useUpdateProfile, useUploadAvatar, useUploadBanner } from "@settleone/api";
 import {
   useRequestEmailChange,
   useVerifyEmailChange,
@@ -80,6 +80,9 @@ export function ProfilePage() {
   const chainRef = useRef<HTMLDivElement>(null);
   const tokenRef = useRef<HTMLDivElement>(null);
 
+  // avatar and banner hooks 
+  const uploadAvatar = useUploadAvatar();
+  const uploadBanner = useUploadBanner();
   // --- API Hooks ---
   const requestEmail = useRequestEmailChange();
   const verifyEmail = useVerifyEmailChange();
@@ -88,9 +91,7 @@ export function ProfilePage() {
   const revokeSession = useRevokeSession();
 
   // Security Tab States
-  const [emailChangeStep, setEmailChangeStep] = useState<
-    "initial" | "verify-new"
-  >("initial");
+  const [emailChangeStep, setEmailChangeStep] = useState<"initial" | "verify-new">("initial");
   const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newEmailOtp, setNewEmailOtp] = useState("");
@@ -115,28 +116,35 @@ export function ProfilePage() {
       {/* Left Panel: Profile Card */}
       <div className="w-full md:w-80 shrink-0">
         <div className="rounded-[var(--radius-card)] bg-[var(--bg-card)] border border-[rgba(255,255,255,0.07)] shadow-[0_8px_40px_rgba(0,0,0,0.6)]">
-          {/* Banner Container - REMOVED overflow-hidden so Avatar can pop out! */}
+          {/* Banner Container */}
           <div
-            className="relative rounded-t-[var(--radius-card)] h-28"
+            className="relative rounded-t-[var(--radius-card)] h-28 bg-cover bg-center"
             style={{
-              backgroundImage:
-                "url(/blockchain-bg.jpg), linear-gradient(135deg, #1d4ed8, #7c3aed)",
-              backgroundSize: "cover, cover",
-              backgroundPosition: "center, center",
+              backgroundImage: user?.bannerUrl ? `url(${user.bannerUrl})`
+                : "url(/blockchain-bg.jpg), linear-gradient(135deg, #1d4ed8, #7c3aed)",
             }}
           >
+            {/* 
+                    Only show the heavy purple gradient if they haven't uploaded a custom banner.
+                    If they have a custom banner, just add a tiny dark fade so icons remain visible. 
+                */}
+            {user?.bannerUrl ? (
+              <div className="absolute inset-0 bg-black/10 rounded-t-[var(--radius-card)]" />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/70 to-purple-500/60 rounded-t-[var(--radius-card)]" />
+            )}
+
             {/* Banner Background Upload (Camera icon in top right) */}
             <label className="absolute top-2 right-2 p-2 bg-black/40 hover:bg-black/60 rounded-full cursor-pointer transition-colors group z-10">
               <input
                 type="file"
                 accept="image/*"
                 className="hidden"
+                disabled={uploadBanner.isPending}
                 onChange={(e) => {
-                  if (e.target.files?.[0])
-                    console.log(
-                      "Uploading background:",
-                      e.target.files[0].name,
-                    );
+                  if (e.target.files?.[0]) {
+                    uploadBanner.mutate(e.target.files[0]);
+                  }
                 }}
               />
               <Camera
@@ -154,11 +162,10 @@ export function ProfilePage() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      // TODO: Wire to API apiClient('/users/me/avatar', {method: 'POST'})
-                      console.log("Uploading avatar:", file.name);
+                  disabled={uploadAvatar.isPending}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      uploadAvatar.mutate(e.target.files[0]);
                     }
                   }}
                 />
@@ -195,10 +202,10 @@ export function ProfilePage() {
                 <span className="font-medium">
                   {user?.createdAt
                     ? new Date(user.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
                     : "Recently"}
                 </span>
               </div>
@@ -250,11 +257,10 @@ export function ProfilePage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]"
-              }`}
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id
+                ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
+                : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]"
+                }`}
             >
               <tab.icon size={16} />
               {tab.label}

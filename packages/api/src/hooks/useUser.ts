@@ -32,3 +32,34 @@ export function useUpdateProfile() {
     },
   });
 }
+
+export function useUploadAvatar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file); // Must match what Fastify expects
+
+      return apiClient("/users/me/avatar", {
+        method: "POST",
+        body: formData, // the client will automatically set multipart/form-data
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+  });
+};
+
+export const useUploadBanner = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return apiClient("/users/me/banner", {
+        method: "POST",
+        body: formData,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+  });
+};

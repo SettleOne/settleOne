@@ -83,14 +83,14 @@ export function useNonce() {
   });
 }
 
-export const useRequestEmailChange = () => {
+export function useRequestEmailChange() {
   return useMutation({
     mutationFn: (data: { currentPassword: string; newEmail: string }) =>
       apiClient("/auth/change-email", { method: "POST", body: data }),
   });
 };
 
-export const useVerifyEmailChange = () => {
+export function useVerifyEmailChange() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: { newEmail: string; code: string }) =>
@@ -101,14 +101,14 @@ export const useVerifyEmailChange = () => {
   });
 };
 
-export const useChangePassword = () => {
+export function useChangePassword() {
   return useMutation({
     mutationFn: (data: any) =>
       apiClient("/auth/change-password", { method: "POST", body: data }),
   });
 };
 
-export const useSessions = () => {
+export function useSessions() {
   return useQuery({
     queryKey: ["sessions"],
     queryFn: () =>
@@ -118,7 +118,7 @@ export const useSessions = () => {
   });
 };
 
-export const useRevokeSession = () => {
+export function useRevokeSession() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>

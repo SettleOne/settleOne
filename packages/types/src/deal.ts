@@ -135,6 +135,7 @@ export interface UserProfile {
   preferredChain?: string[];
   preferredTokens?: string[];
   avatarUrl?: string;
+  bannerUrl?: string;
   role: string;
   isActive: boolean;
   isBanned: boolean;
@@ -142,7 +143,6 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: string;
   wallets: UserWallet[];
-  sessions: Sessions[];
 }
 
 export interface ChatMessage {
