@@ -27,13 +27,6 @@ import {
 } from "../lib/constants";
 import { Avatar, Input, Button } from "@settleone/design-system";
 import { useUser, useUpdateProfile, useUploadAvatar, useUploadBanner } from "@settleone/api";
-import {
-  useRequestEmailChange,
-  useVerifyEmailChange,
-  useChangePassword,
-  useSessions,
-  useRevokeSession,
-} from "@settleone/api";
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState("account");
@@ -85,26 +78,6 @@ export function ProfilePage() {
   // avatar and banner hooks 
   const uploadAvatar = useUploadAvatar();
   const uploadBanner = useUploadBanner();
-
-  /// Security tab hooks and variables
-
-  // --- API Hooks ---
-  const requestEmail = useRequestEmailChange();
-  const verifyEmail = useVerifyEmailChange();
-  const updatePassword = useChangePassword();
-  const { data: sessions } = useSessions();
-  const revokeSession = useRevokeSession();
-  const { openConnectModal } = useConnectModal();
-
-  // Security Tab States
-  const [emailChangeStep, setEmailChangeStep] = useState<"initial" | "verify-new">("initial");
-  const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newEmailOtp, setNewEmailOtp] = useState("");
-
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -258,7 +231,6 @@ export function ProfilePage() {
         <div className="mb-6 flex gap-2 border-b border-[var(--border)] overflow-x-auto scrollbar-hide">
           {[
             { id: "account", label: "Account Info", icon: Building },
-            { id: "security", label: "Security", icon: Lock },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -800,6 +772,30 @@ export function ProfilePage() {
                 </div>
               </div>
 
+              {/* --- CONNECTED WALLETS (READ-ONLY) --- */}
+              {user?.wallets && user.wallets.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-bold mb-5 border-b border-[var(--border)] pb-2 text-[var(--text-primary)]">
+                    Connected Wallets
+                  </h3>
+                  <div className="flex flex-col space-y-4">
+                    {user.wallets.map((wallet: any, index: number) => (
+                      <div key={wallet.address} className="relative">
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                          Wallet {index + 1} {wallet.isPrimary && <span className="text-[var(--accent-green)]">(Primary)</span>}
+                        </label>
+                        <Input
+                          type="text"
+                          readOnly
+                          value={wallet.address}
+                          className="w-full bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* --- SAVE BUTTON --- */}
               <div className="pt-8 border-t border-[var(--border)] flex justify-end">
                 <Button
@@ -812,250 +808,6 @@ export function ProfilePage() {
                 </Button>
               </div>
             </form>
-          )}
-
-          {activeTab === "security" && (
-            <div className="space-y-8 animate-fade-in">
-              {/* ─────────────────────────────────────────────────────────
-                      1. CHANGE EMAIL 
-                  ─────────────────────────────────────────────────────────── */}
-              <div>
-                <h3 className="text-xl font-bold mb-4">Change Email Address</h3>
-                <div className="space-y-4 max-w-md">
-                  {emailChangeStep === "initial" && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                          Current Password
-                        </label>
-                        <Input
-                          type="password"
-                          value={currentPasswordForEmail}
-                          onChange={(e) =>
-                            setCurrentPasswordForEmail(e.target.value)
-                          }
-                          className="bg-[var(--bg-base)] border-[var(--border)] text-[var(--text-primary)]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                          New Email Address
-                        </label>
-                        <Input
-                          type="email"
-                          value={newEmail}
-                          onChange={(e) => setNewEmail(e.target.value)}
-                          className="bg-[var(--bg-base)] border-[var(--border)] text-[var(--text-primary)]"
-                        />
-                      </div>
-                      <Button
-                        variant="secondary"
-                        disabled={
-                          requestEmail.isPending ||
-                          !currentPasswordForEmail ||
-                          !newEmail
-                        }
-                        onClick={async () => {
-                          try {
-                            await requestEmail.mutateAsync({
-                              currentPassword: currentPasswordForEmail,
-                              newEmail,
-                            });
-                            setEmailChangeStep("verify-new");
-                          } catch (err: any) {
-                            alert(
-                              err.message || "Failed to send verification code",
-                            );
-                          }
-                        }}
-                      >
-                        {requestEmail.isPending
-                          ? "Sending..."
-                          : "Send Verification Code"}
-                      </Button>
-                    </div>
-                  )}
-
-                  {emailChangeStep === "verify-new" && (
-                    <div className="p-5 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg">
-                      <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                        Enter 6-digit OTP sent to {newEmail}
-                      </label>
-                      <Input
-                        type="text"
-                        value={newEmailOtp}
-                        onChange={(e) => setNewEmailOtp(e.target.value)}
-                        className="mb-4 bg-[var(--bg-base)] border-[var(--border)]"
-                      />
-                      <div className="flex gap-3">
-                        <Button
-                          variant="primary"
-                          disabled={
-                            verifyEmail.isPending || newEmailOtp.length !== 6
-                          }
-                          onClick={async () => {
-                            try {
-                              await verifyEmail.mutateAsync({
-                                newEmail,
-                                code: newEmailOtp,
-                              });
-                              setEmailChangeStep("initial");
-                              setCurrentPasswordForEmail("");
-                              setNewEmail("");
-                              setNewEmailOtp("");
-                              alert("Email successfully updated!");
-                            } catch (err: any) {
-                              alert(err.message || "Invalid OTP");
-                            }
-                          }}
-                        >
-                          {verifyEmail.isPending
-                            ? "Verifying..."
-                            : "Confirm & Update"}
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          onClick={() => setEmailChangeStep("initial")}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* ─────────────────────────────────────────────────────────
-                      2. CHANGE PASSWORD 
-                  ─────────────────────────────────────────────────────────── */}
-              <div className="pt-6 border-t border-[var(--border)]">
-                <h3 className="text-xl font-bold mb-4">Change Password</h3>
-                <div className="space-y-4 max-w-md">
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                      Current Password
-                    </label>
-                    <Input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="bg-[var(--bg-base)] border-[var(--border)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                      New Password
-                    </label>
-                    <Input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="bg-[var(--bg-base)] border-[var(--border)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                      Confirm New Password
-                    </label>
-                    <Input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`bg-[var(--bg-base)] border-[var(--border)] ${confirmPassword && newPassword !== confirmPassword ? "border-red-500" : ""}`}
-                    />
-                    {confirmPassword && newPassword !== confirmPassword && (
-                      <p className="text-xs text-red-500 mt-1">
-                        Passwords do not match
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    variant="primary"
-                    disabled={
-                      updatePassword.isPending ||
-                      !currentPassword ||
-                      !newPassword ||
-                      newPassword !== confirmPassword
-                    }
-                    onClick={async () => {
-                      try {
-                        await updatePassword.mutateAsync({
-                          currentPassword,
-                          newPassword,
-                        });
-                        setCurrentPassword("");
-                        setNewPassword("");
-                        setConfirmPassword("");
-                        alert(
-                          "Password updated! All other devices have been logged out.",
-                        );
-                      } catch (err: any) {
-                        alert(err.message || "Failed to update password");
-                      }
-                    }}
-                  >
-                    {updatePassword.isPending
-                      ? "Updating..."
-                      : "Update Password"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* ─────────────────────────────────────────────────────────
-                      3. ACTIVE SESSIONS 
-                  ─────────────────────────────────────────────────────────── */}
-              <div className="pt-6 border-t border-[var(--border)]">
-                <h3 className="text-xl font-bold mb-4">Active Sessions</h3>
-                <div className="space-y-3">
-                  {sessions?.length === 0 && (
-                    <p className="text-sm text-[var(--text-secondary)]">
-                      No active sessions found.
-                    </p>
-                  )}
-                  {sessions?.map((session: any) => (
-                    <div
-                      key={session.id}
-                      className="flex items-center justify-between p-4 bg-[var(--bg-base)] border
-  border-[var(--border)] rounded-[var(--radius-input)] transition-all hover:border-[var(--border-light)]"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[var(--bg-subtle)] rounded-full text-[var(--text-secondary)]">
-                          {session.deviceInfo?.includes("Mac") ? (
-                            <Globe size={20} />
-                          ) : (
-                            <Smartphone size={20} />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">
-                            {session.deviceInfo || "Unknown Device"}
-                          </p>
-                          <p className="text-xs text-[var(--text-secondary)]">
-                            {session.ipAddress || "Unknown IP"} •{" "}
-                            {new Date(session.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "Are you sure you want to revoke this session?",
-                            )
-                          ) {
-                            revokeSession.mutate(session.id);
-                          }
-                        }}
-                        disabled={revokeSession.isPending}
-                        className="text-sm text-[var(--accent-red)] hover:text-red-400 font-medium flex items-center gap-1 transition-colors"
-                      >
-                        <LogOut size={14} /> Revoke
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           )}
         </div>
       </div>

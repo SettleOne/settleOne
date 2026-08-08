@@ -1,17 +1,44 @@
 import React, { useState } from "react";
 import {
-  Bell,
-  Wallet,
-  Shield,
-  AlertTriangle,
-  Download,
-  Trash2,
-  CheckCircle2,
-} from "lucide-react";
-import { Button } from "@settleone/design-system";
+      Bell, Wallet, Shield, AlertTriangle, Trash2, Download, Lock, Smartphone, Globe, LogOut, Plus, CheckCircle2 
+    } from "lucide-react";
+    import { Button, Input } from "@settleone/design-system";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import {
+   useUser,
+  useRequestEmailChange,
+  useVerifyEmailChange,
+  useChangePassword,
+  useSessions,
+  useRevokeSession,
+} from "@settleone/api";
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("notifications");
+  
+    const { data: user } = useUser();
+      const { openConnectModal } = useConnectModal();
+
+   /// Security tab hooks and variables
+  
+    // --- API Hooks ---
+    const requestEmail = useRequestEmailChange();
+    const verifyEmail = useVerifyEmailChange();
+    const updatePassword = useChangePassword();
+    const { data: sessions } = useSessions();
+    const revokeSession = useRevokeSession();
+    const { openConnectModal } = useConnectModal();
+  
+    // Security Tab States
+    const [emailChangeStep, setEmailChangeStep] = useState<"initial" | "verify-new">("initial");
+    const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
+    const [newEmail, setNewEmail] = useState("");
+    const [newEmailOtp, setNewEmailOtp] = useState("");
+  
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+  
 
   return (
     <div className="max-w-5xl mx-auto p-6 text-[var(--text-primary)] font-[var(--font-sans)] relative">
@@ -38,21 +65,14 @@ export function SettingsPage() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <div className="w-full md:w-64 space-y-2">
-            {[
-              { id: "notifications", label: "Notifications", icon: Bell },
-              { id: "wallet", label: "Wallet & Network", icon: Wallet },
-              { id: "privacy", label: "Privacy", icon: Shield },
-              {
-                id: "danger",
-                label: "Danger Zone",
-                icon: AlertTriangle,
-                color: "text-[var(--accent-red)]",
-              },
-              { id : "profile",
-                label : "Profile Settings",
-                icon : CheckCircle2,
-              }
-            ].map((tab) => (
+                {[
+                  { id: "wallet", label: "Wallets & Web3", icon: Wallet },
+                  { id: "security", label: "Account Security", icon: Lock },
+                  { id: "sessions", label: "Active Sessions", icon: Smartphone },
+                  { id: "notifications", label: "Notifications", icon: Bell },
+                  { id: "privacy", label: "Privacy", icon: Shield },
+                  { id: "danger", label: "Danger Zone", icon: AlertTriangle, color: "text-[var(--accent-red)]" },
+                ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -70,6 +90,320 @@ export function SettingsPage() {
 
           {/* Content */}
           <div className="flex-1 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-8 shadow-[var(--shadow-card)]">
+            
+            {/* --- CONNECTED WALLETS --- */}
+            
+            {activeTab === "wallet" && (
+                          <div>
+                            <div className="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-2">
+                              <h3 className="text-xl font-bold text-[var(--text-primary)]">
+                                Connected Wallets
+                              </h3>
+                              {(!user?.wallets || user.wallets.length < 3) && (
+                                <button
+                                  type="button"
+                                  onClick={openConnectModal}
+                                  className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)] transition-
+              colors bg-[var(--bg-subtle)]"
+                                >
+                                  <Plus size={16} />
+                                  <span>Link New Wallet</span>
+                                </button>
+                              )}
+                            </div>
+            
+                            <div className="flex flex-col space-y-4">
+                              {user?.wallets?.map((wallet: any, index: number) => (
+                                <div key={wallet.address} className="relative group">
+                                  <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                    Wallet {index + 1}{" "}
+                                    {wallet.isPrimary && (
+                                      <span className="text-[var(--accent-green)]">
+                                        (Primary)
+                                      </span>
+                                    )}
+                                  </label>
+            
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      type="text"
+                                      readOnly
+                                      value={wallet.address}
+                                      className="flex-1 bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
+                                    />
+            
+                                    {/* Action Buttons - Visible only on hover */}
+                                    <div className="absolute right-2 bottom-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-[var(--bg-subtle)] pl-2">
+                                      {!wallet.isPrimary && (
+                                        <button
+                                          type="button"
+                                          className="px-2 py-1 text-xs bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] rounded hover:bg-[var(--accent-blue)]/20 transition-colors"
+                                        >
+                                          Make Primary
+                                        </button>
+                                      )}
+                                      <button
+                                        type="button"
+                                        className="px-2 py-1 text-xs bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 transition-colors"
+                                      >
+                                        Disconnect
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {(!user?.wallets || user.wallets.length === 0) && (
+                                <p className="text-sm text-[var(--text-muted)] italic">
+                                  No wallets connected yet.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+            )}
+            
+            {activeTab === "security" && (
+                        <div className="space-y-8 animate-fade-in">
+                          {/* ─────────────────────────────────────────────────────────
+                                  1. CHANGE EMAIL 
+                              ─────────────────────────────────────────────────────────── */}
+                          <div>
+                            <h3 className="text-xl font-bold mb-4">Change Email Address</h3>
+                            <div className="space-y-4 max-w-md">
+                              {emailChangeStep === "initial" && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                      Current Password
+                                    </label>
+                                    <Input
+                                      type="password"
+                                      value={currentPasswordForEmail}
+                                      onChange={(e) =>
+                                        setCurrentPasswordForEmail(e.target.value)
+                                      }
+                                      className="bg-[var(--bg-base)] border-[var(--border)] text-[var(--text-primary)]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                      New Email Address
+                                    </label>
+                                    <Input
+                                      type="email"
+                                      value={newEmail}
+                                      onChange={(e) => setNewEmail(e.target.value)}
+                                      className="bg-[var(--bg-base)] border-[var(--border)] text-[var(--text-primary)]"
+                                    />
+                                  </div>
+                                  <Button
+                                    variant="secondary"
+                                    disabled={
+                                      requestEmail.isPending ||
+                                      !currentPasswordForEmail ||
+                                      !newEmail
+                                    }
+                                    onClick={async () => {
+                                      try {
+                                        await requestEmail.mutateAsync({
+                                          currentPassword: currentPasswordForEmail,
+                                          newEmail,
+                                        });
+                                        setEmailChangeStep("verify-new");
+                                      } catch (err: any) {
+                                        alert(
+                                          err.message || "Failed to send verification code",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    {requestEmail.isPending
+                                      ? "Sending..."
+                                      : "Send Verification Code"}
+                                  </Button>
+                                </div>
+                              )}
+            
+                              {emailChangeStep === "verify-new" && (
+                                <div className="p-5 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg">
+                                  <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                    Enter 6-digit OTP sent to {newEmail}
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    value={newEmailOtp}
+                                    onChange={(e) => setNewEmailOtp(e.target.value)}
+                                    className="mb-4 bg-[var(--bg-base)] border-[var(--border)]"
+                                  />
+                                  <div className="flex gap-3">
+                                    <Button
+                                      variant="primary"
+                                      disabled={
+                                        verifyEmail.isPending || newEmailOtp.length !== 6
+                                      }
+                                      onClick={async () => {
+                                        try {
+                                          await verifyEmail.mutateAsync({
+                                            newEmail,
+                                            code: newEmailOtp,
+                                          });
+                                          setEmailChangeStep("initial");
+                                          setCurrentPasswordForEmail("");
+                                          setNewEmail("");
+                                          setNewEmailOtp("");
+                                          alert("Email successfully updated!");
+                                        } catch (err: any) {
+                                          alert(err.message || "Invalid OTP");
+                                        }
+                                      }}
+                                    >
+                                      {verifyEmail.isPending
+                                        ? "Verifying..."
+                                        : "Confirm & Update"}
+                                    </Button>
+                                    <Button
+                                      variant="secondary"
+                                      onClick={() => setEmailChangeStep("initial")}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+            
+                          {/* ─────────────────────────────────────────────────────────
+                                  2. CHANGE PASSWORD 
+                              ─────────────────────────────────────────────────────────── */}
+                          <div className="pt-6 border-t border-[var(--border)]">
+                            <h3 className="text-xl font-bold mb-4">Change Password</h3>
+                            <div className="space-y-4 max-w-md">
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                  Current Password
+                                </label>
+                                <Input
+                                  type="password"
+                                  value={currentPassword}
+                                  onChange={(e) => setCurrentPassword(e.target.value)}
+                                  className="bg-[var(--bg-base)] border-[var(--border)]"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                  New Password
+                                </label>
+                                <Input
+                                  type="password"
+                                  value={newPassword}
+                                  onChange={(e) => setNewPassword(e.target.value)}
+                                  className="bg-[var(--bg-base)] border-[var(--border)]"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                                  Confirm New Password
+                                </label>
+                                <Input
+                                  type="password"
+                                  value={confirmPassword}
+                                  onChange={(e) => setConfirmPassword(e.target.value)}
+                                  className={`bg-[var(--bg-base)] border-[var(--border)] ${confirmPassword && newPassword !== confirmPassword ? "border-red-500" : ""}`}
+                                />
+                                {confirmPassword && newPassword !== confirmPassword && (
+                                  <p className="text-xs text-red-500 mt-1">
+                                    Passwords do not match
+                                  </p>
+                                )}
+                              </div>
+                              <Button
+                                variant="primary"
+                                disabled={
+                                  updatePassword.isPending ||
+                                  !currentPassword ||
+                                  !newPassword ||
+                                  newPassword !== confirmPassword
+                                }
+                                onClick={async () => {
+                                  try {
+                                    await updatePassword.mutateAsync({
+                                      currentPassword,
+                                      newPassword,
+                                    });
+                                    setCurrentPassword("");
+                                    setNewPassword("");
+                                    setConfirmPassword("");
+                                    alert(
+                                      "Password updated! All other devices have been logged out.",
+                                    );
+                                  } catch (err: any) {
+                                    alert(err.message || "Failed to update password");
+                                  }
+                                }}
+                              >
+                                {updatePassword.isPending
+                                  ? "Updating..."
+                                  : "Update Password"}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+            )}
+            
+            {activeTab === "sessions" && (
+                <div className="pt-6 border-t border-[var(--border)]">
+                              <h3 className="text-xl font-bold mb-4">Active Sessions</h3>
+                              <div className="space-y-3">
+                                {sessions?.length === 0 && (
+                                  <p className="text-sm text-[var(--text-secondary)]">
+                                    No active sessions found.
+                                  </p>
+                                )}
+                                {sessions?.map((session: any) => (
+                                  <div
+                                    key={session.id}
+                                    className="flex items-center justify-between p-4 bg-[var(--bg-base)] border
+                border-[var(--border)] rounded-[var(--radius-input)] transition-all hover:border-[var(--border-light)]"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div className="p-2 bg-[var(--bg-subtle)] rounded-full text-[var(--text-secondary)]">
+                                        {session.deviceInfo?.includes("Mac") ? (
+                                          <Globe size={20} />
+                                        ) : (
+                                          <Smartphone size={20} />
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm">
+                                          {session.deviceInfo || "Unknown Device"}
+                                        </p>
+                                        <p className="text-xs text-[var(--text-secondary)]">
+                                          {session.ipAddress || "Unknown IP"} •{" "}
+                                          {new Date(session.createdAt).toLocaleDateString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        if (
+                                          confirm(
+                                            "Are you sure you want to revoke this session?",
+                                          )
+                                        ) {
+                                          revokeSession.mutate(session.id);
+                                        }
+                                      }}
+                                      disabled={revokeSession.isPending}
+                                      className="text-sm text-[var(--accent-red)] hover:text-red-400 font-medium flex items-center gap-1 transition-colors"
+                                    >
+                                      <LogOut size={14} /> Revoke
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                        )}
+
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div>
