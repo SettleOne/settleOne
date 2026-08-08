@@ -13,7 +13,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Avatar } from "@settleone/design-system";
 import { CreateDealModal } from "../modals/CreateDealModal";
 import { useAccount, useSignMessage } from "wagmi";
-import { apiClient } from "@settleone/api";
+import { apiClient,useUser } from "@settleone/api";
 
 interface TopNavigationBarProps {
   onMenuClick?: () => void;
@@ -29,6 +29,8 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const linkedRef = useRef<string | null>(null);
+
+  const { data: user } = useUser();
 
   useEffect(() => {
     if (isConnected && address && linkedRef.current !== address) {
@@ -279,7 +281,11 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
               className="focus:outline-none rounded-full p-0.5 bg-gradient-to-tr from-blue-500/20 to-cyan-400/20 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]"
             >
               <div className="bg-[#050a14] rounded-full p-[2px]">
-                <Avatar initials="JD" size="md" />
+                <Avatar 
+                      src={user?.avatarUrl}
+                      initials={user?.name ? user.name.substring(0, 2).toUpperCase() : "U"} 
+                      size="md" 
+                    />
               </div>
             </button>
 
@@ -290,10 +296,10 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
 
                 <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
                   <p className="font-bold text-sm text-white tracking-wide">
-                    John Doe
+                     {user?.name || "User"}
                   </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    john@example.com
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">
+                     {user?.email || ""}
                   </p>
                 </div>
                 <div className="px-3 py-2 mt-1 flex flex-col gap-1">

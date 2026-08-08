@@ -5,7 +5,7 @@ import React, { useState } from "react";
    ══════════════════════════════════════════════════════════════════════════ */
 export function FeatureCard({
   icon: Icon,
-  iconColor,
+
   glowColor,
   title,
   body,

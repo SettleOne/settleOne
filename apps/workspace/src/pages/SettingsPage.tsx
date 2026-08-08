@@ -48,6 +48,10 @@ export function SettingsPage() {
                 icon: AlertTriangle,
                 color: "text-[var(--accent-red)]",
               },
+              { id : "profile",
+                label : "Profile Settings",
+                icon : CheckCircle2,
+              }
             ].map((tab) => (
               <button
                 key={tab.id}

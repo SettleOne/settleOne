@@ -3,12 +3,13 @@ import { apiClient } from "../client";
 import type { UserProfile } from "@settleone/types";
 
 export function useUser() {
-  return useQuery({
-    queryKey: ["users"],
-    queryFn: () => apiClient<UserProfile>("/users/me"),
-    retry: false,
-  });
-}
+      return useQuery({
+        queryKey: ["users"],
+        queryFn: () => apiClient<any>("/users/me").then(res => res.data.user),
+        retry: false,
+      });
+    }
+    
 
 export function useUserByAddress(address: string | undefined) {
   return useQuery({
@@ -18,20 +19,20 @@ export function useUserByAddress(address: string | undefined) {
   });
 }
 
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: Partial<UserProfile>) =>
-      apiClient<UserProfile>("/users/me", {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-    },
-  });
-}
+    export function useUpdateProfile() {
+      const queryClient = useQueryClient();
+    
+      return useMutation({
+        mutationFn: (data: Partial<UserProfile>) =>
+          apiClient<any>("/users/me", {
+            method: "PATCH",
+            body: JSON.stringify(data),
+          }).then(res => res.data.user),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+      });
+    }
 
 export function useUploadAvatar() {
   const queryClient = useQueryClient();
@@ -45,7 +46,7 @@ export function useUploadAvatar() {
         body: formData, // the client will automatically set multipart/form-data
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 };
 
@@ -60,6 +61,27 @@ export const useUploadBanner = () => {
         body: formData,
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 };
+
+export function useSessions() {
+      return useQuery({
+        queryKey: ["sessions"],
+        queryFn: () =>
+          apiClient<any>("/users/me/sessions", { method: "GET" }).then(
+            (res) => res.data.sessions,
+          ),
+      });
+    }
+    
+    export function useRevokeSession() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: (id: string) =>
+          apiClient(`/users/me/sessions/${id}`, { method: "DELETE" }),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["sessions"] });
+        },
+      });
+    }

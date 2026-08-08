@@ -31,7 +31,7 @@ export function GoogleCallbackPage() {
     if (token && role) {
       storeAuthResult(token, role);
       // Small delay so state is persisted before navigation
-      setTimeout(() => redirectAfterAuth(role), 300);
+      setTimeout(() => redirectAfterAuth(token, role), 300);
     } else {
       // Missing params — go home
       window.location.href = "/";

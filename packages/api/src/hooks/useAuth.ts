@@ -86,7 +86,7 @@ export function useNonce() {
 export function useRequestEmailChange() {
   return useMutation({
     mutationFn: (data: { currentPassword: string; newEmail: string }) =>
-      apiClient("/auth/change-email", { method: "POST", body: data }),
+      apiClient("/auth/change-email", { method: "POST", body: JSON.stringify(data) }),
   });
 };
 
@@ -94,7 +94,7 @@ export function useVerifyEmailChange() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: { newEmail: string; code: string }) =>
-      apiClient("/auth/change-email/verify", { method: "POST", body: data }),
+      apiClient("/auth/change-email/verify", { method: "POST", body: JSON.stringify(data) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },
@@ -104,27 +104,7 @@ export function useVerifyEmailChange() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (data: any) =>
-      apiClient("/auth/change-password", { method: "POST", body: data }),
+      apiClient("/auth/change-password", { method: "POST",  body: JSON.stringify(data) }),
   });
 };
 
-export function useSessions() {
-  return useQuery({
-    queryKey: ["sessions"],
-    queryFn: () =>
-      apiClient("/auth/sessions", { method: "GET" }).then(
-        (res) => res.sessions,
-      ),
-  });
-};
-
-export function useRevokeSession() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) =>
-      apiClient(`/auth/sessions/${id}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sessions"] });
-    },
-  });
-};

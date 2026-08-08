@@ -1,9 +1,5 @@
-const BASE_URL =
-  (typeof process !== "undefined" && process.env
-    ? process.env.NEXT_PUBLIC_API_URL
-    : typeof import.meta !== "undefined"
-      ? (import.meta as any).env?.VITE_API_URL
-      : undefined) || "http://localhost:4000/api/v1";
+const BASE_URL = (typeof import.meta !== "undefined" ? (import.meta as any).env?.VITE_API_URL
+      : undefined ) || "http://localhost:4000/api/v1";
 
 // Memory-based token storage for XSS protection
 let authToken: string | null = null;
@@ -27,9 +23,21 @@ function buildUrl(
   return url.toString();
 }
 
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public statusText: string,
+    public body: string,
+  ) {
+    super(`API Error ${status}: ${statusText}`);
+    this.name = "ApiError";
+  }
+}
+
 export async function apiClient<T>(
   path: string,
   options: RequestOptions = {},
+  isRetry = false
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
   const url = buildUrl(path, params);
@@ -43,33 +51,63 @@ export async function apiClient<T>(
     headers["Authorization"] = `Bearer ${authToken}`;
   }
 
-  const response = await fetch(url, {
+  // We must include credentials so the HttpOnly Refresh Cookie is sent to the backend
+  const fetchConfig = {
     ...fetchOptions,
     headers,
-  });
+    credentials: "include" as RequestCredentials,
+  };
 
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => "Unknown error");
-    throw new ApiError(response.status, response.statusText, errorBody);
+  let response = await fetch(url, fetchConfig);
+
+  // --- SILENT TOKEN REFRESH INTERCEPTOR ---
+  if (response.status === 401 && !isRetry && path !== "/auth/login") {
+    try {
+      // 1. Ask the backend for a new Access Token using our Refresh Cookie
+      const refreshRes = await fetch(buildUrl("/auth/refresh"), {
+        method: "POST",
+        credentials: "include", // Sends the cookie
+      });
+
+      if (!refreshRes.ok) throw new Error("Refresh token expired");
+
+      const refreshData = await refreshRes.json();
+      const newAccessToken = refreshData.data?.accessToken;
+
+      if (newAccessToken) {
+        // 2. Save the new token in memory and localStorage
+        persistAuthToken(newAccessToken);
+
+        // 3. Update the headers with the new token
+        headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+        // 4. Retry the exact same request that just failed!
+        response = await fetch(url, { ...fetchConfig, headers });
+      }
+    } catch (refreshError) {
+      // If the refresh token is ALSO expired, we must force a hard logout
+      clearAuthToken();
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("so_access_token");
+        // Redirect them to marketing app's login page
+        window.location.href = "http://localhost:3001/login";
+        throw new ApiError(401, "Unauthorized", "Session fully expired");
+      }
+    }
   }
+    // --------------------------------------------------
 
-  if (response.status === 204) {
-    return undefined as T;
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => "Unknown error");
+      throw new ApiError(response.status, response.statusText, errorBody);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
   }
-
-  return response.json();
-}
-
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    public statusText: string,
-    public body: string,
-  ) {
-    super(`API Error ${status}: ${statusText}`);
-    this.name = "ApiError";
-  }
-}
 
 export function setAuthToken(token: string): void {
   authToken = token;

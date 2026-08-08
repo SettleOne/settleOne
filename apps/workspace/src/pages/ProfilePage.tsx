@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   Camera,
   Mail,
@@ -17,6 +18,7 @@ import {
   Hash,
   X,
   ChevronDown,
+  Plus,
 } from "lucide-react";
 import {
   UTC_TIMEZONES,
@@ -83,12 +85,16 @@ export function ProfilePage() {
   // avatar and banner hooks 
   const uploadAvatar = useUploadAvatar();
   const uploadBanner = useUploadBanner();
+
+  /// Security tab hooks and variables
+
   // --- API Hooks ---
   const requestEmail = useRequestEmailChange();
   const verifyEmail = useVerifyEmailChange();
   const updatePassword = useChangePassword();
   const { data: sessions } = useSessions();
   const revokeSession = useRevokeSession();
+  const { openConnectModal } = useConnectModal();
 
   // Security Tab States
   const [emailChangeStep, setEmailChangeStep] = useState<"initial" | "verify-new">("initial");
@@ -214,11 +220,11 @@ export function ProfilePage() {
                 <span
                   className="font-mono text-[var(--text-muted)] truncate max-w-[140px]"
                   title={
-                    user?.wallets?.find((w) => w.isPrimary)?.address ||
+                    user?.wallets?.find((w: any) => w.isPrimary)?.address ||
                     user?.wallets?.[0]?.address
                   }
                 >
-                  {user?.wallets?.find((w) => w.isPrimary)?.address ||
+                  {user?.wallets?.find((w: any) => w.isPrimary)?.address ||
                     user?.wallets?.[0]?.address ||
                     "No wallet"}
                 </span>
@@ -736,15 +742,18 @@ export function ProfilePage() {
                   {(!user?.wallets || user.wallets.length < 3) && (
                     <button
                       type="button"
-                      className="text-xs text-[var(--accent-blue)] hover:text-blue-400 font-bold transition-colors"
+                      onClick={openConnectModal}
+                      className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)] transition-
+  colors bg-[var(--bg-subtle)]"
                     >
-                      + Link New Wallet
+                      <Plus size={16} />
+                      <span>Link New Wallet</span>
                     </button>
                   )}
                 </div>
 
                 <div className="flex flex-col space-y-4">
-                  {user?.wallets?.map((wallet, index) => (
+                  {user?.wallets?.map((wallet: any, index: number) => (
                     <div key={wallet.address} className="relative group">
                       <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
                         Wallet {index + 1}{" "}
