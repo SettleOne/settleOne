@@ -83,28 +83,4 @@ export function useNonce() {
   });
 }
 
-export function useRequestEmailChange() {
-  return useMutation({
-    mutationFn: (data: { currentPassword: string; newEmail: string }) =>
-      apiClient("/auth/change-email", { method: "POST", body: JSON.stringify(data) }),
-  });
-};
-
-export function useVerifyEmailChange() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: { newEmail: string; code: string }) =>
-      apiClient("/auth/change-email/verify", { method: "POST", body: JSON.stringify(data) }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-    },
-  });
-};
-
-export function useChangePassword() {
-  return useMutation({
-    mutationFn: (data: any) =>
-      apiClient("/auth/change-password", { method: "POST",  body: JSON.stringify(data) }),
-  });
-};
 

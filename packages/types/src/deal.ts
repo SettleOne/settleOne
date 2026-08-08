@@ -139,6 +139,9 @@ export interface UserProfile {
   role: string;
   isActive: boolean;
   isBanned: boolean;
+  showWalletPublicly: boolean;
+  profileVisibility:  string;
+  notificationPrefs?:  JSON;
   totpEnabled: boolean;
   createdAt: string;
   updatedAt: string;

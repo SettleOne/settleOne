@@ -40,7 +40,9 @@ export {
   useSendMessage,
   useMarkMessagesRead,
 } from "./hooks/useChat";
-export { useUser, useUserByAddress, useUpdateProfile, useUploadAvatar, useUploadBanner, useRevokeSession, useSessions } from "./hooks/useUser";
+export { useUser, useUserByAddress, useUpdateProfile, useUploadAvatar, useUploadBanner, useRevokeSession, useSessions, exportUserData, useDeleteAccount ,
+  useRequestEmailChange, useVerifyEmailChange, useChangePassword
+} from "./hooks/useUser";
 export {
   useNotifications,
   useUnreadCount,
@@ -48,4 +50,4 @@ export {
   useMarkAllNotificationsRead,
 } from "./hooks/useNotifications";
 export { usePortfolio, usePortfolioActivity } from "./hooks/usePortfolio";
-export { useLogin, useRegister, useLogout, useNonce, useRequestEmailChange, useVerifyEmailChange, useChangePassword } from "./hooks/useAuth";
+export { useLogin, useRegister, useLogout, useNonce } from "./hooks/useAuth";

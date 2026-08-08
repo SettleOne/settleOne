@@ -705,75 +705,8 @@ export function ProfilePage() {
                 </div>
               </div>
 
-              {/* --- CONNECTED WALLETS --- */}
-              <div>
-                <div className="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-2">
-                  <h3 className="text-xl font-bold text-[var(--text-primary)]">
-                    Connected Wallets
-                  </h3>
-                  {(!user?.wallets || user.wallets.length < 3) && (
-                    <button
-                      type="button"
-                      onClick={openConnectModal}
-                      className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)] transition-
-  colors bg-[var(--bg-subtle)]"
-                    >
-                      <Plus size={16} />
-                      <span>Link New Wallet</span>
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-col space-y-4">
-                  {user?.wallets?.map((wallet: any, index: number) => (
-                    <div key={wallet.address} className="relative group">
-                      <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                        Wallet {index + 1}{" "}
-                        {wallet.isPrimary && (
-                          <span className="text-[var(--accent-green)]">
-                            (Primary)
-                          </span>
-                        )}
-                      </label>
-
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="text"
-                          readOnly
-                          value={wallet.address}
-                          className="flex-1 bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
-                        />
-
-                        {/* Action Buttons - Visible only on hover */}
-                        <div className="absolute right-2 bottom-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-[var(--bg-subtle)] pl-2">
-                          {!wallet.isPrimary && (
-                            <button
-                              type="button"
-                              className="px-2 py-1 text-xs bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] rounded hover:bg-[var(--accent-blue)]/20 transition-colors"
-                            >
-                              Make Primary
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            className="px-2 py-1 text-xs bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 transition-colors"
-                          >
-                            Disconnect
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {(!user?.wallets || user.wallets.length === 0) && (
-                    <p className="text-sm text-[var(--text-muted)] italic">
-                      No wallets connected yet.
-                    </p>
-                  )}
-                </div>
-              </div>
-
               {/* --- CONNECTED WALLETS (READ-ONLY) --- */}
-              {user?.wallets && user.wallets.length > 0 && (
+              {user?.showWalletPublicly && user?.wallets && user.wallets.length > 0 && (
                 <div>
                   <h3 className="text-xl font-bold mb-5 border-b border-[var(--border)] pb-2 text-[var(--text-primary)]">
                     Connected Wallets

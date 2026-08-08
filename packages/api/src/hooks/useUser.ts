@@ -65,6 +65,41 @@ export const useUploadBanner = () => {
   });
 };
 
+  export function useRequestEmailChange() {
+      return useMutation({
+        mutationFn: (data: { currentPassword: string; newEmail: string }) =>
+          apiClient("/users/me/change-email", { 
+            method: "POST", 
+            body: JSON.stringify(data) 
+          }),
+      });
+    }
+    
+    export function useVerifyEmailChange() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: (data: { newEmail: string; code: string }) =>
+          apiClient("/users/me/change-email/verify", { 
+            method: "POST", 
+            body: JSON.stringify(data) 
+          }),
+        onSuccess: () => {
+          // Invalidate the "users" query so the UI updates with the new email immediately
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+      });
+    }
+    
+    export function useChangePassword() {
+      return useMutation({
+        mutationFn: (data: any) =>
+          apiClient("/users/me/change-password", { 
+            method: "POST",  
+            body: JSON.stringify(data) 
+          }),
+      });
+    }
+
 export function useSessions() {
       return useQuery({
         queryKey: ["sessions"],
@@ -83,5 +118,29 @@ export function useSessions() {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["sessions"] });
         },
+      });
+    }
+
+    export function useDeleteAccount() {
+      return useMutation({
+        mutationFn: () => apiClient("/users/me", { method: "DELETE" }),
+      });
+    }
+    
+    export function exportUserData(token: string) {
+      const baseUrl = (typeof import.meta !== "undefined" ? (import.meta as any).env?.VITE_API_URL : undefined) 
+          || "http://localhost:4000/api/v1";
+
+      return fetch(`${baseUrl}/users/me/export`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'my_settleone_data.json';
+        a.click();
+        window.URL.revokeObjectURL(url);
       });
     }
