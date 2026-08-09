@@ -9,12 +9,13 @@ export function ProtectedRoute({
   children: React.ReactNode;
   allowedRoles?: string[];
 }) {
-  const { data: user, isLoading, isError } = useUser();
+  const { data: user, isLoading, isPending, isError } = useUser();
 
-  if (isLoading) {
+  // Check isPending || isLoading
+  if (isPending || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
-        <Spinner size="lg" />
+        <Spinner size="md" />
       </div>
     );
   }

@@ -144,3 +144,19 @@ export function useSessions() {
         window.URL.revokeObjectURL(url);
       });
     }
+
+ export function useRemoveWallet() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: (address: string) => apiClient(`/users/me/wallets/${address}`, { method: "DELETE" }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+      });
+    }
+    
+    export function useMakePrimaryWallet() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: (address: string) => apiClient(`/users/me/wallets/${address}/primary`, { method: "POST" }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+      });
+    }

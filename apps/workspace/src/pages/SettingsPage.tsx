@@ -11,15 +11,23 @@ import {
   useChangePassword,
   useSessions,
   useRevokeSession,
+  useRemoveWallet,
+  useMakePrimaryWallet
 } from "@settleone/api";
 
 import { useUpdateProfile, useDeleteAccount, exportUserData } from "@settleone/api";
+import { useDisconnect } from "wagmi";
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("notifications");
 
   const { data: user } = useUser();
+
   const { openConnectModal } = useConnectModal();
+  const { disconnect } = useDisconnect();
+  const removeWallet = useRemoveWallet();
+  const makePrimary = useMakePrimaryWallet();
+
   const updateProfile = useUpdateProfile();
   const deleteAccount = useDeleteAccount();
   const [notifPrefs, setNotifPrefs] = useState<any>(user?.notificationPrefs || {});
@@ -104,68 +112,81 @@ export function SettingsPage() {
             {/* --- CONNECTED WALLETS --- */}
 
             {activeTab === "wallet" && (
-              <div>
-                <div className="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-2">
-                  <h3 className="text-xl font-bold text-[var(--text-primary)]">
-                    Connected Wallets
-                  </h3>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)]">Connected Wallets</h3>
+                    <p className="text-[var(--text-secondary)] text-sm mt-1">
+                      Your <span className="text-[var(--accent-green)] font-medium">Primary</span> wallet is where you will receive all escrow payouts and refunds.
+                    </p>
+                  </div>
                   {(!user?.wallets || user.wallets.length < 3) && (
                     <button
                       type="button"
-                      onClick={openConnectModal}
-                      className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)] transition-
-              colors bg-[var(--bg-subtle)]"
+                      onClick={() => {
+                        disconnect();
+                        setTimeout(() => openConnectModal?.(), 300);
+                      }}
+                      className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-[var(--border)] rounded-
+  [var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]
+  transition-colors bg-[var(--bg-subtle)] whitespace-nowrap"
                     >
-                      <Plus size={16} />
-                      <span>Link New Wallet</span>
+                      <Plus size={16} /> Link New Wallet
                     </button>
                   )}
                 </div>
 
                 <div className="flex flex-col space-y-4">
                   {user?.wallets?.map((wallet: any, index: number) => (
-                    <div key={wallet.address} className="relative group">
-                      <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                        Wallet {index + 1}{" "}
-                        {wallet.isPrimary && (
-                          <span className="text-[var(--accent-green)]">
-                            (Primary)
-                          </span>
-                        )}
-                      </label>
+                    <div key={wallet.address} className="relative p-4 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-card)]">
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="text-sm font-medium text-[var(--text-secondary)]">
+                          Wallet {index + 1}
+                          {wallet.isPrimary && (
+                            <span className="ml-3 px-2 py-0.5 rounded text-xs bg-[var(--accent-green)]/10 text-[var(--accent-green)] border border-[var(--accent-green)]/20">
+                              Primary Payout Address
+                            </span>
+                          )}
+                        </label>
 
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="text"
-                          readOnly
-                          value={wallet.address}
-                          className="flex-1 bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
-                        />
-
-                        {/* Action Buttons - Visible only on hover */}
-                        <div className="absolute right-2 bottom-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-[var(--bg-subtle)] pl-2">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2">
                           {!wallet.isPrimary && (
                             <button
                               type="button"
-                              className="px-2 py-1 text-xs bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] rounded hover:bg-[var(--accent-blue)]/20 transition-colors"
+                              onClick={() => makePrimary.mutate(wallet.address)}
+                              disabled={makePrimary.isPending}
+                              className="px-3 py-1 text-xs bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] rounded hover:bg-[var(--accent-blue)]/20 transition-colors"
                             >
-                              Make Primary
+                              {makePrimary.isPending ? "Setting..." : "Make Primary"}
                             </button>
                           )}
                           <button
                             type="button"
-                            className="px-2 py-1 text-xs bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 transition-colors"
+                            onClick={() => {
+                              if (confirm("Remove this wallet?")) removeWallet.mutate(wallet.address);
+                            }}
+                            disabled={removeWallet.isPending || wallet.isPrimary}
+                            className={`px-3 py-1 text-xs rounded transition-colors ${wallet.isPrimary
+                                ? "bg-slate-500/10 text-slate-500 cursor-not-allowed"
+                                : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                              }`}
+                            title={wallet.isPrimary ? "Cannot delete primary wallet" : "Remove wallet"}
                           >
-                            Disconnect
+                            Remove
                           </button>
                         </div>
                       </div>
+                      <Input
+                        type="text"
+                        readOnly
+                        value={wallet.address}
+                        className="w-full bg-[var(--bg-base)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
+                      />
                     </div>
                   ))}
                   {(!user?.wallets || user.wallets.length === 0) && (
-                    <p className="text-sm text-[var(--text-muted)] italic">
-                      No wallets connected yet.
-                    </p>
+                    <p className="text-sm text-[var(--text-muted)] italic">No wallets connected yet.</p>
                   )}
                 </div>
               </div>

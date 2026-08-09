@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -13,7 +14,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Avatar } from "@settleone/design-system";
 import { CreateDealModal } from "../modals/CreateDealModal";
 import { useAccount, useSignMessage } from "wagmi";
-import { apiClient,useUser } from "@settleone/api";
+import { apiClient, useUser } from "@settleone/api";
 
 interface TopNavigationBarProps {
   onMenuClick?: () => void;
@@ -32,31 +33,43 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
 
   const { data: user } = useUser();
 
+  const queryClient = useQueryClient();
+
   useEffect(() => {
-    if (isConnected && address && linkedRef.current !== address) {
+    if (!user) return;
+
+    const isAlreadyLinked = user.wallets?.some(
+      (w: any) => w.address.toLowerCase() === address?.toLowerCase()
+    );
+
+    if (isConnected && address && !isAlreadyLinked && linkedRef.current !== address) {
       const linkWallet = async () => {
         try {
-          const { nonce } = await apiClient<{ nonce: string }>(
-            "/users/me/wallets/nonce",
-            {
-              method: "POST",
-              body: JSON.stringify({ address }),
-            },
-          );
-          const signature = await signMessageAsync({ message: nonce });
+          // Extract from .data object!
+          const response = await apiClient<any>("/users/me/wallets/nonce", {
+            method: "POST",
+            body: JSON.stringify({ address }),
+          });
+
+          const nonceToSign = response.data.nonce;
+          const signature = await signMessageAsync({ message: nonceToSign });
+
           await apiClient("/users/me/wallets/verify", {
             method: "POST",
             body: JSON.stringify({ address, signature }),
           });
+
           linkedRef.current = address;
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+
         } catch (err) {
-          console.warn("Wallet linking skipped:", err);
+          console.warn("Wallet linking skipped or failed:", err);
           linkedRef.current = address;
         }
       };
       linkWallet();
     }
-  }, [isConnected, address]);
+  }, [isConnected, address, user, queryClient, signMessageAsync]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -125,11 +138,10 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative px-6 xl:px-8 py-2.5 rounded-full text-[11px] xl:text-xs font-bold tracking-[0.1em] transition-all duration-300 whitespace-nowrap ${
-                    isActive
+                  className={`relative px-6 xl:px-8 py-2.5 rounded-full text-[11px] xl:text-xs font-bold tracking-[0.1em] transition-all duration-300 whitespace-nowrap ${isActive
                       ? "text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -281,11 +293,11 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
               className="focus:outline-none rounded-full p-0.5 bg-gradient-to-tr from-blue-500/20 to-cyan-400/20 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]"
             >
               <div className="bg-[#050a14] rounded-full p-[2px]">
-                <Avatar 
-                      src={user?.avatarUrl}
-                      initials={user?.name ? user.name.substring(0, 2).toUpperCase() : "U"} 
-                      size="md" 
-                    />
+                <Avatar
+                  src={user?.avatarUrl}
+                  initials={user?.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+                  size="md"
+                />
               </div>
             </button>
 
@@ -296,10 +308,10 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
 
                 <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
                   <p className="font-bold text-sm text-white tracking-wide">
-                     {user?.name || "User"}
+                    {user?.name || "User"}
                   </p>
                   <p className="text-xs text-slate-400 mt-0.5 truncate">
-                     {user?.email || ""}
+                    {user?.email || ""}
                   </p>
                 </div>
                 <div className="px-3 py-2 mt-1 flex flex-col gap-1">
@@ -339,8 +351,20 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
                   </Link>
                 </div>
                 <div className="px-3 py-2 mt-1 border-t border-white/5 bg-red-500/[0.02]">
+
                   <button
-                    onClick={() => navigate("/login")}
+                        onClick={async () => {
+                          try {
+                            // 1. Tell the backend to destroy the active session in the database
+                            await apiClient("/auth/logout", { method: "POST" });
+                          } catch (e) {
+                            console.warn("Backend logout skipped:", e);
+                          }
+                          // 2. Clear the local token
+                          localStorage.removeItem("so_access_token");
+                          // 3. Eject to marketing site
+                      window.location.href = (import.meta).env.VITE_MARKETING_URL || "http://localhost:3001/login";
+                    }}
                     className="w-full group text-left px-3 py-2.5 text-sm text-red-400/90 hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all duration-200 flex items-center gap-3"
                   >
                     <LogOut

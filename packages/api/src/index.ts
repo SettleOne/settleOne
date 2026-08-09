@@ -41,7 +41,7 @@ export {
   useMarkMessagesRead,
 } from "./hooks/useChat";
 export { useUser, useUserByAddress, useUpdateProfile, useUploadAvatar, useUploadBanner, useRevokeSession, useSessions, exportUserData, useDeleteAccount ,
-  useRequestEmailChange, useVerifyEmailChange, useChangePassword
+  useRequestEmailChange, useVerifyEmailChange, useChangePassword,useRemoveWallet, useMakePrimaryWallet
 } from "./hooks/useUser";
 export {
   useNotifications,
