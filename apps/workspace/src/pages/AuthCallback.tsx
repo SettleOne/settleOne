@@ -16,6 +16,7 @@ export function AuthCallback() {
       persistAuthToken(token);
       navigate("/marketplace", { replace: true });
     } else {
+      console.error("KICKED BY AUTHCALLBACK! Token is missing in URL!");
       window.location.href = `${MARKETING_URL}/login`;
     }
   }, []);

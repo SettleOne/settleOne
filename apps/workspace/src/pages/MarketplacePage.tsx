@@ -17,76 +17,10 @@ import { useDeals, usePortfolio } from "@settleone/api";
 import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
+import { formatUnits } from "viem";
+import { DealCard, getDealStateStyle } from "../components/DealCard";
+import { CHAIN_CONFIG } from "../lib/config";
 
-// ── Inline enhanced DealCard ────────────────────────────────────
-function getDealStateStyle(state: number) {
-  const map: Record<
-    number,
-    { color: string; bg: string; border: string; dot: string }
-  > = {
-    [DealState.AwaitingFunding]: {
-      color: "#fbbf24",
-      bg: "rgba(245,158,11,0.12)",
-      border: "rgba(245,158,11,0.3)",
-      dot: "#f59e0b",
-    },
-    [DealState.PendingSellerAcceptance]: {
-      color: "#60a5fa",
-      bg: "rgba(59,130,246,0.12)",
-      border: "rgba(59,130,246,0.3)",
-      dot: "#3b82f6",
-    },
-    [DealState.Active]: {
-      color: "#4ade80",
-      bg: "rgba(34,197,94,0.12)",
-      border: "rgba(34,197,94,0.3)",
-      dot: "#22c55e",
-    },
-    [DealState.DeliverySubmitted]: {
-      color: "#a78bfa",
-      bg: "rgba(139,92,246,0.12)",
-      border: "rgba(139,92,246,0.3)",
-      dot: "#8b5cf6",
-    },
-    [DealState.AwaitingAcceptance]: {
-      color: "#22d3ee",
-      bg: "rgba(6,182,212,0.12)",
-      border: "rgba(6,182,212,0.3)",
-      dot: "#06b6d4",
-    },
-    [DealState.Accepted]: {
-      color: "#2dd4bf",
-      bg: "rgba(20,184,166,0.12)",
-      border: "rgba(20,184,166,0.3)",
-      dot: "#14b8a6",
-    },
-    [DealState.Disputed]: {
-      color: "#f87171",
-      bg: "rgba(239,68,68,0.12)",
-      border: "rgba(239,68,68,0.3)",
-      dot: "#ef4444",
-    },
-    [DealState.Released]: {
-      color: "#4ade80",
-      bg: "rgba(34,197,94,0.12)",
-      border: "rgba(34,197,94,0.3)",
-      dot: "#22c55e",
-    },
-    [DealState.Refunded]: {
-      color: "#9ca3af",
-      bg: "rgba(156,163,175,0.12)",
-      border: "rgba(156,163,175,0.3)",
-      dot: "#9ca3af",
-    },
-    [DealState.Settled]: {
-      color: "#94a3b8",
-      bg: "rgba(100,116,139,0.12)",
-      border: "rgba(100,116,139,0.3)",
-      dot: "#64748b",
-    },
-  };
-  return map[state] || map[DealState.Settled]!;
-}
 
 function getDealStateLabel(state: number) {
   const map: Record<number, string> = {
@@ -102,182 +36,6 @@ function getDealStateLabel(state: number) {
     [DealState.Settled]: "Settled",
   };
   return map[state] || "Unknown";
-}
-
-function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
-  const [copied, setCopied] = useState(false);
-  const stateKey = deal.state || DealState.Active;
-  const style = getDealStateStyle(stateKey);
-  const isSoftware = deal.dealType === 0 || deal.dealType === "SoftDelivery";
-  const deadline = deal.deliveryDeadline
-    ? new Date(Number(deal.deliveryDeadline) * 1000)
-    : null;
-  const now = Date.now();
-  const hoursLeft = deadline ? (deadline.getTime() - now) / 3_600_000 : null;
-  const isExpiringSoon = hoursLeft !== null && hoursLeft < 72 && hoursLeft > 0;
-
-  const progress =
-    deal.depositedFunds && deal.amount
-      ? Math.min(100, (Number(deal.depositedFunds) / Number(deal.amount)) * 100)
-      : 0;
-
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(deal.buyer || "0x0");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <div
-      onClick={onClick}
-      className="group relative rounded-[var(--radius-card)] p-5 cursor-pointer animate-card-enter card-hover"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(14,25,45,0.75) 0%, rgba(10,18,32,0.65) 100%)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        boxShadow:
-          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-      }}
-    >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex flex-wrap gap-1.5">
-          <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${
-              isSoftware
-                ? "bg-blue-900/30 text-blue-400 border border-blue-800/40"
-                : "bg-orange-900/30 text-orange-400 border border-orange-800/40"
-            }`}
-          >
-            {isSoftware ? "Software" : "Hardware"}
-          </span>
-        </div>
-        <span
-          className="text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap"
-          style={{
-            color: style.color,
-            background: style.bg,
-            border: `1px solid ${style.border}`,
-          }}
-        >
-          <span
-            className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
-            style={{ background: style.dot }}
-          />
-          {getDealStateLabel(stateKey)}
-        </span>
-      </div>
-
-      <h3 className="font-bold text-[var(--text-primary)] text-[15px] leading-snug line-clamp-2 mb-1">
-        {deal.title || deal.name || `Deal #${deal.id}`}
-      </h3>
-
-      <p className="text-xs text-[var(--text-muted)] font-mono mb-3">
-        #{String(deal.id).padStart(5, "0")}
-      </p>
-
-      <div className="flex items-center gap-1.5 mb-3 text-xs text-[var(--text-secondary)]">
-        <span className="text-[var(--text-muted)]">Creator:</span>
-        <span className="font-mono text-[var(--text-primary)]">
-          {deal.buyer
-            ? `${deal.buyer.slice(0, 6)}…${deal.buyer.slice(-4)}`
-            : "0x0000…0000"}
-        </span>
-        <button
-          onClick={handleCopy}
-          className="p-0.5 text-[var(--text-muted)] hover:text-[var(--accent-blue)] transition-colors"
-        >
-          {copied ? (
-            <span className="text-[var(--accent-green)]">✓</span>
-          ) : (
-            <Copy size={11} />
-          )}
-        </button>
-      </div>
-
-      <div className="mb-3">
-        <span className="text-xl font-bold text-[var(--text-primary)]">
-          {deal.amount
-            ? Number(deal.amount / 1_000_000n || deal.amount).toLocaleString()
-            : "5,000"}
-        </span>
-        <span className="text-sm text-[var(--text-muted)] ml-1">
-          {deal.token || "USDC"}
-        </span>
-        {progress > 0 && progress < 100 && (
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">
-            Deposited: {progress.toFixed(0)}%
-          </p>
-        )}
-      </div>
-
-      {deal.amount && (
-        <div className="w-full h-1 bg-[var(--bg-subtle)] rounded-full mb-3 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progress}%`,
-              background:
-                progress >= 100
-                  ? "#22c55e"
-                  : progress > 0
-                    ? "#f59e0b"
-                    : "#374151",
-            }}
-          />
-        </div>
-      )}
-
-      <div className="space-y-1 mb-4 text-xs text-[var(--text-secondary)]">
-        {deadline && (
-          <div className="flex items-center gap-1.5">
-            <Calendar size={11} className="text-[var(--text-muted)]" />
-            <span>
-              Deadline:{" "}
-              {deadline.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
-          </div>
-        )}
-        {deal.createdAt && (
-          <div className="flex items-center gap-1.5">
-            <Clock size={11} className="text-[var(--text-muted)]" />
-            <span>
-              Created{" "}
-              {Math.round((now / 1000 - Number(deal.createdAt)) / 86400)} days
-              ago
-            </span>
-          </div>
-        )}
-        {isExpiringSoon && (
-          <div className="flex items-center gap-1 text-[var(--accent-amber)]">
-            <Zap size={11} />
-            <span className="font-semibold">
-              Expires in{" "}
-              {hoursLeft! > 24
-                ? `${Math.floor(hoursLeft! / 24)}d ${Math.floor(hoursLeft! % 24)}h`
-                : `${Math.floor(hoursLeft!)}h`}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-0.5 rounded-full border border-[var(--border)]">
-            {deal.chain || "Arbitrum"}
-          </span>
-        </div>
-        <span className="text-xs font-semibold text-[var(--accent-blue)] group-hover:text-[var(--accent-blue-bright)] transition-colors">
-          View Deal →
-        </span>
-      </div>
-    </div>
-  );
 }
 
 const STATUS_FILTERS = [
@@ -328,23 +86,43 @@ export function MarketplacePage() {
   const deals = data?.deals || [];
   const { data: portfolioData } = usePortfolio();
 
-  const filteredDeals = deals.filter((d: any) => {
-    if (
-      searchQuery &&
-      !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !String(d.id).includes(searchQuery)
-    )
-      return false;
-    if (statusFilter !== "All" && d.stateName !== statusFilter) return false;
-    if (
-      dealType !== "All Types" &&
-      (dealType === "Software" ? d.dealType !== 0 : d.dealType !== 1)
-    )
-      return false;
-    if (chain !== "All Chains" && d.chain !== chain) return false;
-    if (token !== "All Tokens" && d.token !== token) return false;
-    return true;
-  });
+   const filteredDeals = deals.filter((d: any) => {
+        // 1. Search Query
+        if (
+          searchQuery &&
+          !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !String(d.id).includes(searchQuery)
+        ) return false;
+    
+        // 2. Status
+        if (statusFilter !== "All" && d.state !== statusFilter) return false;
+    
+        // 3. Deal Type (Backend returns strings like "SoftDelivery")
+        if (
+          dealType !== "All Types" &&
+          (dealType === "Software" ? d.dealType !== "SoftDelivery" : d.dealType !== "HardDelivery")
+        ) return false;
+    
+        // 4. Chain (Backend returns numbers like 421614)
+        if (chain !== "All Chains") {
+          const targetChainId = CHAIN_CONFIG[chain]?.chainId;
+          if (d.chainId !== targetChainId) return false;
+        }
+    
+        // 5. Token (Convert string "USDC" to address based on the deal's chain)
+        if (token !== "All Tokens") {
+          // Find which chain config this deal belongs to
+          const configEntry = Object.values(CHAIN_CONFIG).find(c => c.chainId === d.chainId);
+          // Get the address for the selected token on that chain
+          const requiredTokenAddress = configEntry?.tokens[token as keyof typeof configEntry.tokens];
+          
+          // Compare addresses (case-insensitive)
+          if (d.tokenAddress?.toLowerCase() !== requiredTokenAddress?.toLowerCase()) return false;
+        }
+    
+        return true;
+      });
+      
 
   return (
     <>
@@ -464,11 +242,10 @@ export function MarketplacePage() {
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                      statusFilter === s
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === s
                         ? "bg-[var(--accent-blue)] text-white shadow-[var(--shadow-glow)]"
                         : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)]"
-                    }`}
+                      }`}
                   >
                     {s}
                   </button>
@@ -509,11 +286,10 @@ export function MarketplacePage() {
 
                 <button
                   onClick={() => setMoreFiltersOpen(!isMoreFiltersOpen)}
-                  className={`p-2 border rounded-[var(--radius-input)] transition-colors ${
-                    isMoreFiltersOpen
+                  className={`p-2 border rounded-[var(--radius-input)] transition-colors ${isMoreFiltersOpen
                       ? "bg-[var(--accent-blue)] border-[var(--accent-blue)] text-white"
                       : "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  }`}
+                    }`}
                   title="More filters"
                 >
                   <SlidersHorizontal size={16} />
@@ -616,21 +392,19 @@ export function MarketplacePage() {
               <button
                 key={label}
                 onClick={() => setActiveTab(label)}
-                className={`pb-3 px-2 text-sm font-medium flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === label
+                className={`pb-3 px-2 text-sm font-medium flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${activeTab === label
                     ? "border-[var(--accent-blue)] text-[var(--text-primary)]"
                     : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
-                }`}
+                  }`}
               >
                 <Icon size={14} />
                 {label}
                 {count !== undefined && (
                   <span
-                    className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${
-                      activeTab === label
+                    className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${activeTab === label
                         ? "bg-[var(--accent-blue)] text-white"
                         : "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
-                    }`}
+                      }`}
                   >
                     {count}
                   </span>

@@ -18,6 +18,8 @@ import { useChainId, useAccount } from "wagmi";
 import { useCreateDeal } from "@settleone/sdk";
 import { apiClient } from "@settleone/api";
 import { useRequireWallet } from "../../hooks/useRequireWallet";
+ import { CHAIN_CONFIG, UI_CHAIN_MAPPING } from "../../lib/config";
+    import { parseUnits, keccak256 } from "viem";
 
 interface CreateDealModalProps {
   isOpen: boolean;
@@ -46,7 +48,8 @@ const HARDWARE_CATEGORIES = [
   "Other",
 ];
 const TOKENS = ["USDC", "USDT", "DAI", "ETH", "SETL"];
-const CHAINS = ["Ethereum", "Arbitrum", "Polygon", "Base"];
+const CHAINS = ["Sepolia", "Arbitrum Sepolia", "Ethereum", "Arbitrum", "Polygon", "Base"];
+const CHAINS_ID = [11155111, 421614, 1, 42161, 137, 8453];
 
 export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const navigate = useNavigate();
@@ -97,13 +100,17 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const categories =
     form.dealType === "software" ? SOFTWARE_CATEGORIES : HARDWARE_CATEGORIES;
 
-  const chainId = useChainId();
-  const { address } = useAccount();
-  const {
-    createDeal,
-    isPending: isTxPending,
-    isSuccess: isTxSuccess,
-  } = useCreateDeal(chainId);
+  const rawChainId = useChainId();
+      const { address } = useAccount();
+      
+      // Guard against unsupported chains crashing the render. 
+      const safeChainId = CHAINS_ID.includes(rawChainId) ? rawChainId : 421614; 
+      
+      const {
+        createDeal,
+        isPending: isTxPending,
+        isSuccess: isTxSuccess,
+      } = useCreateDeal(safeChainId);
 
   const { requireWallet, WalletPromptModal } = useRequireWallet();
 
@@ -111,67 +118,86 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     // Note: Success state typically handled by transaction status
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    requireWallet(async () => {
-      setErrorMessage("");
-      setIsPending(true);
-      try {
-        // 1. POST /deals to backend
-        const result = await apiClient<any>("/deals", {
-          method: "POST",
-          body: JSON.stringify({
-            title: form.name,
-            description: form.description,
-            sellerAddress: form.sellerAddress,
-            amount: form.amount,
-            token: form.token,
-            dealType: form.dealType,
-            chain: form.chain,
-          }),
+   const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        requireWallet(async () => {
+          setErrorMessage("");
+          setIsPending(true);
+          try {
+            const config = CHAIN_CONFIG[form.chain] || CHAIN_CONFIG["Arbitrum Sepolia"];
+            const tokenAddress = config.tokens[form.token];
+            
+            let termsHash = undefined;
+            if (form.termsFile) {
+              const arrayBuffer = await form.termsFile.arrayBuffer();
+              termsHash = keccak256(new Uint8Array(arrayBuffer));
+            }
+    
+            const apiPayload = {
+              chainId: config.chainId,
+              name: form.name,
+              description: form.description,
+              category: form.category,
+              dealType: form.dealType === "software" ? "SoftDelivery" : "HardDelivery",
+              sellerAddress: form.sellerAddress || undefined,
+              tokenAddress: tokenAddress,
+              amount: form.amount,
+              fundingType: form.fundingOption,
+              sellerAcceptanceWindowSeconds: Number(form.sellerWindow) * 86400,
+              deliveryDeadlineTimestamp: Math.floor(new Date(form.deliveryDeadline || Date.now()).getTime() / 1000),
+              acceptanceWindowSeconds: Number(form.acceptanceWindow) * 86400,
+              disputeWindowSeconds: Number(form.disputeWindow) * 86400,
+              partialSettlementAllowed: form.partialSettlement,
+              verifierAddress: form.verifier === "custom" ? form.customVerifier : config.verifier,
+              resolverAddress: form.resolver === "custom" ? form.customResolver : config.resolver,
+              termsHash: termsHash,
+              evidenceRequirements: form.evidenceRequirements,
+              settlementRules: form.settlementRules,
+              sellerSpecifications: form.sellerSpecifications,
+            };
+    
+            const result = await apiClient<any>("/deals", {
+              method: "POST",
+              body: JSON.stringify(apiPayload),
+            });
+    
+            if (form.termsFile && result.deal?.id) {
+              const fd = new FormData();
+              fd.append("file", form.termsFile);
+              fd.append("dealId", result.deal.id);
+              fd.append("context", "terms");
+              apiClient("/files/upload", { method: "POST", body: fd }).catch(console.error);
+            }
+    
+            const amountInWei = parseUnits(form.amount || "0", config.decimals[form.token] || 18);
+    
+            createDeal({
+              buyer: (address as `0x${string}`) || "0x0000000000000000000000000000000000000000",
+              seller: (form.sellerAddress as `0x${string}`) || "0x0000000000000000000000000000000000000000",
+              token: tokenAddress as `0x${string}`,
+              amount: amountInWei,
+              deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
+              disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
+              acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
+              sellerAcceptanceWindowSecs: BigInt(apiPayload.sellerAcceptanceWindowSeconds),
+              dealType: form.dealType === "software" ? 0 : 1,
+              partialSettlementAllowed: form.partialSettlement,
+              termsHash: result.hashes?.termsHash || termsHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+              metadataHash: result.hashes?.metadataHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+              evidenceRequirementsHash: result.hashes?.evidenceHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+              settlementRulesHash: result.hashes?.rulesHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+              verifier: apiPayload.verifierAddress as `0x${string}`,
+              disputeResolver: apiPayload.resolverAddress as `0x${string}`,
+            });
+            
+            setCreatedId(result.deal.id);
+            setIsSuccess(true);
+          } catch (err: any) {
+            setErrorMessage(err.message || "Failed to create deal");
+            setIsPending(false);
+          }
         });
-
-        // 2. call on-chain
-        createDeal({
-          buyer:
-            (address as `0x${string}`) ||
-            "0x0000000000000000000000000000000000000000",
-          seller:
-            (form.sellerAddress as `0x${string}`) ||
-            "0x0000000000000000000000000000000000000000",
-          token: "0x0000000000000000000000000000000000000000",
-          amount: BigInt(form.amount || "0"),
-          deliveryDeadline: BigInt(
-            new Date(form.deliveryDeadline || Date.now()).getTime() / 1000,
-          ),
-          disputeWindow: BigInt(Number(form.disputeWindow) * 86400),
-          acceptanceWindow: BigInt(Number(form.acceptanceWindow) * 86400),
-          sellerAcceptanceWindowSecs: BigInt(Number(form.sellerWindow) * 86400),
-          dealType: form.dealType === "software" ? 0 : 1,
-          partialSettlementAllowed: form.partialSettlement,
-          termsHash:
-            result.hashes?.termsHash ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-          metadataHash:
-            result.hashes?.metadataHash ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-          evidenceRequirementsHash:
-            result.hashes?.evidenceHash ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-          settlementRulesHash:
-            result.hashes?.rulesHash ||
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-          verifier: "0x0000000000000000000000000000000000000000",
-          disputeResolver: "0x0000000000000000000000000000000000000000",
-        });
-        setIsSuccess(true);
-      } catch (err: any) {
-        console.error(err);
-        setErrorMessage(err.message || "Failed to create deal");
-        setIsPending(false);
-      }
-    });
-  };
+      };
 
   const charCount = form.name.length;
 

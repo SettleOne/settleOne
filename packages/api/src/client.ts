@@ -85,6 +85,7 @@ export async function apiClient<T>(
         response = await fetch(url, { ...fetchConfig, headers });
       }
     } catch (refreshError) {
+       console.error(" KICKED BY CLIENT.TS! Refresh failed:", refreshError);
       // If the refresh token is ALSO expired, we must force a hard logout
       clearAuthToken();
       if (typeof window !== "undefined") {
