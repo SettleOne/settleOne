@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useChainId } from "wagmi";
 import { useAcceptDeal, useRejectDeal, useCancelDeal } from "@settleone/sdk";
 import { useRequireWallet } from "../../../hooks/useRequireWallet";
-import { DealState } from "@settleone/types";
+// Use plain strings matching Prisma backend state field
 import {
   AlertCircle,
   Wallet,
@@ -23,9 +23,9 @@ import { SubmitDeliveryModal } from "../modals/SubmitDeliveryModal";
 import { DisputeModal } from "../modals/DisputeModal";
 
 interface ActionCenterProps {
-  currentState: DealState;
+  currentState: string; // string from backend e.g. "AwaitingFunding"
   userRole: "buyer" | "seller" | "none";
-  deal?: any; // To be typed properly later
+  deal?: any;
 }
 
 export function ActionCenter({
@@ -273,26 +273,26 @@ export function ActionCenter({
     );
   };
 
-  const renderTerminal = (state: DealState) => {
+  const renderTerminal = (state: string) => {
     let title = "Deal Closed";
     let icon = <CheckCircle size={24} />;
     let colorClass =
       "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)]";
     let textColor = "text-[var(--text-primary)]";
 
-    if (state === DealState.Released) {
+    if (state === "Released") {
       title = "Funds Released";
       colorClass =
         "bg-[var(--state-released)]/10 border-[var(--state-released)]/30 text-[var(--state-released)]";
-    } else if (state === DealState.Refunded) {
+    } else if (state === "Refunded") {
       title = "Deal Refunded";
       colorClass =
         "bg-[var(--state-refunded)]/10 border-[var(--state-refunded)]/30 text-[var(--state-refunded)]";
-    } else if (state === DealState.Settled) {
+    } else if (state === "Settled") {
       title = "Deal Settled";
       colorClass =
         "bg-[var(--state-settled)]/10 border-[var(--state-settled)]/30 text-[var(--state-settled)]";
-    } else if (state === DealState.Cancelled) {
+    } else if (state === "Cancelled") {
       title = "Deal Cancelled";
       icon = <Ban size={24} />;
       colorClass =
@@ -322,22 +322,18 @@ export function ActionCenter({
     <>
       <WalletPromptModal />
       <div className="mb-6">
-        {currentState === DealState.AwaitingFunding && renderAwaitingFunding()}
-        {currentState === DealState.PendingSellerAcceptance &&
+        {currentState === "AwaitingFunding" && renderAwaitingFunding()}
+        {currentState === "PendingSellerAcceptance" &&
           renderPendingSellerAcceptance()}
-        {currentState === DealState.Active && renderActive()}
-        {currentState === DealState.DeliverySubmitted &&
+        {currentState === "Active" && renderActive()}
+        {currentState === "DeliverySubmitted" &&
           renderDeliverySubmitted()}
-        {currentState === DealState.AwaitingAcceptance &&
+        {currentState === "AwaitingAcceptance" &&
           renderAwaitingAcceptance()}
-        {currentState === DealState.Disputed && renderDisputed()}
-        {[
-          DealState.Released,
-          DealState.Refunded,
-          DealState.Settled,
-          DealState.Cancelled,
-        ].includes(currentState) && renderTerminal(currentState)}
-        {currentState === DealState.None && (
+        {currentState === "Disputed" && renderDisputed()}
+        {["Released", "Refunded", "Settled", "Cancelled"].includes(currentState) &&
+          renderTerminal(currentState as any)}
+        {currentState === "None" && (
           <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg p-6 text-center shadow-sm">
             <AlertCircle
               size={24}
