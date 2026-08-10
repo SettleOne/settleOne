@@ -21,12 +21,12 @@ export function ProtectedRoute({
   }
 
   // If session is invalid, bounce them to Marketing!
-  if (isError || !user) {
-    const MARKETING_URL =
-      (import.meta as any).env?.VITE_MARKETING_URL ?? "http://localhost:5173";
-    window.location.href = `${MARKETING_URL}/login`;
-    return null;
-  }
+  // if (isError || !user) {
+  //   const MARKETING_URL =
+  //     (import.meta as any).env?.VITE_MARKETING_URL ?? "http://localhost:5173";
+  //   window.location.href = `${MARKETING_URL}/login`;
+  //   return null;
+  // }
 
   if (
     allowedRoles &&

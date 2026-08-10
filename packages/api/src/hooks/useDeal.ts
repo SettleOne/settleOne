@@ -31,6 +31,9 @@ interface CreateDealPayload {
   acceptanceWindowSeconds: number;
   disputeWindowSeconds: number;
   deliveryDeadlineTimestamp: number;
+  fundingType?: string;
+  sellerSpecifications?: string;
+  termsHash?: string;
   termsText?: string;
   evidenceRequirements?: string;
   settlementRules?: string;

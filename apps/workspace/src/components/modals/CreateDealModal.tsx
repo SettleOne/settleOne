@@ -18,8 +18,10 @@ import { useChainId, useAccount } from "wagmi";
 import { useCreateDeal } from "@settleone/sdk";
 import { apiClient } from "@settleone/api";
 import { useRequireWallet } from "../../hooks/useRequireWallet";
- import { CHAIN_CONFIG, UI_CHAIN_MAPPING } from "../../lib/config";
-    import { parseUnits, keccak256 } from "viem";
+import { CHAIN_CONFIG, UI_CHAIN_MAPPING } from "../../lib/config";
+import { parseUnits, keccak256 } from "viem";
+import { SUPPORTED_CHAINS, SUPPORTED_TOKENS } from "../../lib/constants";
+
 
 interface CreateDealModalProps {
   isOpen: boolean;
@@ -47,8 +49,7 @@ const HARDWARE_CATEGORIES = [
   "Inventory",
   "Other",
 ];
-const TOKENS = ["USDC", "USDT", "DAI", "ETH", "SETL"];
-const CHAINS = ["Sepolia", "Arbitrum Sepolia", "Ethereum", "Arbitrum", "Polygon", "Base"];
+
 const CHAINS_ID = [11155111, 421614, 1, 42161, 137, 8453];
 
 export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
@@ -101,16 +102,16 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     form.dealType === "software" ? SOFTWARE_CATEGORIES : HARDWARE_CATEGORIES;
 
   const rawChainId = useChainId();
-      const { address } = useAccount();
-      
-      // Guard against unsupported chains crashing the render. 
-      const safeChainId = CHAINS_ID.includes(rawChainId) ? rawChainId : 421614; 
-      
-      const {
-        createDeal,
-        isPending: isTxPending,
-        isSuccess: isTxSuccess,
-      } = useCreateDeal(safeChainId);
+  const { address } = useAccount();
+
+  // Guard against unsupported chains crashing the render. 
+  const safeChainId = CHAINS_ID.includes(rawChainId) ? rawChainId : 421614;
+
+  const {
+    createDeal,
+    isPending: isTxPending,
+    isSuccess: isTxSuccess,
+  } = useCreateDeal(safeChainId);
 
   const { requireWallet, WalletPromptModal } = useRequireWallet();
 
@@ -118,86 +119,86 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     // Note: Success state typically handled by transaction status
   }, []);
 
-   const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        requireWallet(async () => {
-          setErrorMessage("");
-          setIsPending(true);
-          try {
-            const config = CHAIN_CONFIG[form.chain] || CHAIN_CONFIG["Arbitrum Sepolia"];
-            const tokenAddress = config.tokens[form.token];
-            
-            let termsHash = undefined;
-            if (form.termsFile) {
-              const arrayBuffer = await form.termsFile.arrayBuffer();
-              termsHash = keccak256(new Uint8Array(arrayBuffer));
-            }
-    
-            const apiPayload = {
-              chainId: config.chainId,
-              name: form.name,
-              description: form.description,
-              category: form.category,
-              dealType: form.dealType === "software" ? "SoftDelivery" : "HardDelivery",
-              sellerAddress: form.sellerAddress || undefined,
-              tokenAddress: tokenAddress,
-              amount: form.amount,
-              fundingType: form.fundingOption,
-              sellerAcceptanceWindowSeconds: Number(form.sellerWindow) * 86400,
-              deliveryDeadlineTimestamp: Math.floor(new Date(form.deliveryDeadline || Date.now()).getTime() / 1000),
-              acceptanceWindowSeconds: Number(form.acceptanceWindow) * 86400,
-              disputeWindowSeconds: Number(form.disputeWindow) * 86400,
-              partialSettlementAllowed: form.partialSettlement,
-              verifierAddress: form.verifier === "custom" ? form.customVerifier : config.verifier,
-              resolverAddress: form.resolver === "custom" ? form.customResolver : config.resolver,
-              termsHash: termsHash,
-              evidenceRequirements: form.evidenceRequirements,
-              settlementRules: form.settlementRules,
-              sellerSpecifications: form.sellerSpecifications,
-            };
-    
-            const result = await apiClient<any>("/deals", {
-              method: "POST",
-              body: JSON.stringify(apiPayload),
-            });
-    
-            if (form.termsFile && result.deal?.id) {
-              const fd = new FormData();
-              fd.append("file", form.termsFile);
-              fd.append("dealId", result.deal.id);
-              fd.append("context", "terms");
-              apiClient("/files/upload", { method: "POST", body: fd }).catch(console.error);
-            }
-    
-            const amountInWei = parseUnits(form.amount || "0", config.decimals[form.token] || 18);
-    
-            createDeal({
-              buyer: (address as `0x${string}`) || "0x0000000000000000000000000000000000000000",
-              seller: (form.sellerAddress as `0x${string}`) || "0x0000000000000000000000000000000000000000",
-              token: tokenAddress as `0x${string}`,
-              amount: amountInWei,
-              deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
-              disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
-              acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
-              sellerAcceptanceWindowSecs: BigInt(apiPayload.sellerAcceptanceWindowSeconds),
-              dealType: form.dealType === "software" ? 0 : 1,
-              partialSettlementAllowed: form.partialSettlement,
-              termsHash: result.hashes?.termsHash || termsHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
-              metadataHash: result.hashes?.metadataHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
-              evidenceRequirementsHash: result.hashes?.evidenceHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
-              settlementRulesHash: result.hashes?.rulesHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
-              verifier: apiPayload.verifierAddress as `0x${string}`,
-              disputeResolver: apiPayload.resolverAddress as `0x${string}`,
-            });
-            
-            setCreatedId(result.deal.id);
-            setIsSuccess(true);
-          } catch (err: any) {
-            setErrorMessage(err.message || "Failed to create deal");
-            setIsPending(false);
-          }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    requireWallet(async () => {
+      setErrorMessage("");
+      setIsPending(true);
+      try {
+        const config = CHAIN_CONFIG[form.chain] || CHAIN_CONFIG["Arbitrum Sepolia"];
+        const tokenAddress = config.tokens[form.token];
+
+        let termsHash = undefined;
+        if (form.termsFile) {
+          const arrayBuffer = await form.termsFile.arrayBuffer();
+          termsHash = keccak256(new Uint8Array(arrayBuffer));
+        }
+
+        const apiPayload = {
+          chainId: config.chainId,
+          name: form.name,
+          description: form.description,
+          category: form.category,
+          dealType: form.dealType === "software" ? "SoftDelivery" : "HardDelivery",
+          sellerAddress: form.sellerAddress || undefined,
+          tokenAddress: tokenAddress,
+          amount: form.amount,
+          fundingType: form.fundingOption,
+          sellerAcceptanceWindowSeconds: Number(form.sellerWindow) * 86400,
+          deliveryDeadlineTimestamp: Math.floor(new Date(form.deliveryDeadline || Date.now()).getTime() / 1000),
+          acceptanceWindowSeconds: Number(form.acceptanceWindow) * 86400,
+          disputeWindowSeconds: Number(form.disputeWindow) * 86400,
+          partialSettlementAllowed: form.partialSettlement,
+          verifierAddress: form.verifier === "custom" ? form.customVerifier : config.verifier,
+          resolverAddress: form.resolver === "custom" ? form.customResolver : config.resolver,
+          termsHash: termsHash,
+          evidenceRequirements: form.evidenceRequirements,
+          settlementRules: form.settlementRules,
+          sellerSpecifications: form.sellerSpecifications,
+        };
+
+        const result = await apiClient<any>("/deals", {
+          method: "POST",
+          body: JSON.stringify(apiPayload),
         });
-      };
+
+        if (form.termsFile && result.deal?.id) {
+          const fd = new FormData();
+          fd.append("file", form.termsFile);
+          fd.append("dealId", result.deal.id);
+          fd.append("context", "terms");
+          apiClient("/files/upload", { method: "POST", body: fd }).catch(console.error);
+        }
+
+        const amountInWei = parseUnits(form.amount || "0", config.decimals[form.token] || 18);
+
+        createDeal({
+          buyer: (address as `0x${string}`) || "0x0000000000000000000000000000000000000000",
+          seller: (form.sellerAddress as `0x${string}`) || "0x0000000000000000000000000000000000000000",
+          token: tokenAddress as `0x${string}`,
+          amount: amountInWei,
+          deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
+          disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
+          acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
+          sellerAcceptanceWindowSecs: BigInt(apiPayload.sellerAcceptanceWindowSeconds),
+          dealType: form.dealType === "software" ? 0 : 1,
+          partialSettlementAllowed: form.partialSettlement,
+          termsHash: result.hashes?.termsHash || termsHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+          metadataHash: result.hashes?.metadataHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+          evidenceRequirementsHash: result.hashes?.evidenceHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+          settlementRulesHash: result.hashes?.rulesHash || "0x0000000000000000000000000000000000000000000000000000000000000000",
+          verifier: apiPayload.verifierAddress as `0x${string}`,
+          disputeResolver: apiPayload.resolverAddress as `0x${string}`,
+        });
+
+        setCreatedId(result.deal.id);
+        setIsSuccess(true);
+      } catch (err: any) {
+        setErrorMessage(err.message || "Failed to create deal");
+        setIsPending(false);
+      }
+    });
+  };
 
   const charCount = form.name.length;
 
@@ -234,20 +235,18 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
               <React.Fragment key={s.num}>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                      step >= s.num
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= s.num
                         ? "bg-[var(--accent-blue)] text-white"
                         : "bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]"
-                    }`}
+                      }`}
                   >
                     {step > s.num ? <Check size={12} /> : s.num}
                   </div>
                   <span
-                    className={`text-xs font-medium hidden sm:block ${
-                      step === s.num
+                    className={`text-xs font-medium hidden sm:block ${step === s.num
                         ? "text-[var(--text-primary)]"
                         : "text-[var(--text-muted)]"
-                    }`}
+                      }`}
                   >
                     {s.label}
                   </span>
@@ -343,11 +342,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                     <button
                       key={type}
                       onClick={() => update("dealType", type)}
-                      className={`p-4 rounded-[var(--radius-card)] border-2 text-left transition-all ${
-                        form.dealType === type
+                      className={`p-4 rounded-[var(--radius-card)] border-2 text-left transition-all ${form.dealType === type
                           ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                           : "border-[var(--border)] hover:border-[var(--border-light)] bg-[var(--bg-base)]"
-                      }`}
+                        }`}
                     >
                       <div
                         className={`mb-2 ${form.dealType === type ? "text-[var(--accent-blue)]" : "text-[var(--text-muted)]"}`}
@@ -435,9 +433,21 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                     onChange={(e) => update("token", e.target.value)}
                     className="w-full px-3 py-2.5 bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-input)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)]"
                   >
-                    {TOKENS.map((t) => (
-                      <option key={t}>{t}</option>
-                    ))}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {SUPPORTED_TOKENS.map((token) => (
+                        <button
+                          key={token.id}
+                          type="button"
+                          onClick={() => update("token", token.id)}
+                          className={`px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all flex items-center gap-2 ${form.token === token.id
+                              ? "border-[var(--accent-blue)] bg-[var(--accent-blue)] text-white shadow-md shadow-blue-500/20"
+                              : "border-[var(--border)] bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)]"}`}
+                        >
+                          <img src={token.logo} alt={token.symbol} className="w-4 h-4 rounded-full bg-white" />
+                          {token.symbol}
+                        </button>
+                      ))}
+                    </div>
                   </select>
                 </div>
               </div>
@@ -448,19 +458,21 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                   Chain
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {CHAINS.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => update("chain", c)}
-                      className={`px-3 py-1.5 text-sm rounded-[var(--radius-pill)] border transition-all ${
-                        form.chain === c
-                          ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)] text-[var(--accent-blue-bright)] font-medium"
-                          : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-light)]"
-                      }`}
-                    >
-                      {c}
-                    </button>
-                  ))}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {SUPPORTED_CHAINS.map((chain) => (
+                      <button
+                        key={chain.id}
+                        type="button"
+                        onClick={() => update("chain", chain.id)}
+                        className={`px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all flex items-center gap-2 ${form.chain === chain.id
+                            ? "border-[var(--accent-blue)] bg-[var(--accent-blue)] text-white shadow-md shadow-blue-500/20"
+                            : "border-[var(--border)] bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)]"}`}
+                      >
+                        <img src={chain.logo} alt={chain.name} className="w-4 h-4 rounded-full" />
+                        {chain.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -505,11 +517,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                   ].map((opt) => (
                     <label
                       key={opt.key}
-                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                        form.fundingOption === opt.key
+                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.fundingOption === opt.key
                           ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                           : "border-[var(--border)] hover:border-[var(--border-light)]"
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -667,11 +678,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                   ].map((opt) => (
                     <label
                       key={opt.key}
-                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                        form.verifier === opt.key
+                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.verifier === opt.key
                           ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                           : "border-[var(--border)] hover:border-[var(--border-light)]"
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -722,11 +732,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                   ].map((opt) => (
                     <label
                       key={opt.key}
-                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                        form.resolver === opt.key
+                      className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.resolver === opt.key
                           ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                           : "border-[var(--border)] hover:border-[var(--border-light)]"
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -921,8 +930,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                   <span className="font-mono text-[var(--text-primary)] bg-[var(--bg-subtle)] px-1 rounded border border-[var(--border)]">
                     DealManager.createDeal()
                   </span>{" "}
-                  on {form.chain}. Make sure you have carefully reviewed the
-                  terms. Estimated gas cost: ~0.003 ETH.
+                  on {form.chain}. Make sure you have carefully reviewed the terms. Estimated gas cost: ~0.003 ETH.
                 </p>
               </div>
             </>

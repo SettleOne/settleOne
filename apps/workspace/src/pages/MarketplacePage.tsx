@@ -18,25 +18,8 @@ import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
 import { formatUnits } from "viem";
-import { DealCard, getDealStateStyle } from "../components/DealCard";
+import { DealCard, getDealStateStyle } from "./Marketplace/components/DealCard";
 import { CHAIN_CONFIG } from "../lib/config";
-
-
-function getDealStateLabel(state: number) {
-  const map: Record<number, string> = {
-    [DealState.AwaitingFunding]: "Awaiting Funding",
-    [DealState.PendingSellerAcceptance]: "Pending Acceptance",
-    [DealState.Active]: "Active",
-    [DealState.DeliverySubmitted]: "Delivery Submitted",
-    [DealState.AwaitingAcceptance]: "Awaiting Buyer Acceptance",
-    [DealState.Accepted]: "Accepted",
-    [DealState.Disputed]: "Disputed",
-    [DealState.Released]: "Released",
-    [DealState.Refunded]: "Refunded",
-    [DealState.Settled]: "Settled",
-  };
-  return map[state] || "Unknown";
-}
 
 const STATUS_FILTERS = [
   "All",

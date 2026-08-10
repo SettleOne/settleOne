@@ -41,76 +41,47 @@ export const UTC_TIMEZONES = [
 
 export const SUPPORTED_CHAINS = [
   {
-    id: "Ethereum Mainnet",
+    id: "Ethereum",
     name: "Ethereum",
+    chainId: 1,
     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040",
   },
   {
     id: "Polygon",
     name: "Polygon",
+    chainId: 137,
     logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=040",
   },
   {
     id: "Arbitrum",
     name: "Arbitrum",
+    chainId: 42161,
     logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=040",
   },
   {
     id: "Base",
     name: "Base",
+    chainId: 8453,
     logo: "https://cryptologos.cc/logos/base-base-logo.png?v=040",
   },
   {
-    id: "Sepolia Testnet",
-    name: "Sepolia Testnet",
+    id: "Sepolia",
+    name: "Sepolia",
+    chainId: 11155111,
     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040",
   },
   {
-    id: "Arbitrum Sepolia Testnet",
+    id: "Arbitrum Sepolia",
     name: "Arbitrum Sepolia",
+    chainId: 421614,
     logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=040",
   },
 ];
 
 export const SUPPORTED_TOKENS = [
-  {
-    id: "USDC",
-    name: "USDC",
-    logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040",
-  },
-  {
-    id: "USDT",
-    name: "USDT",
-    logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=040",
-  },
-  {
-    id: "DAI",
-    name: "DAI",
-    logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=040",
-  },
-  {
-    id: "ETH",
-    name: "ETH",
-    logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040",
-  },
-  {
-    id: "WBTC",
-    name: "WBTC",
-    logo: "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=040",
-  }, // standard btc fallback
-  {
-    id: "SETL",
-    name: "SETL",
-    logo: "/logocoin1.jpg",
-  },
-  {
-    id: "Sepolia ETH",
-    name: "Sepolia ETH",
-    logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040",
-  },
-  {
-    id: "Arbitrum Sepolia ETH",
-    name: "Arb Sepolia ETH",
-    logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=040",
-  },
+  { id: "USDC", symbol: "USDC", logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040" },
+  { id: "USDT", symbol: "USDT", logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=040" },
+  { id: "DAI", symbol: "DAI", logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=040" },
+  { id: "ETH", symbol: "ETH", logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040" },
+  { id: "SETL", symbol: "SETL", logo: "/logocoin1.jpg" },
 ];
