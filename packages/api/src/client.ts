@@ -31,7 +31,7 @@ export class ApiError extends Error {
     public statusText: string,
     public body: string,
   ) {
-    super(`API Error ${status}: ${statusText}`);
+    super(body ? `API Error: ${body}` : `API Error ${status}: ${statusText}`);
     this.name = "ApiError";
   }
 }

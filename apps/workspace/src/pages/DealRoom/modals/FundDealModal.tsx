@@ -204,11 +204,11 @@ export function FundDealModal({
               >
                 {isApprovePending || isApproveConfirming ? (
                   <span className="flex items-center gap-2">
-                    <Spinner size="sm" /> Approving...
+                    <Spinner size={16} /> Approving...
                   </span>
                 ) : isFundPending || isFundConfirming ? (
                   <span className="flex items-center gap-2">
-                    <Spinner size="sm" /> Funding...
+                    <Spinner size={16} /> Funding...
                   </span>
                 ) : !hasEnoughAllowance ? (
                   "Approve Token"

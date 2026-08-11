@@ -22,7 +22,7 @@ export function SubmittedDeliveriesLog({
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <Spinner size="md" />
+        <Spinner size={24} />
       </div>
     );
   }

@@ -76,7 +76,7 @@ export function DeliveryVerificationPanel({
         </div>
         <div className="p-4 flex items-center gap-4">
           <div className="w-10 h-10 bg-[var(--bg-card)] rounded-full flex items-center justify-center text-[var(--accent-purple)] shrink-0 shadow-sm shadow-glow">
-            <Spinner size="sm" />
+            <Spinner size={16} />
           </div>
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">
@@ -145,7 +145,7 @@ export function DeliveryVerificationPanel({
                   {status === "signing" ? (
                     "Check Wallet..."
                   ) : status === "submitting" ? (
-                    <Spinner size="sm" />
+                    <Spinner size={16} />
                   ) : (
                     "Approve Delivery"
                   )}

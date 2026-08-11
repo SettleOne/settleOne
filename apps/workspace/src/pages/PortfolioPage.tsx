@@ -61,7 +61,7 @@ export function PortfolioPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-[var(--text-primary)]">
-        <Spinner size="lg" />
+        <Spinner size={32} />
         <p className="mt-4 text-[var(--text-secondary)] font-medium">
           Calculating Portfolio...
         </p>

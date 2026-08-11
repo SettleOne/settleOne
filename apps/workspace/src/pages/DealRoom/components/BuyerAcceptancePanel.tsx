@@ -115,7 +115,7 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
                 }`}
               >
                 {status === "submitting" ? (
-                  <Spinner size="sm" className="mx-auto mb-2" />
+                  <Spinner size={16} className="mx-auto mb-2" />
                 ) : (
                   <CheckCircle
                     size={24}
@@ -136,7 +136,7 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
                 className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--state-awaiting-funding)] hover:bg-[var(--state-awaiting-funding)]/10 transition-colors"
               >
                 {status === "submitting" ? (
-                  <Spinner size="sm" className="mx-auto mb-2" />
+                  <Spinner size={16} className="mx-auto mb-2" />
                 ) : (
                   <RefreshCw
                     size={24}

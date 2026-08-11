@@ -57,7 +57,7 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
       >
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Spinner size="md" />
+            <Spinner size={24} />
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-12 text-[var(--text-muted)] text-sm italic">
