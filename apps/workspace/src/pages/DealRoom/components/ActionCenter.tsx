@@ -326,13 +326,12 @@ export function ActionCenter({
         {currentState === "PendingSellerAcceptance" &&
           renderPendingSellerAcceptance()}
         {currentState === "Active" && renderActive()}
-        {currentState === "DeliverySubmitted" &&
-          renderDeliverySubmitted()}
-        {currentState === "AwaitingAcceptance" &&
-          renderAwaitingAcceptance()}
+        {currentState === "DeliverySubmitted" && renderDeliverySubmitted()}
+        {currentState === "AwaitingAcceptance" && renderAwaitingAcceptance()}
         {currentState === "Disputed" && renderDisputed()}
-        {["Released", "Refunded", "Settled", "Cancelled"].includes(currentState) &&
-          renderTerminal(currentState as any)}
+        {["Released", "Refunded", "Settled", "Cancelled"].includes(
+          currentState,
+        ) && renderTerminal(currentState as any)}
         {currentState === "None" && (
           <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-lg p-6 text-center shadow-sm">
             <AlertCircle

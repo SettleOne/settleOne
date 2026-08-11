@@ -10,14 +10,25 @@ import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { hydrateAuthToken } from "@settleone/api";
 
-const queryClient = new QueryClient();
 hydrateAuthToken();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      retryOnMount: false,
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <WagmiProvider config={wagmiConfig}>
           <RainbowKitProvider
             theme={darkTheme({
               accentColor: "#0ea5e9",
@@ -29,8 +40,8 @@ createRoot(document.getElementById("root")!).render(
           >
             <App />
           </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+        </WagmiProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>,
 );

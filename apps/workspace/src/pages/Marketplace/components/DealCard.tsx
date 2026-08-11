@@ -5,24 +5,93 @@ import { CHAIN_CONFIG } from "../../../lib/config";
 import { SUPPORTED_CHAINS, SUPPORTED_TOKENS } from "../../../lib/constants";
 
 export function getDealStateStyle(state: string) {
-  const map: Record<string, { color: string; bg: string; border: string; dot: string }> = {
-    "AwaitingFunding": { color: "#fbbf24", bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)", dot: "#f59e0b" },
-    "PendingSellerAcceptance": { color: "#60a5fa", bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)", dot: "#3b82f6" },
-    "Active": { color: "#4ade80", bg: "rgba(34,197,94,0.12)", border: "rgba(34,197,94,0.3)", dot: "#22c55e" },
-    "DeliverySubmitted": { color: "#a78bfa", bg: "rgba(139,92,246,0.12)", border: "rgba(139,92,246,0.3)", dot: "#8b5cf6" },
-    "AwaitingAcceptance": { color: "#22d3ee", bg: "rgba(6,182,212,0.12)", border: "rgba(6,182,212,0.3)", dot: "#06b6d4" },
-    "Accepted": { color: "#2dd4bf", bg: "rgba(20,184,166,0.12)", border: "rgba(20,184,166,0.3)", dot: "#14b8a6" },
-    "Disputed": { color: "#f87171", bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", dot: "#ef4444" },
-    "Released": { color: "#4ade80", bg: "rgba(34,197,94,0.12)", border: "rgba(34,197,94,0.3)", dot: "#22c55e" },
-    "Refunded": { color: "#fb7185", bg: "rgba(251,113,133,0.12)", border: "rgba(251,113,133,0.3)", dot: "#f43f5e" },
-    "Settled": { color: "#34d399", bg: "rgba(52,211,153,0.12)", border: "rgba(52,211,153,0.3)", dot: "#10b981" },
-    "Expired": { color: "#9ca3af", bg: "rgba(156,163,175,0.12)", border: "rgba(156,163,175,0.3)", dot: "#6b7280" },
-    "Cancelled": { color: "#9ca3af", bg: "rgba(156,163,175,0.12)", border: "rgba(156,163,175,0.3)", dot: "#6b7280" },
+  const map: Record<
+    string,
+    { color: string; bg: string; border: string; dot: string }
+  > = {
+    AwaitingFunding: {
+      color: "#fbbf24",
+      bg: "rgba(245,158,11,0.12)",
+      border: "rgba(245,158,11,0.3)",
+      dot: "#f59e0b",
+    },
+    PendingSellerAcceptance: {
+      color: "#60a5fa",
+      bg: "rgba(59,130,246,0.12)",
+      border: "rgba(59,130,246,0.3)",
+      dot: "#3b82f6",
+    },
+    Active: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    DeliverySubmitted: {
+      color: "#a78bfa",
+      bg: "rgba(139,92,246,0.12)",
+      border: "rgba(139,92,246,0.3)",
+      dot: "#8b5cf6",
+    },
+    AwaitingAcceptance: {
+      color: "#22d3ee",
+      bg: "rgba(6,182,212,0.12)",
+      border: "rgba(6,182,212,0.3)",
+      dot: "#06b6d4",
+    },
+    Accepted: {
+      color: "#2dd4bf",
+      bg: "rgba(20,184,166,0.12)",
+      border: "rgba(20,184,166,0.3)",
+      dot: "#14b8a6",
+    },
+    Disputed: {
+      color: "#f87171",
+      bg: "rgba(239,68,68,0.12)",
+      border: "rgba(239,68,68,0.3)",
+      dot: "#ef4444",
+    },
+    Released: {
+      color: "#4ade80",
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.3)",
+      dot: "#22c55e",
+    },
+    Refunded: {
+      color: "#fb7185",
+      bg: "rgba(251,113,133,0.12)",
+      border: "rgba(251,113,133,0.3)",
+      dot: "#f43f5e",
+    },
+    Settled: {
+      color: "#34d399",
+      bg: "rgba(52,211,153,0.12)",
+      border: "rgba(52,211,153,0.3)",
+      dot: "#10b981",
+    },
+    Expired: {
+      color: "#9ca3af",
+      bg: "rgba(156,163,175,0.12)",
+      border: "rgba(156,163,175,0.3)",
+      dot: "#6b7280",
+    },
+    Cancelled: {
+      color: "#9ca3af",
+      bg: "rgba(156,163,175,0.12)",
+      border: "rgba(156,163,175,0.3)",
+      dot: "#6b7280",
+    },
   };
   return map[state] || map["Settled"]!;
 }
 
-export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) {
+export function DealCard({
+  deal,
+  onClick,
+}: {
+  deal: any;
+  onClick: () => void;
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (e: React.MouseEvent) => {
@@ -37,7 +106,10 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
   const style = getDealStateStyle(deal.state);
 
   // 1. Dynamic Reverse Lookup for Chain and Token info
-  const chainName = Object.keys(CHAIN_CONFIG).find(key => CHAIN_CONFIG[key].chainId === deal.chainId) || "Unknown Chain";
+  const chainName =
+    Object.keys(CHAIN_CONFIG).find(
+      (key) => CHAIN_CONFIG[key].chainId === deal.chainId,
+    ) || "Unknown Chain";
   const chainConfig = CHAIN_CONFIG[chainName];
 
   let tokenSymbol = "Unknown";
@@ -45,28 +117,43 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
 
   if (chainConfig && deal.tokenAddress) {
     const tokenEntry = Object.entries(chainConfig.tokens).find(
-      ([sym, addr]) => (addr as string).toLowerCase() === deal.tokenAddress.toLowerCase()
+      ([sym, addr]) =>
+        (addr as string).toLowerCase() === deal.tokenAddress.toLowerCase(),
     );
     if (tokenEntry) {
       tokenSymbol = tokenEntry[0];
-      tokenDecimals = chainConfig.decimals[tokenSymbol as keyof typeof chainConfig.decimals] || 18;
+      tokenDecimals =
+        chainConfig.decimals[
+          tokenSymbol as keyof typeof chainConfig.decimals
+        ] || 18;
     }
   }
 
-  const chainInfo = SUPPORTED_CHAINS.find(c => c.chainId === deal.chainId);
-  const tokenLogo = SUPPORTED_TOKENS.find(t => t.symbol === tokenSymbol)?.logo;
+  const chainInfo = SUPPORTED_CHAINS.find((c) => c.chainId === deal.chainId);
+  const tokenLogo = SUPPORTED_TOKENS.find(
+    (t) => t.symbol === tokenSymbol,
+  )?.logo;
 
   // 2. Safe Date parsing
-  const deadline = deal.deliveryDeadline ? new Date(deal.deliveryDeadline) : null;
+  const deadline = deal.deliveryDeadline
+    ? new Date(deal.deliveryDeadline)
+    : null;
   const createdAt = deal.createdAt ? new Date(deal.createdAt) : null;
   const now = Date.now();
   const hoursLeft = deadline ? (deadline.getTime() - now) / 3600000 : null;
   const isExpiringSoon = hoursLeft !== null && hoursLeft > 0 && hoursLeft <= 48;
 
   // 3. Dynamic Amount Calculation (Using exact decimals from config)
-  const formattedAmount = deal.amount ? Number(formatUnits(BigInt(deal.amount.toString()), tokenDecimals)) : 0;
-  const formattedDeposited = deal.depositedFunds ? Number(formatUnits(BigInt(deal.depositedFunds.toString()), tokenDecimals)) : 0;
-  const progress = formattedAmount > 0 ? Math.min(100, (formattedDeposited / formattedAmount) * 100) : 0;
+  const formattedAmount = deal.amount
+    ? Number(formatUnits(BigInt(deal.amount.toString()), tokenDecimals))
+    : 0;
+  const formattedDeposited = deal.depositedFunds
+    ? Number(formatUnits(BigInt(deal.depositedFunds.toString()), tokenDecimals))
+    : 0;
+  const progress =
+    formattedAmount > 0
+      ? Math.min(100, (formattedDeposited / formattedAmount) * 100)
+      : 0;
 
   return (
     <div
@@ -74,41 +161,61 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
       className="group cursor-pointer bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--accent-blue)]
   transition-all duration-300 hover:shadow-[0_8px_30px_rgba(59,130,246,0.1)] relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--accent-blue)] to-transparent opacity-[0.03] rounded-bl-
-  full pointer-events-none group-hover:opacity-[0.08] transition-opacity" />
+      <div
+        className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--accent-blue)] to-transparent opacity-[0.03] rounded-bl-
+  full pointer-events-none group-hover:opacity-[0.08] transition-opacity"
+      />
 
       {/* Header Tags */}
       <div className="flex items-start justify-between mb-3 relative z-10">
         {/* Left Side: Status */}
         <div
           className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
-          style={{ backgroundColor: style.bg, color: style.color, borderColor: style.border, borderWidth: "1px" }}
+          style={{
+            backgroundColor: style.bg,
+            color: style.color,
+            borderColor: style.border,
+            borderWidth: "1px",
+          }}
         >
-          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: style.dot }} />
+          <div
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: style.dot }}
+          />
           {deal.state.replace(/([A-Z])/g, " $1").trim()}
         </div>
 
         {/* Right Side: Configuration Badges */}
         <div className="flex items-center gap-1.5">
           {/* Availability Badge */}
-          <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
-  flex items-center gap-1 border border-[var(--border)]">
+          <div
+            className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
+  flex items-center gap-1 border border-[var(--border)]"
+          >
             {deal.sellerAddress ? (
-              <><Lock size={10} /> Private</>
+              <>
+                <Lock size={10} /> Private
+              </>
             ) : (
-              <><Globe size={10} /> Open</>
+              <>
+                <Globe size={10} /> Open
+              </>
             )}
           </div>
 
           {/* Funding Badge */}
-          <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
-  border border-[var(--border)]">
+          <div
+            className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
+  border border-[var(--border)]"
+          >
             {deal.fundingType === "staged" ? "60/40 Staged" : "100% Upfront"}
           </div>
 
           {/* Deal Type Badge */}
-          <div className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
-  border border-[var(--border)]">
+          <div
+            className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
+  border border-[var(--border)]"
+          >
             {deal.dealType === "SoftDelivery" ? "Software" : "Hardware"}
           </div>
         </div>
@@ -123,7 +230,10 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
         <span className="bg-[var(--bg-subtle)] px-1.5 py-0.5 rounded text-[10px]">
           {deal.category || "Uncategorized"}
         </span>
-        #{deal.onChainId ? String(deal.onChainId).padStart(5, "0") : deal.id.slice(0, 8)}
+        #
+        {deal.onChainId
+          ? String(deal.onChainId).padStart(5, "0")
+          : deal.id.slice(0, 8)}
       </p>
 
       {/* Addresses */}
@@ -138,7 +248,11 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
           onClick={handleCopy}
           className="p-0.5 text-[var(--text-muted)] hover:text-[var(--accent-blue)] transition-colors"
         >
-          {copied ? <span className="text-[var(--accent-green)]">✓</span> : <Copy size={11} />}
+          {copied ? (
+            <span className="text-[var(--accent-green)]">✓</span>
+          ) : (
+            <Copy size={11} />
+          )}
         </button>
       </div>
 
@@ -164,7 +278,12 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${progress}%`,
-              background: progress >= 100 ? "#22c55e" : progress > 0 ? "#f59e0b" : "#374151",
+              background:
+                progress >= 100
+                  ? "#22c55e"
+                  : progress > 0
+                    ? "#f59e0b"
+                    : "#374151",
             }}
           />
         </div>
@@ -177,7 +296,11 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
             <Calendar size={11} className="text-[var(--text-muted)]" />
             <span>
               Deadline:{" "}
-              {deadline.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {deadline.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </span>
           </div>
         )}
@@ -185,7 +308,9 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
           <div className="flex items-center gap-1.5">
             <Clock size={11} className="text-[var(--text-muted)]" />
             <span>
-              Created {Math.max(0, Math.round((now - createdAt.getTime()) / 86400000))} days ago
+              Created{" "}
+              {Math.max(0, Math.round((now - createdAt.getTime()) / 86400000))}{" "}
+              days ago
             </span>
           </div>
         )}
@@ -193,7 +318,10 @@ export function DealCard({ deal, onClick }: { deal: any; onClick: () => void }) 
           <div className="flex items-center gap-1 text-[var(--accent-amber)]">
             <Zap size={11} />
             <span className="font-semibold">
-              Expires in {hoursLeft! > 24 ? `${Math.floor(hoursLeft! / 24)}d ${Math.floor(hoursLeft! % 24)}h` : `${Math.floor(hoursLeft!)}h`}
+              Expires in{" "}
+              {hoursLeft! > 24
+                ? `${Math.floor(hoursLeft! / 24)}d ${Math.floor(hoursLeft! % 24)}h`
+                : `${Math.floor(hoursLeft!)}h`}
             </span>
           </div>
         )}

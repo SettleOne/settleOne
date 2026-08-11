@@ -15,7 +15,7 @@ export function ProtectedRoute({
   if (isPending || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
-         <Spinner size={32} />
+        <Spinner size={32} />
       </div>
     );
   }

@@ -128,7 +128,7 @@ export function DealInfoSidebar({ deal }: DealInfoSidebarProps) {
   // Resolve chain name and token symbol from config
   const chainName =
     Object.keys(CHAIN_CONFIG).find(
-      (key) => CHAIN_CONFIG[key].chainId === deal.chainId
+      (key) => CHAIN_CONFIG[key].chainId === deal.chainId,
     ) || "Unknown";
   const chainConfig = CHAIN_CONFIG[chainName];
   const chainInfo = SUPPORTED_CHAINS.find((c) => c.id === chainName);
@@ -138,13 +138,14 @@ export function DealInfoSidebar({ deal }: DealInfoSidebarProps) {
   if (chainConfig && deal.tokenAddress) {
     const entry = Object.entries(chainConfig.tokens).find(
       ([, addr]) =>
-        (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase()
+        (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase(),
     );
     if (entry) {
       tokenSymbol = entry[0];
       tokenDecimals =
-        chainConfig.decimals[tokenSymbol as keyof typeof chainConfig.decimals] ||
-        6;
+        chainConfig.decimals[
+          tokenSymbol as keyof typeof chainConfig.decimals
+        ] || 6;
     }
   }
 
@@ -164,12 +165,10 @@ export function DealInfoSidebar({ deal }: DealInfoSidebarProps) {
   const deliveryDeadline = deal.deliveryDeadline
     ? new Date(deal.deliveryDeadline)
     : null;
-  const hoursLeft =
-    deliveryDeadline
-      ? (deliveryDeadline.getTime() - now) / 3600000
-      : null;
-  const isExpiringSoon =
-    hoursLeft !== null && hoursLeft > 0 && hoursLeft <= 48;
+  const hoursLeft = deliveryDeadline
+    ? (deliveryDeadline.getTime() - now) / 3600000
+    : null;
+  const isExpiringSoon = hoursLeft !== null && hoursLeft > 0 && hoursLeft <= 48;
 
   const sellerWindowSecs = deal.sellerAcceptanceWindowSecs;
   const disputeWindowSecs = deal.disputeWindowSecs;
@@ -249,7 +248,9 @@ export function DealInfoSidebar({ deal }: DealInfoSidebarProps) {
             <div className="flex justify-between text-xs">
               <span className="text-[var(--text-muted)]">Funding Type</span>
               <span className="text-[var(--text-primary)] font-medium capitalize">
-                {deal.fundingType === "staged" ? "60/40 Staged" : "100% Upfront"}
+                {deal.fundingType === "staged"
+                  ? "60/40 Staged"
+                  : "100% Upfront"}
               </span>
             </div>
             <div className="flex justify-between text-xs">
@@ -388,9 +389,7 @@ export function DealInfoSidebar({ deal }: DealInfoSidebarProps) {
             )}
             {disputeWindowSecs && (
               <div className="flex justify-between">
-                <span className="text-[var(--text-muted)]">
-                  Dispute Window
-                </span>
+                <span className="text-[var(--text-muted)]">Dispute Window</span>
                 <span className="font-medium text-[var(--text-primary)]">
                   {Math.round(disputeWindowSecs / 86400)}d
                 </span>

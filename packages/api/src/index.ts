@@ -40,8 +40,21 @@ export {
   useSendMessage,
   useMarkMessagesRead,
 } from "./hooks/useChat";
-export { useUser, useUserByAddress, useUpdateProfile, useUploadAvatar, useUploadBanner, useRevokeSession, useSessions, exportUserData, useDeleteAccount ,
-  useRequestEmailChange, useVerifyEmailChange, useChangePassword,useRemoveWallet, useMakePrimaryWallet
+export {
+  useUser,
+  useUserByAddress,
+  useUpdateProfile,
+  useUploadAvatar,
+  useUploadBanner,
+  useRevokeSession,
+  useSessions,
+  exportUserData,
+  useDeleteAccount,
+  useRequestEmailChange,
+  useVerifyEmailChange,
+  useChangePassword,
+  useRemoveWallet,
+  useMakePrimaryWallet,
 } from "./hooks/useUser";
 export {
   useNotifications,

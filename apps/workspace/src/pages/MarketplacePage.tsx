@@ -69,43 +69,50 @@ export function MarketplacePage() {
   const deals = data?.deals || [];
   const { data: portfolioData } = usePortfolio();
 
-   const filteredDeals = deals.filter((d: any) => {
-        // 1. Search Query
-        if (
-          searchQuery &&
-          !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !String(d.id).includes(searchQuery)
-        ) return false;
-    
-        // 2. Status
-        if (statusFilter !== "All" && d.state !== statusFilter) return false;
-    
-        // 3. Deal Type (Backend returns strings like "SoftDelivery")
-        if (
-          dealType !== "All Types" &&
-          (dealType === "Software" ? d.dealType !== "SoftDelivery" : d.dealType !== "HardDelivery")
-        ) return false;
-    
-        // 4. Chain (Backend returns numbers like 421614)
-        if (chain !== "All Chains") {
-          const targetChainId = CHAIN_CONFIG[chain]?.chainId;
-          if (d.chainId !== targetChainId) return false;
-        }
-    
-        // 5. Token (Convert string "USDC" to address based on the deal's chain)
-        if (token !== "All Tokens") {
-          // Find which chain config this deal belongs to
-          const configEntry = Object.values(CHAIN_CONFIG).find(c => c.chainId === d.chainId);
-          // Get the address for the selected token on that chain
-          const requiredTokenAddress = configEntry?.tokens[token as keyof typeof configEntry.tokens];
-          
-          // Compare addresses (case-insensitive)
-          if (d.tokenAddress?.toLowerCase() !== requiredTokenAddress?.toLowerCase()) return false;
-        }
-    
-        return true;
-      });
-      
+  const filteredDeals = deals.filter((d: any) => {
+    // 1. Search Query
+    if (
+      searchQuery &&
+      !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !String(d.id).includes(searchQuery)
+    )
+      return false;
+
+    // 2. Status
+    if (statusFilter !== "All" && d.state !== statusFilter) return false;
+
+    // 3. Deal Type (Backend returns strings like "SoftDelivery")
+    if (
+      dealType !== "All Types" &&
+      (dealType === "Software"
+        ? d.dealType !== "SoftDelivery"
+        : d.dealType !== "HardDelivery")
+    )
+      return false;
+
+    // 4. Chain (Backend returns numbers like 421614)
+    if (chain !== "All Chains") {
+      const targetChainId = CHAIN_CONFIG[chain]?.chainId;
+      if (d.chainId !== targetChainId) return false;
+    }
+
+    // 5. Token (Convert string "USDC" to address based on the deal's chain)
+    if (token !== "All Tokens") {
+      // Find which chain config this deal belongs to
+      const configEntry = Object.values(CHAIN_CONFIG).find(
+        (c) => c.chainId === d.chainId,
+      );
+      // Get the address for the selected token on that chain
+      const requiredTokenAddress =
+        configEntry?.tokens[token as keyof typeof configEntry.tokens];
+
+      // Compare addresses (case-insensitive)
+      if (d.tokenAddress?.toLowerCase() !== requiredTokenAddress?.toLowerCase())
+        return false;
+    }
+
+    return true;
+  });
 
   return (
     <>
@@ -225,10 +232,11 @@ export function MarketplacePage() {
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === s
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                      statusFilter === s
                         ? "bg-[var(--accent-blue)] text-white shadow-[var(--shadow-glow)]"
                         : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)]"
-                      }`}
+                    }`}
                   >
                     {s}
                   </button>
@@ -269,10 +277,11 @@ export function MarketplacePage() {
 
                 <button
                   onClick={() => setMoreFiltersOpen(!isMoreFiltersOpen)}
-                  className={`p-2 border rounded-[var(--radius-input)] transition-colors ${isMoreFiltersOpen
+                  className={`p-2 border rounded-[var(--radius-input)] transition-colors ${
+                    isMoreFiltersOpen
                       ? "bg-[var(--accent-blue)] border-[var(--accent-blue)] text-white"
                       : "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                    }`}
+                  }`}
                   title="More filters"
                 >
                   <SlidersHorizontal size={16} />
@@ -375,19 +384,21 @@ export function MarketplacePage() {
               <button
                 key={label}
                 onClick={() => setActiveTab(label)}
-                className={`pb-3 px-2 text-sm font-medium flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${activeTab === label
+                className={`pb-3 px-2 text-sm font-medium flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === label
                     ? "border-[var(--accent-blue)] text-[var(--text-primary)]"
                     : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
-                  }`}
+                }`}
               >
                 <Icon size={14} />
                 {label}
                 {count !== undefined && (
                   <span
-                    className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${activeTab === label
+                    className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full ${
+                      activeTab === label
                         ? "bg-[var(--accent-blue)] text-white"
                         : "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
-                      }`}
+                    }`}
                   >
                     {count}
                   </span>
@@ -399,7 +410,7 @@ export function MarketplacePage() {
           {/* Deal Cards Grid */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <Spinner size="lg" />
+              <Spinner size={24} />
               <p className="mt-4 text-[var(--text-secondary)] font-medium">
                 Scanning Marketplace…
               </p>

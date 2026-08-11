@@ -79,9 +79,25 @@ export const SUPPORTED_CHAINS = [
 ];
 
 export const SUPPORTED_TOKENS = [
-  { id: "USDC", symbol: "USDC", logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040" },
-  { id: "USDT", symbol: "USDT", logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=040" },
-  { id: "DAI", symbol: "DAI", logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=040" },
-  { id: "ETH", symbol: "ETH", logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040" },
+  {
+    id: "USDC",
+    symbol: "USDC",
+    logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=040",
+  },
+  {
+    id: "USDT",
+    symbol: "USDT",
+    logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=040",
+  },
+  {
+    id: "DAI",
+    symbol: "DAI",
+    logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=040",
+  },
+  {
+    id: "ETH",
+    symbol: "ETH",
+    logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040",
+  },
   { id: "SETL", symbol: "SETL", logo: "/logocoin1.jpg" },
 ];

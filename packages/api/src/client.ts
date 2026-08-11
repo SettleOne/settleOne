@@ -1,5 +1,7 @@
-const BASE_URL = (typeof import.meta !== "undefined" ? (import.meta as any).env?.VITE_API_URL
-      : undefined ) || "http://localhost:4000/api/v1";
+const BASE_URL =
+  (typeof import.meta !== "undefined"
+    ? (import.meta as any).env?.VITE_API_URL
+    : undefined) || "http://localhost:4000/api/v1";
 
 // Memory-based token storage for XSS protection
 let authToken: string | null = null;
@@ -37,7 +39,7 @@ export class ApiError extends Error {
 export async function apiClient<T>(
   path: string,
   options: RequestOptions = {},
-  isRetry = false
+  isRetry = false,
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
   const url = buildUrl(path, params);
@@ -85,30 +87,34 @@ export async function apiClient<T>(
         response = await fetch(url, { ...fetchConfig, headers });
       }
     } catch (refreshError) {
-       console.error(" KICKED BY CLIENT.TS! Refresh failed:", refreshError);
+      console.error(" KICKED BY CLIENT.TS! Refresh failed:", refreshError);
       // If the refresh token is ALSO expired, we must force a hard logout
       clearAuthToken();
       if (typeof window !== "undefined") {
         localStorage.removeItem("so_access_token");
         // Redirect them to marketing app's login page
-        window.location.href = "http://localhost:3001/login";
+        const mktUrl =
+          (typeof import.meta !== "undefined"
+            ? (import.meta as any).env?.VITE_MARKETING_URL
+            : undefined) || "http://localhost:3001";
+        window.location.href = `${mktUrl}/login`;
         throw new ApiError(401, "Unauthorized", "Session fully expired");
       }
     }
   }
-    // --------------------------------------------------
+  // --------------------------------------------------
 
-    if (!response.ok) {
-      const errorBody = await response.text().catch(() => "Unknown error");
-      throw new ApiError(response.status, response.statusText, errorBody);
-    }
-
-    if (response.status === 204) {
-      return undefined as T;
-    }
-
-    return response.json();
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => "Unknown error");
+    throw new ApiError(response.status, response.statusText, errorBody);
   }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json();
+}
 
 export function setAuthToken(token: string): void {
   authToken = token;

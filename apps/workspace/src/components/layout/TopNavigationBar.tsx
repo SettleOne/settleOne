@@ -36,16 +36,18 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isConnected || !address) return;
+
+    // ONLY run if the user manually clicked the Connect Wallet button this session
+    if (sessionStorage.getItem("intent_to_link") !== "true") return;
 
     const isAlreadyLinked = user.wallets?.some(
-      (w: any) => w.address.toLowerCase() === address?.toLowerCase()
+      (w: any) => w.address.toLowerCase() === address?.toLowerCase(),
     );
 
-    if (isConnected && address && !isAlreadyLinked && linkedRef.current !== address) {
+    if (!isAlreadyLinked && linkedRef.current !== address) {
       const linkWallet = async () => {
         try {
-          // Extract from .data object!
           const response = await apiClient<any>("/users/me/wallets/nonce", {
             method: "POST",
             body: JSON.stringify({ address }),
@@ -60,11 +62,13 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
           });
 
           linkedRef.current = address;
+          // Clear intent so it doesn't pop up again on refresh
+          sessionStorage.removeItem("intent_to_link");
           queryClient.invalidateQueries({ queryKey: ["users"] });
-
         } catch (err) {
           console.warn("Wallet linking skipped or failed:", err);
           linkedRef.current = address;
+          sessionStorage.removeItem("intent_to_link");
         }
       };
       linkWallet();
@@ -138,10 +142,11 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative px-6 xl:px-8 py-2.5 rounded-full text-[11px] xl:text-xs font-bold tracking-[0.1em] transition-all duration-300 whitespace-nowrap ${isActive
+                  className={`relative px-6 xl:px-8 py-2.5 rounded-full text-[11px] xl:text-xs font-bold tracking-[0.1em] transition-all duration-300 whitespace-nowrap ${
+                    isActive
                       ? "text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -214,9 +219,15 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
                       if (!connected) {
                         return (
                           <button
-                            onClick={openConnectModal}
+                            onClick={() => {
+                              // Set the intent flag before opening the modal
+                              sessionStorage.setItem("intent_to_link", "true");
+                              openConnectModal();
+                            }}
                             type="button"
-                            className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-xs font-bold tracking-wide text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+                            className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-
+  xs font-bold tracking-wide text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-
+  [0_0_20px_rgba(255,255,255,0.15)]"
                           >
                             Connect Wallet
                           </button>
@@ -295,7 +306,9 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
               <div className="bg-[#050a14] rounded-full p-[2px]">
                 <Avatar
                   src={user?.avatarUrl}
-                  initials={user?.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+                  initials={
+                    user?.name ? user.name.substring(0, 2).toUpperCase() : "U"
+                  }
                   size="md"
                 />
               </div>
@@ -351,19 +364,20 @@ export function TopNavigationBar({ onMenuClick }: TopNavigationBarProps) {
                   </Link>
                 </div>
                 <div className="px-3 py-2 mt-1 border-t border-white/5 bg-red-500/[0.02]">
-
                   <button
-                        onClick={async () => {
-                          try {
-                            // 1. Tell the backend to destroy the active session in the database
-                            await apiClient("/auth/logout", { method: "POST" });
-                          } catch (e) {
-                            console.warn("Backend logout skipped:", e);
-                          }
-                          // 2. Clear the local token
-                          localStorage.removeItem("so_access_token");
-                          // 3. Eject to marketing site
-                      window.location.href = (import.meta).env.VITE_MARKETING_URL || "http://localhost:3001/login";
+                    onClick={async () => {
+                      try {
+                        // 1. Tell the backend to destroy the active session in the database
+                        await apiClient("/auth/logout", { method: "POST" });
+                      } catch (e) {
+                        console.warn("Backend logout skipped:", e);
+                      }
+                      // 2. Clear the local token
+                      localStorage.removeItem("so_access_token");
+                      // 3. Eject to marketing site
+                      window.location.href =
+                        import.meta.env.VITE_MARKETING_URL ||
+                        "http://localhost:3001/login";
                     }}
                     className="w-full group text-left px-3 py-2.5 text-sm text-red-400/90 hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all duration-200 flex items-center gap-3"
                   >

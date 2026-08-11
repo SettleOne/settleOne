@@ -26,7 +26,12 @@ import {
   SUPPORTED_TOKENS,
 } from "../lib/constants";
 import { Avatar, Input, Button } from "@settleone/design-system";
-import { useUser, useUpdateProfile, useUploadAvatar, useUploadBanner } from "@settleone/api";
+import {
+  useUser,
+  useUpdateProfile,
+  useUploadAvatar,
+  useUploadBanner,
+} from "@settleone/api";
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState("account");
@@ -75,7 +80,7 @@ export function ProfilePage() {
   const chainRef = useRef<HTMLDivElement>(null);
   const tokenRef = useRef<HTMLDivElement>(null);
 
-  // avatar and banner hooks 
+  // avatar and banner hooks
   const uploadAvatar = useUploadAvatar();
   const uploadBanner = useUploadBanner();
 
@@ -99,7 +104,8 @@ export function ProfilePage() {
           <div
             className="relative rounded-t-[var(--radius-card)] h-28 bg-cover bg-center"
             style={{
-              backgroundImage: user?.bannerUrl ? `url(${user.bannerUrl})`
+              backgroundImage: user?.bannerUrl
+                ? `url(${user.bannerUrl})`
                 : "url(/blockchain-bg.jpg), linear-gradient(135deg, #1d4ed8, #7c3aed)",
             }}
           >
@@ -181,10 +187,10 @@ export function ProfilePage() {
                 <span className="font-medium">
                   {user?.createdAt
                     ? new Date(user.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                     : "Recently"}
                 </span>
               </div>
@@ -229,21 +235,22 @@ export function ProfilePage() {
       {/* Right Panel: Tabs & Content */}
       <div className="flex-1">
         <div className="mb-6 flex gap-2 border-b border-[var(--border)] overflow-x-auto scrollbar-hide">
-          {[
-            { id: "account", label: "Account Info", icon: Building },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id
-                ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
-                : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]"
+          {[{ id: "account", label: "Account Info", icon: Building }].map(
+            (tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
+                    : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]"
                 }`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-            </button>
-          ))}
+              >
+                <tab.icon size={16} />
+                {tab.label}
+              </button>
+            ),
+          )}
         </div>
 
         <div
@@ -706,28 +713,35 @@ export function ProfilePage() {
               </div>
 
               {/* --- CONNECTED WALLETS (READ-ONLY) --- */}
-              {user?.showWalletPublicly && user?.wallets && user.wallets.length > 0 && (
-                <div>
-                  <h3 className="text-xl font-bold mb-5 border-b border-[var(--border)] pb-2 text-[var(--text-primary)]">
-                    Connected Wallets
-                  </h3>
-                  <div className="flex flex-col space-y-4">
-                    {user.wallets.map((wallet: any, index: number) => (
-                      <div key={wallet.address} className="relative">
-                        <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
-                          Wallet {index + 1} {wallet.isPrimary && <span className="text-[var(--accent-green)]">(Primary)</span>}
-                        </label>
-                        <Input
-                          type="text"
-                          readOnly
-                          value={wallet.address}
-                          className="w-full bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
-                        />
-                      </div>
-                    ))}
+              {user?.showWalletPublicly &&
+                user?.wallets &&
+                user.wallets.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-bold mb-5 border-b border-[var(--border)] pb-2 text-[var(--text-primary)]">
+                      Connected Wallets
+                    </h3>
+                    <div className="flex flex-col space-y-4">
+                      {user.wallets.map((wallet: any, index: number) => (
+                        <div key={wallet.address} className="relative">
+                          <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                            Wallet {index + 1}{" "}
+                            {wallet.isPrimary && (
+                              <span className="text-[var(--accent-green)]">
+                                (Primary)
+                              </span>
+                            )}
+                          </label>
+                          <Input
+                            type="text"
+                            readOnly
+                            value={wallet.address}
+                            className="w-full bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] font-mono text-sm opacity-80 cursor-not-allowed"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* --- SAVE BUTTON --- */}
               <div className="pt-8 border-t border-[var(--border)] flex justify-end">

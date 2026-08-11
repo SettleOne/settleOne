@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
-  Bell, Wallet, Shield, AlertTriangle, Trash2, Download, Lock, Smartphone, Globe, LogOut, Plus, CheckCircle2
+  Bell,
+  Wallet,
+  Shield,
+  AlertTriangle,
+  Trash2,
+  Download,
+  Lock,
+  Smartphone,
+  Globe,
+  LogOut,
+  Plus,
+  CheckCircle2,
 } from "lucide-react";
 import { Button, Input } from "@settleone/design-system";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -12,10 +23,14 @@ import {
   useSessions,
   useRevokeSession,
   useRemoveWallet,
-  useMakePrimaryWallet
+  useMakePrimaryWallet,
 } from "@settleone/api";
 
-import { useUpdateProfile, useDeleteAccount, exportUserData } from "@settleone/api";
+import {
+  useUpdateProfile,
+  useDeleteAccount,
+  exportUserData,
+} from "@settleone/api";
 import { useDisconnect } from "wagmi";
 
 export function SettingsPage() {
@@ -30,7 +45,9 @@ export function SettingsPage() {
 
   const updateProfile = useUpdateProfile();
   const deleteAccount = useDeleteAccount();
-  const [notifPrefs, setNotifPrefs] = useState<any>(user?.notificationPrefs || {});
+  const [notifPrefs, setNotifPrefs] = useState<any>(
+    user?.notificationPrefs || {},
+  );
 
   //  this sync the state when user data loads:
   useEffect(() => {
@@ -49,7 +66,9 @@ export function SettingsPage() {
   const revokeSession = useRevokeSession();
 
   // Security Tab States
-  const [emailChangeStep, setEmailChangeStep] = useState<"initial" | "verify-new">("initial");
+  const [emailChangeStep, setEmailChangeStep] = useState<
+    "initial" | "verify-new"
+  >("initial");
   const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newEmailOtp, setNewEmailOtp] = useState("");
@@ -57,7 +76,6 @@ export function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
 
   return (
     <div className="max-w-5xl mx-auto p-6 text-[var(--text-primary)] font-[var(--font-sans)] relative">
@@ -90,15 +108,21 @@ export function SettingsPage() {
               { id: "sessions", label: "Active Sessions", icon: Smartphone },
               { id: "notifications", label: "Notifications", icon: Bell },
               { id: "privacy", label: "Privacy", icon: Shield },
-              { id: "danger", label: "Danger Zone", icon: AlertTriangle, color: "text-[var(--accent-red)]" },
+              {
+                id: "danger",
+                label: "Danger Zone",
+                icon: AlertTriangle,
+                color: "text-[var(--accent-red)]",
+              },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-input)] transition-colors ${activeTab === tab.id
-                  ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/30"
-                  : "hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
-                  } ${tab.color || ""}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-input)] transition-colors ${
+                  activeTab === tab.id
+                    ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/30"
+                    : "hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
+                } ${tab.color || ""}`}
               >
                 <tab.icon size={18} />
                 <span className="font-medium">{tab.label}</span>
@@ -108,16 +132,22 @@ export function SettingsPage() {
 
           {/* Content */}
           <div className="flex-1 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-8 shadow-[var(--shadow-card)]">
-
             {/* --- CONNECTED WALLETS --- */}
 
             {activeTab === "wallet" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">Connected Wallets</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)]">
+                      Connected Wallets
+                    </h3>
                     <p className="text-[var(--text-secondary)] text-sm mt-1">
-                      Your <span className="text-[var(--accent-green)] font-medium">Primary</span> wallet is where you will receive all escrow payouts and refunds.
+                      Your{" "}
+                      <span className="text-[var(--accent-green)] font-medium">
+                        Primary
+                      </span>{" "}
+                      wallet is where you will receive all escrow payouts and
+                      refunds.
                     </p>
                   </div>
                   {(!user?.wallets || user.wallets.length < 3) && (
@@ -138,7 +168,10 @@ export function SettingsPage() {
 
                 <div className="flex flex-col space-y-4">
                   {user?.wallets?.map((wallet: any, index: number) => (
-                    <div key={wallet.address} className="relative p-4 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-card)]">
+                    <div
+                      key={wallet.address}
+                      className="relative p-4 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-card)]"
+                    >
                       <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-medium text-[var(--text-secondary)]">
                           Wallet {index + 1}
@@ -158,20 +191,30 @@ export function SettingsPage() {
                               disabled={makePrimary.isPending}
                               className="px-3 py-1 text-xs bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] rounded hover:bg-[var(--accent-blue)]/20 transition-colors"
                             >
-                              {makePrimary.isPending ? "Setting..." : "Make Primary"}
+                              {makePrimary.isPending
+                                ? "Setting..."
+                                : "Make Primary"}
                             </button>
                           )}
                           <button
                             type="button"
                             onClick={() => {
-                              if (confirm("Remove this wallet?")) removeWallet.mutate(wallet.address);
+                              if (confirm("Remove this wallet?"))
+                                removeWallet.mutate(wallet.address);
                             }}
-                            disabled={removeWallet.isPending || wallet.isPrimary}
-                            className={`px-3 py-1 text-xs rounded transition-colors ${wallet.isPrimary
+                            disabled={
+                              removeWallet.isPending || wallet.isPrimary
+                            }
+                            className={`px-3 py-1 text-xs rounded transition-colors ${
+                              wallet.isPrimary
                                 ? "bg-slate-500/10 text-slate-500 cursor-not-allowed"
                                 : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                              }`}
-                            title={wallet.isPrimary ? "Cannot delete primary wallet" : "Remove wallet"}
+                            }`}
+                            title={
+                              wallet.isPrimary
+                                ? "Cannot delete primary wallet"
+                                : "Remove wallet"
+                            }
                           >
                             Remove
                           </button>
@@ -186,7 +229,9 @@ export function SettingsPage() {
                     </div>
                   ))}
                   {(!user?.wallets || user.wallets.length === 0) && (
-                    <p className="text-sm text-[var(--text-muted)] italic">No wallets connected yet.</p>
+                    <p className="text-sm text-[var(--text-muted)] italic">
+                      No wallets connected yet.
+                    </p>
                   )}
                 </div>
               </div>
@@ -198,7 +243,9 @@ export function SettingsPage() {
                                   1. CHANGE EMAIL 
                               ─────────────────────────────────────────────────────────── */}
                 <div>
-                  <h3 className="text-xl font-bold mb-4">Change Email Address</h3>
+                  <h3 className="text-xl font-bold mb-4">
+                    Change Email Address
+                  </h3>
                   <div className="space-y-4 max-w-md">
                     {emailChangeStep === "initial" && (
                       <div className="space-y-4">
@@ -242,7 +289,8 @@ export function SettingsPage() {
                               setEmailChangeStep("verify-new");
                             } catch (err: any) {
                               alert(
-                                err.message || "Failed to send verification code",
+                                err.message ||
+                                  "Failed to send verification code",
                               );
                             }
                           }}
@@ -437,14 +485,21 @@ export function SettingsPage() {
 
             {activeTab === "privacy" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Shield className="text-[var(--accent-blue)]" /> Privacy</h2>
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <Shield className="text-[var(--accent-blue)]" /> Privacy
+                </h2>
                 <div className="space-y-8 mt-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">Profile
-                      Visibility</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">
+                      Profile Visibility
+                    </label>
                     <select
                       value={user?.profileVisibility || "Public"}
-                      onChange={(e) => updateProfile.mutate({ profileVisibility: e.target.value })}
+                      onChange={(e) =>
+                        updateProfile.mutate({
+                          profileVisibility: e.target.value,
+                        })
+                      }
                       disabled={updateProfile.isPending}
                       className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-input)] px-4 py-3 text-[var(--text-primary)]"
                     >
@@ -455,19 +510,30 @@ export function SettingsPage() {
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)]">
                     <div>
-                      <p className="font-medium text-[var(--text-primary)]">Show Wallet Address Publicly</p>
-                      <p className="text-[var(--text-muted)] text-sm mt-1">If disabled, your address will only be visible to parties in active deals.</p>
+                      <p className="font-medium text-[var(--text-primary)]">
+                        Show Wallet Address Publicly
+                      </p>
+                      <p className="text-[var(--text-muted)] text-sm mt-1">
+                        If disabled, your address will only be visible to
+                        parties in active deals.
+                      </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
                         className="sr-only peer"
                         checked={user?.showWalletPublicly ?? true}
-                        onChange={(e) => updateProfile.mutate({ showWalletPublicly: e.target.checked })}
+                        onChange={(e) =>
+                          updateProfile.mutate({
+                            showWalletPublicly: e.target.checked,
+                          })
+                        }
                         disabled={updateProfile.isPending}
                       />
-                      <div className="w-11 h-6 bg-[var(--bg-base)] peer-focus:outline-none rounded-full peer peer-
-  checked:after:translate-x-full peer-checked:bg-[var(--accent-blue)] border border-[var(--border)]"></div>
+                      <div
+                        className="w-11 h-6 bg-[var(--bg-base)] peer-focus:outline-none rounded-full peer peer-
+  checked:after:translate-x-full peer-checked:bg-[var(--accent-blue)] border border-[var(--border)]"
+                      ></div>
                     </label>
                   </div>
                 </div>
@@ -479,37 +545,58 @@ export function SettingsPage() {
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Bell className="text-[var(--accent-blue)]" /> Notification Preferences</h2>
+                  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <Bell className="text-[var(--accent-blue)]" /> Notification
+                    Preferences
+                  </h2>
                   <div className="space-y-6">
-                    {["Deal State Changes", "Deadline Reminders", "Dispute Updates", "New Messages"].map((item) => (
-                      <div key={item} className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--border)] gap-4">
-                        <p className="font-medium text-[var(--text-primary)]">{item}</p>
+                    {[
+                      "Deal State Changes",
+                      "Deadline Reminders",
+                      "Dispute Updates",
+                      "New Messages",
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--border)] gap-4"
+                      >
+                        <p className="font-medium text-[var(--text-primary)]">
+                          {item}
+                        </p>
                         <div className="flex gap-6 bg-[var(--bg-base)] p-3 rounded-[var(--radius-input)] border border-[var(--border)]">
                           <label className="flex items-center gap-2 text-sm cursor-pointer">
                             <input
                               type="checkbox"
                               className="accent-[var(--accent-blue)] w-4 h-4"
                               checked={notifPrefs[item]?.email ?? true}
-                              onChange={(e) => setNotifPrefs({
-                                ...notifPrefs, [item]: {
-                                  ...notifPrefs[item], email: e.
-                                    target.checked
-                                }
-                              })}
-                            /> Email
+                              onChange={(e) =>
+                                setNotifPrefs({
+                                  ...notifPrefs,
+                                  [item]: {
+                                    ...notifPrefs[item],
+                                    email: e.target.checked,
+                                  },
+                                })
+                              }
+                            />{" "}
+                            Email
                           </label>
                           <label className="flex items-center gap-2 text-sm cursor-pointer">
                             <input
                               type="checkbox"
                               className="accent-[var(--accent-blue)] w-4 h-4"
                               checked={notifPrefs[item]?.inApp ?? true}
-                              onChange={(e) => setNotifPrefs({
-                                ...notifPrefs, [item]: {
-                                  ...notifPrefs[item], inApp: e.
-                                    target.checked
-                                }
-                              })}
-                            /> In-app
+                              onChange={(e) =>
+                                setNotifPrefs({
+                                  ...notifPrefs,
+                                  [item]: {
+                                    ...notifPrefs[item],
+                                    inApp: e.target.checked,
+                                  },
+                                })
+                              }
+                            />{" "}
+                            In-app
                           </label>
                         </div>
                       </div>
@@ -519,7 +606,9 @@ export function SettingsPage() {
                 <div className="pt-4 flex justify-end">
                   <Button
                     variant="primary"
-                    onClick={() => updateProfile.mutate({ notificationPrefs: notifPrefs })}
+                    onClick={() =>
+                      updateProfile.mutate({ notificationPrefs: notifPrefs })
+                    }
                     disabled={updateProfile.isPending}
                   >
                     {updateProfile.isPending ? "Saving..." : "Save Preferences"}
@@ -532,16 +621,25 @@ export function SettingsPage() {
 
             {activeTab === "danger" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold mb-4 text-[var(--accent-red)] flex items-center gap-2"><AlertTriangle />
-                  Danger Zone</h2>
+                <h2 className="text-xl font-bold mb-4 text-[var(--accent-red)] flex items-center gap-2">
+                  <AlertTriangle />
+                  Danger Zone
+                </h2>
                 <div className="border border-[var(--accent-red)]/30 rounded-[var(--radius-card)] overflow-hidden bg-red-950/10">
                   <div className="p-5 border-b border-[var(--accent-red)]/20 flex justify-between gap-4">
                     <div>
-                      <p className="font-medium text-[var(--text-primary)]">Export My Data</p>
-                      <p className="text-[var(--text-secondary)] text-sm">Download a JSON file containing all your deals and account history.</p>
+                      <p className="font-medium text-[var(--text-primary)]">
+                        Export My Data
+                      </p>
+                      <p className="text-[var(--text-secondary)] text-sm">
+                        Download a JSON file containing all your deals and
+                        account history.
+                      </p>
                     </div>
                     <button
-                      onClick={() => exportUserData(localStorage.getItem('auth_token') || '')}
+                      onClick={() =>
+                        exportUserData(localStorage.getItem("auth_token") || "")
+                      }
                       className="flex items-center gap-2 px-4 py-2 text-sm bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-input)] hover:bg-[var(--bg-subtle)]"
                     >
                       <Download size={16} /> Export Data
@@ -549,24 +647,35 @@ export function SettingsPage() {
                   </div>
                   <div className="p-5 flex justify-between gap-4">
                     <div>
-                      <p className="font-medium text-[var(--accent-red)]">Delete Account</p>
-                      <p className="text-[var(--text-secondary)] text-sm">Permanently delete your account. This cannot be undone.</p>
+                      <p className="font-medium text-[var(--accent-red)]">
+                        Delete Account
+                      </p>
+                      <p className="text-[var(--text-secondary)] text-sm">
+                        Permanently delete your account. This cannot be undone.
+                      </p>
                     </div>
                     <button
                       onClick={() => {
-                        if (confirm("Are you absolutely sure? This will delete all your data forever.")) {
+                        if (
+                          confirm(
+                            "Are you absolutely sure? This will delete all your data forever.",
+                          )
+                        ) {
                           deleteAccount.mutate(undefined, {
                             onSuccess: () => {
                               alert("Account deleted.");
                               window.location.href = "/"; // Send them out of the app
-                            }
+                            },
                           });
                         }
                       }}
                       className="flex items-center gap-2 px-4 py-2 text-sm bg-[var(--accent-red)] text-white rounded-[var(-
   -radius-input)] hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
                     >
-                      <Trash2 size={16} /> {deleteAccount.isPending ? "Deleting..." : "Delete Account"}
+                      <Trash2 size={16} />{" "}
+                      {deleteAccount.isPending
+                        ? "Deleting..."
+                        : "Delete Account"}
                     </button>
                   </div>
                 </div>

@@ -28,7 +28,7 @@ function getDealStateLabel(state: string): string {
 function getChainName(chainId: number): string {
   return (
     Object.keys(CHAIN_CONFIG).find(
-      (key) => CHAIN_CONFIG[key].chainId === chainId
+      (key) => CHAIN_CONFIG[key].chainId === chainId,
     ) || "Unknown"
   );
 }
@@ -48,7 +48,7 @@ function DealHeroHeader({ deal }: { deal: any }) {
   if (chainConfig && deal.tokenAddress) {
     const entry = Object.entries(chainConfig.tokens).find(
       ([, addr]) =>
-        (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase()
+        (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase(),
     );
     if (entry) {
       tokenSymbol = entry[0];
@@ -200,7 +200,12 @@ function DealHeroHeader({ deal }: { deal: any }) {
 
 // ─── Work Log Section ─────────────────────────────────────────────────────────
 
-function WorkLogSection({ deal, dealId, userRole, currentState }: {
+function WorkLogSection({
+  deal,
+  dealId,
+  userRole,
+  currentState,
+}: {
   deal: any;
   dealId: bigint | undefined;
   userRole: string;
@@ -371,7 +376,6 @@ export function DealRoomPage() {
       {/* Zone 2: Two-column layout (65/35) → stacks on mobile */}
       <div className="max-w-[1400px] w-full mx-auto px-4 md:px-8 py-8">
         <div className="flex flex-col xl:flex-row gap-6 items-start">
-
           {/* LEFT: Work Column (65%) */}
           <div className="flex-1 min-w-0 space-y-6">
             {/* Action Center */}
