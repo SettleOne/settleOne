@@ -12,7 +12,7 @@ export const wagmiConfig = getDefaultConfig({
     "YOUR_WALLETCONNECT_PROJECT_ID",
   chains: [arbitrumSepolia, sepolia],
   transports: {
-    [arbitrumSepolia.id]: http(),
-    [sepolia.id]: http(),
+    [arbitrumSepolia.id]: http((import.meta as any).env?.VITE_ARBITRUM_SEPOLIA_RPC_URL),
+    [sepolia.id]: http((import.meta as any).env?.VITE_SEPOLIA_RPC_URL),
   },
 });
