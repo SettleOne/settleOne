@@ -39,7 +39,7 @@ export const settleOneTokenAbi = [
     name: "transfer",
     inputs: [
       { name: "to", type: "address" },
-      { name: "amount", type: "uint256" },
+      { name: "value", type: "uint256" },
     ],
     outputs: [{ name: "", type: "bool" }],
     stateMutability: "nonpayable",
@@ -49,7 +49,7 @@ export const settleOneTokenAbi = [
     name: "approve",
     inputs: [
       { name: "spender", type: "address" },
-      { name: "amount", type: "uint256" },
+      { name: "value", type: "uint256" },
     ],
     outputs: [{ name: "", type: "bool" }],
     stateMutability: "nonpayable",
@@ -66,6 +66,17 @@ export const settleOneTokenAbi = [
   },
   {
     type: "function",
+    name: "transferFrom",
+    inputs: [
+      { name: "from", type: "address" },
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "mint",
     inputs: [
       { name: "to", type: "address" },
@@ -74,6 +85,121 @@ export const settleOneTokenAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    name: "burn",
+    inputs: [
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "burnFrom",
+    inputs: [
+      { name: "account", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "MAX_SUPPLY",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "remainingMintable",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "MINTER_ROLE",
+    inputs: [],
+    outputs: [{ name: "", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "BURNER_ROLE",
+    inputs: [],
+    outputs: [{ name: "", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "hasRole",
+    inputs: [
+      { name: "role", type: "bytes32" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "addMinter",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "removeMinter",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "addBurner",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "removeBurner",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "nonces",
+    inputs: [{ name: "owner", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "DOMAIN_SEPARATOR",
+    inputs: [],
+    outputs: [{ name: "", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "permit",
+    inputs: [
+      { name: "owner", type: "address" },
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "deadline", type: "uint256" },
+      { name: "v", type: "uint8" },
+      { name: "r", type: "bytes32" },
+      { name: "s", type: "bytes32" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+
   {
     type: "event",
     name: "Transfer",
@@ -90,6 +216,34 @@ export const settleOneTokenAbi = [
       { name: "owner", type: "address", indexed: true },
       { name: "spender", type: "address", indexed: true },
       { name: "value", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "MinterAdded",
+    inputs: [
+      { name: "account", type: "address", indexed: true },
+    ],
+  },
+  {
+    type: "event",
+    name: "MinterRemoved",
+    inputs: [
+      { name: "account", type: "address", indexed: true },
+    ],
+  },
+  {
+    type: "event",
+    name: "BurnerAdded",
+    inputs: [
+      { name: "account", type: "address", indexed: true },
+    ],
+  },
+  {
+    type: "event",
+    name: "BurnerRemoved",
+    inputs: [
+      { name: "account", type: "address", indexed: true },
     ],
   },
 ] as const;

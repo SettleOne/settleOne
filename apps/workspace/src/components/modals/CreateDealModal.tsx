@@ -199,7 +199,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
           disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
           acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
-          sellerAcceptanceWindowSecs: BigInt(
+          sellerAcceptanceWindow: BigInt(
             apiPayload.sellerAcceptanceWindowSeconds,
           ),
           dealType: form.dealType === "software" ? 0 : 1,
