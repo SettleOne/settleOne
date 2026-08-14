@@ -30,7 +30,7 @@ import { DisputeModal } from "../modals/DisputeModal";
 import { RequestRevisionModal } from "../modals/RequestRevisionModal";
 
 interface ActionCenterProps {
-  currentState: string; // string from backend e.g. "AwaitingFunding"
+  currentState: string | any;
   userRole: "buyer" | "seller" | "none";
   deal?: any;
 }
@@ -125,7 +125,7 @@ export function ActionCenter({
             <Button
               variant="danger"
               className="bg-transparent border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10"
-              onClick={() => requireWallet(() => rejectDeal(getDealId()))}
+              onClick={() => requireWallet(() => rejectDeal(getDealId(), "0x0000000000000000000000000000000000000000000000000000000000000000"))}
               disabled={isRejecting}
             >
               Reject Deal

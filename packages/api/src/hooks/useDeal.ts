@@ -5,6 +5,7 @@ import type { Deal } from "@settleone/types";
 interface DealDetail extends Deal {
   chainId: number;
   onChainDealId: string;
+  onChainId: number | string | null;
 }
 
 export function useDeal(dealId: string | undefined) {
@@ -73,3 +74,21 @@ export function useDealPayout(dealId: string | undefined) {
     enabled: !!dealId,
   });
 }
+
+ export function useLinkDealMutation() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: ({ dealId, onChainId }: { dealId: string; onChainId: string }) =>
+          apiClient<{ deal: any }>(`/deals/${dealId}/link`, {
+            method: "PATCH",
+            body: JSON.stringify({ onChainId }),
+          }),
+        onSuccess: (_, variables) => {
+          // Invalidate the cache so the UI updates to show the linked deal
+          queryClient.invalidateQueries({ queryKey: ["deals"] });
+          queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
+          queryClient.invalidateQueries({ queryKey: ["myCreatedDeals"] });
+          queryClient.invalidateQueries({ queryKey: ["activeDeals"] });
+        },
+      });
+    }

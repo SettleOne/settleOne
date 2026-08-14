@@ -78,7 +78,7 @@ export function FundDealModal({
       if (!hasEnoughAllowance) {
         approve(vaultAddress, parsedAmount);
       } else {
-        fundDeal(dealId);
+        fundDeal(dealId, parsedAmount);
       }
     });
   };

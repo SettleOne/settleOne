@@ -661,11 +661,11 @@ export function ProfilePage() {
                                 />
                                 <img
                                   src={token.logo}
-                                  alt={token.name}
+                                  alt={token.symbol}
                                   className="w-5 h-5 rounded-full"
                                 />
                                 <span className="text-sm font-medium text-[var(--text-primary)]">
-                                  {token.name}
+                                  {token.symbol}
                                 </span>
                               </div>
                             ))}
@@ -689,11 +689,11 @@ export function ProfilePage() {
                               {tokenObj?.logo && (
                                 <img
                                   src={tokenObj.logo}
-                                  alt={tokenObj.name}
+                                  alt={tokenObj.symbol}
                                   className="w-4 h-4 rounded-full"
                                 />
                               )}
-                              {tokenObj?.name || tokenId}
+                              {tokenObj?.symbol || tokenId}
                               <X
                                 size={14}
                                 className="ml-1 cursor-pointer text-[var(--text-muted)] hover:text-red-400 transition-colors"

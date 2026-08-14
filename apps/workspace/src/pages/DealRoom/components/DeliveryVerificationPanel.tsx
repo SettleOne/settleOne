@@ -55,7 +55,7 @@ export function DeliveryVerificationPanel({
 
         setStatus("submitting");
         // In a real implementation, you'd pass the signature to the contract
-        await finalizeDelivery(BigInt(deal.id));
+        await finalizeDelivery(BigInt(deal.id), "0x");
 
         setStatus("success");
       } catch (err) {

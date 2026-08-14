@@ -44,9 +44,9 @@ export function RequestRevisionModal({
         let evidenceCid = "";
         if (files.length > 0) {
           const result = await uploadFile({
-            file: files[0],
+            file: files[0] as File,
             dealId: dealId.toString(),
-            context: "revision",
+            context: "delivery",
           });
           evidenceCid = result.file.id;
         }

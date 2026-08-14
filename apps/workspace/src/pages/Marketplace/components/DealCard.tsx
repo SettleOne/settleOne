@@ -117,7 +117,7 @@ export function DealCard({
 
   if (chainConfig && deal.tokenAddress) {
     const tokenEntry = Object.entries(chainConfig.tokens).find(
-      ([sym, addr]) =>
+      ([_sym, addr]) =>
         (addr as string).toLowerCase() === deal.tokenAddress.toLowerCase(),
     );
     if (tokenEntry) {

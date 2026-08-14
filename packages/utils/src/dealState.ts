@@ -1,6 +1,7 @@
 import { DealState } from "@settleone/types";
 
 const STATE_COLORS: Record<DealState, string> = {
+  [DealState.Draft]: "#9CA3AF",
   [DealState.None]: "#9CA3AF",
   [DealState.AwaitingFunding]: "#F59E0B",
   [DealState.PendingSellerAcceptance]: "#3B82F6",
@@ -16,6 +17,7 @@ const STATE_COLORS: Record<DealState, string> = {
 };
 
 const STATE_LABELS: Record<DealState, string> = {
+  [DealState.Draft]: "Draft",
   [DealState.None]: "None",
   [DealState.AwaitingFunding]: "Awaiting Funding",
   [DealState.PendingSellerAcceptance]: "Pending Acceptance",

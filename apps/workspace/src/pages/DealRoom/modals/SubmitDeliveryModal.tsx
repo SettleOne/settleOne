@@ -64,7 +64,7 @@ export function SubmitDeliveryModal({
 
       setStatus("signing_tx");
       // 4. Submit on-chain
-      await submitDeliveryProof(dealId, proofHash, cid);
+      await submitDeliveryProof(dealId, proofHash);
 
       setStatus("success");
     } catch (err: any) {

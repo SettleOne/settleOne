@@ -14,9 +14,9 @@ import {
   Upload,
   Trash2,
 } from "lucide-react";
-import { useChainId, useAccount } from "wagmi";
+import { useChainId, useAccount, usePublicClient } from "wagmi";
 import { useCreateDeal } from "@settleone/sdk";
-import { apiClient } from "@settleone/api";
+import { apiClient, useLinkDealMutation } from "@settleone/api";
 import { useRequireWallet } from "../../hooks/useRequireWallet";
 import { CHAIN_CONFIG, UI_CHAIN_MAPPING } from "../../lib/config";
 import { parseUnits, keccak256 } from "viem";
@@ -91,18 +91,45 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   // ALL hooks MUST be called before any conditional return (Rules of Hooks)
   const rawChainId = useChainId();
   const { address } = useAccount();
+  const publicClient = usePublicClient();
   const safeChainId = CHAINS_ID.includes(rawChainId) ? rawChainId : 421614;
   const {
     createDeal,
+    hash,
     isPending: isTxPending,
     isSuccess: isTxSuccess,
     error: txError,
   } = useCreateDeal(safeChainId);
   const { requireWallet, WalletPromptModal } = useRequireWallet();
+  const { mutateAsync: linkDealOnChain } = useLinkDealMutation();
 
   React.useEffect(() => {
-    if (txError) console.error("SMART CONTRACT CRASHED:", txError);
+    if (txError) {
+      console.error("SMART CONTRACT CRASHED:", txError);
+      setErrorMessage("Transaction failed. Please try again.");
+      setIsPending(false);
+    }
   }, [txError]);
+
+  React.useEffect(() => {
+    if (isTxSuccess && hash && createdId && publicClient) {
+      publicClient.getTransactionReceipt({ hash }).then(async (receipt) => {
+        try {
+          const dealIdHex = receipt.logs[0]?.topics[1];
+          if (dealIdHex) {
+            const onChainId = BigInt(dealIdHex).toString();
+            await linkDealOnChain({ dealId: createdId, onChainId });
+            setIsSuccess(true);
+            setIsPending(false);
+          }
+        } catch (err) {
+          console.error("Failed to link deal", err);
+          setErrorMessage("Failed to link deal on our servers.");
+          setIsPending(false);
+        }
+      });
+    }
+  }, [isTxSuccess, hash, createdId, publicClient, linkDealOnChain]);
 
   // Early return AFTER all hooks
   if (!isOpen) return null;
@@ -189,6 +216,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
         );
 
         createDeal({
+          amount: amountInWei,
           buyer:
             (address as `0x${string}`) ||
             "0x0000000000000000000000000000000000000000",

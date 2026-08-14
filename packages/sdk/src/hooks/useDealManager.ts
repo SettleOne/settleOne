@@ -86,8 +86,8 @@
     export function useCancelDeal(chainId: number) {
       const address = getContractAddress(chainId, "DealManager");
       const { writeContract, data: hash, isPending, error } = useWriteContract();
-        hash,
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+        hash,
       });
     
       const cancelDeal = (dealId: bigint) => {

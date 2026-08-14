@@ -30,6 +30,7 @@ export {
 export {
   useDeal,
   useCreateDealMutation,
+  useLinkDealMutation,
   useDealActivity,
   useDealPayout,
 } from "./hooks/useDeal";
