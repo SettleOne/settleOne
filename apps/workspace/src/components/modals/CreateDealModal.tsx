@@ -56,7 +56,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const [createdId, setCreatedId] = useState("DL-00144");
+  const [createdId, setCreatedId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   // Form state
@@ -111,25 +111,39 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     }
   }, [txError]);
 
-  React.useEffect(() => {
-    if (isTxSuccess && hash && createdId && publicClient) {
-      publicClient.getTransactionReceipt({ hash }).then(async (receipt) => {
-        try {
-          const dealIdHex = receipt.logs[0]?.topics[1];
-          if (dealIdHex) {
-            const onChainId = BigInt(dealIdHex).toString();
-            await linkDealOnChain({ dealId: createdId, onChainId });
-            setIsSuccess(true);
+      React.useEffect(() => {
+        if (isTxSuccess && hash && createdId && publicClient) {
+          publicClient.waitForTransactionReceipt({ hash }).then(async (receipt) => {
+            try {
+               // Instead of hardcoding logs[0], we look for the exact topic hash of DealCreated
+              // keccak256("DealCreated(uint256,address,address,address,uint256)")
+              const dealCreatedTopic = "0x0bc127ec368c49855f83b33056bc62c2c434e5bb4affed3de29ad7c9126df553";
+ 
+              const dealLog = receipt.logs.find(log => log.topics[0] === dealCreatedTopic);
+
+              if (dealLog && dealLog.topics[1]) {
+                const dealIdHex = dealLog.topics[1];
+                const onChainId = BigInt(dealIdHex).toString();
+
+                await linkDealOnChain({ dealId: createdId, onChainId });
+                setIsSuccess(true);
+                setIsPending(false);
+              } else {
+                 console.error("DealCreated event not found in transaction logs");
+                 setIsPending(false);
+              }
+            } catch (err) {
+              console.error("Failed to link deal", err);
+              setErrorMessage("Failed to link deal on our servers.");
+              setIsPending(false);
+            }
+          }).catch(err => {
+            console.error("Failed to get receipt", err);
+            setErrorMessage("Could not fetch transaction receipt. Please try again.");
             setIsPending(false);
-          }
-        } catch (err) {
-          console.error("Failed to link deal", err);
-          setErrorMessage("Failed to link deal on our servers.");
-          setIsPending(false);
+          });
         }
-      });
-    }
-  }, [isTxSuccess, hash, createdId, publicClient, linkDealOnChain]);
+      }, [isTxSuccess, hash, createdId, publicClient, linkDealOnChain]);
 
   // Early return AFTER all hooks
   if (!isOpen) return null;

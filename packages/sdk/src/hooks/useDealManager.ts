@@ -12,6 +12,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+        timeout: 120_000, 
       });
     
       const createDeal = (input: DealInput) => {
@@ -31,6 +32,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+         timeout: 120_000,
       });
     
       const fundDeal = (dealId: bigint, amount: bigint) => {
@@ -50,6 +52,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+         timeout: 120_000,
       });
     
       const acceptDeal = (dealId: bigint) => {
@@ -69,6 +72,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+         timeout: 120_000,
       });
     
       const rejectDeal = (dealId: bigint, reasonHash: `0x${string}`) => {
@@ -88,6 +92,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+         timeout: 120_000,
       });
     
       const cancelDeal = (dealId: bigint) => {
@@ -107,6 +112,7 @@
       const { writeContract, data: hash, isPending, error } = useWriteContract();
       const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
+         timeout: 120_000,
       });
     
       const expireSellerAcceptance = (
