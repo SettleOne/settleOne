@@ -1,16 +1,17 @@
 export enum DealState {
   None = 0,
-  AwaitingFunding = 1,
-  PendingSellerAcceptance = 2,
-  Active = 3,
-  DeliverySubmitted = 4,
-  AwaitingAcceptance = 5,
-  Accepted = 6,
-  Disputed = 7,
-  Released = 8,
-  Refunded = 9,
-  Settled = 10,
-  Cancelled = 11,
+  Draft = 1,
+  AwaitingFunding = 2,
+  PendingSellerAcceptance = 3,
+  Active = 4,
+  DeliverySubmitted = 5,
+  AwaitingAcceptance = 6,
+  Accepted = 7,
+  Disputed = 8,
+  Released = 9,
+  Refunded = 10,
+  Settled = 11,
+  Cancelled = 12,
 }
 
 export enum DisputeOutcome {
@@ -38,18 +39,19 @@ export enum EvidenceRole {
 }
 
 export enum EvidenceType {
-  Image = 0,
-  Video = 1,
-  PDF = 2,
-  Invoice = 3,
-  DeliveryReceipt = 4,
-  SourceCode = 5,
-  ExternalLink = 6,
-  TrackingInfo = 7,
-  InspectionReport = 8,
-  ChatTranscript = 9,
-  Email = 10,
-  Other = 11,
+  Unknown = 0,
+  Image = 1,
+  Video = 2,
+  PDF = 3,
+  Invoice = 4,
+  DeliveryReceipt = 5,
+  SourceCode = 6,
+  ExternalLink = 7,
+  TrackingInfo = 8,
+  InspectionReport = 9,
+  ChatTranscript = 10,
+  Email = 11,
+  Other = 12,
 }
 
 export enum UserRole {
@@ -70,8 +72,9 @@ export enum VerificationState {
 
 export enum AutomationAction {
   None = 0,
-  FinalizeDelivery = 1,
-  AutoAcceptDelivery = 2,
-  ReleaseSeller = 3,
-  RefundBuyer = 4,
+  ExpireSellerAcceptance = 1,
+  FinalizeDelivery = 2,
+  AutoAcceptDelivery = 3,
+  ReleaseSeller = 4,
+  RefundBuyer = 5,
 }

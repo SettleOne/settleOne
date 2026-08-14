@@ -17,7 +17,7 @@ const errors = [
   "InvalidDisputeResolver()",
   "SellerNotRegistered()",
   "InvalidAcceptanceWindow()",
-  "InvalidDisputeWindow()"
+  "InvalidDisputeWindow()",
 ];
 
 for (const err of errors) {

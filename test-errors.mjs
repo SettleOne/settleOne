@@ -15,7 +15,7 @@ const errors = [
   "NotBuyer()",
   "NotSeller()",
   "InvalidVerifier()",
-  "InvalidDisputeResolver()"
+  "InvalidDisputeResolver()",
 ];
 
 for (const err of errors) {

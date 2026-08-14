@@ -5,10 +5,10 @@ export interface DealInput {
   seller: `0x${string}`;
   token: `0x${string}`;
   amount: bigint;
+  sellerAcceptanceWindow: bigint;
   deliveryDeadline: bigint;
-  disputeWindow: bigint;
   acceptanceWindow: bigint;
-  sellerAcceptanceWindowSecs: bigint;
+  disputeWindow: bigint;
   dealType: DealType;
   partialSettlementAllowed: boolean;
   termsHash: `0x${string}`;
@@ -55,29 +55,36 @@ export interface Deal {
 export interface VaultPosition {
   token: `0x${string}`;
   principal: bigint;
+  required: bigint;
   shares: bigint;
+  depositedAt: bigint;
+  strategyId: number;
   funded: boolean;
 }
 
 export interface SettlementPayout {
-  sellerAmount: bigint;
-  buyerAmount: bigint;
-  treasuryAmount: bigint;
-  yieldAmount: bigint;
+  sellerPrincipal: bigint;
+  buyerPrincipal: bigint;
+  sellerAssets: bigint;
+  buyerAssets: bigint;
+  buyerYield: bigint;
+  platformYield: bigint;
 }
 
 export interface Evidence {
+  id: bigint;
   dealId: bigint;
   submitter: `0x${string}`;
   role: number;
   evidenceType: number;
-  contentHash: `0x${string}`;
+  hash: `0x${string}`;
   cid: string;
   submittedAt: bigint;
 }
 
 export interface Dispute {
   dealId: bigint;
+  opener: `0x${string}`;
   buyer: `0x${string}`;
   seller: `0x${string}`;
   token: `0x${string}`;
@@ -85,6 +92,7 @@ export interface Dispute {
   amount: bigint;
   openedAt: bigint;
   resolvedAt: bigint;
+  status: number;
   outcome: number;
   active: boolean;
   reasonHash: `0x${string}`;
@@ -101,9 +109,10 @@ export interface Delivery {
   seller: `0x${string}`;
   proofHash: `0x${string}`;
   cid: string;
-  revision: number;
   submittedAt: bigint;
-  status: string;
+  verifiedAt: bigint;
+  revision: number;
+  status: number;
 }
 
 export interface UserWallet {

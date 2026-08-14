@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useChainId } from "wagmi";
 import { CheckCircle, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button, Spinner } from "@settleone/design-system";
-import { useAcceptDelivery, useRequestRevision } from "@settleone/sdk";
+import { useAcceptDelivery } from "@settleone/sdk";
 import { useRequireWallet } from "../../../hooks/useRequireWallet";
 import { formatAmount } from "@settleone/utils";
+import { DisputeModal } from "../modals/DisputeModal";
+import { RequestRevisionModal } from "../modals/RequestRevisionModal";
 
 interface BuyerAcceptancePanelProps {
   deal: any;
@@ -16,18 +18,23 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
     "idle" | "submitting" | "success" | "error"
   >("idle");
 
+  const [isDisputeModalOpen, setDisputeModalOpen] = useState(false);
+  const [isRevisionModalOpen, setRevisionModalOpen] = useState(false);
+
   const { acceptDelivery } = useAcceptDelivery(chainId);
-  const { requestRevision } = useRequestRevision(chainId);
   const { requireWallet, WalletPromptModal } = useRequireWallet();
 
-  const isFullyFunded = BigInt(deal.depositedFunds) >= BigInt(deal.amount);
+  const isFullyFunded =
+    BigInt(deal?.depositedFunds || 0) >= BigInt(deal?.amount || 0);
+
+  const dealIdOnChain = deal?.onChainId ? BigInt(deal.onChainId) : 0n;
 
   const handleAccept = async () => {
     if (!isFullyFunded) return;
     requireWallet(async () => {
       try {
         setStatus("submitting");
-        await acceptDelivery(BigInt(deal.id));
+        await acceptDelivery(dealIdOnChain);
         setStatus("success");
       } catch (err) {
         console.error("Acceptance failed", err);
@@ -36,25 +43,22 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
     });
   };
 
-  const handleRevision = async () => {
-    requireWallet(async () => {
-      try {
-        setStatus("submitting");
-        // Mocking reason hash for now
-        const reasonHash =
-          "0x1234567890123456789012345678901234567890123456789012345678901234";
-        await requestRevision(BigInt(deal.id), reasonHash);
-        setStatus("success");
-      } catch (err) {
-        console.error("Revision request failed", err);
-        setStatus("error");
-      }
-    });
-  };
-
   return (
     <>
       <WalletPromptModal />
+
+      <DisputeModal
+        isOpen={isDisputeModalOpen}
+        onClose={() => setDisputeModalOpen(false)}
+        dealId={dealIdOnChain}
+      />
+
+      <RequestRevisionModal
+        isOpen={isRevisionModalOpen}
+        onClose={() => setRevisionModalOpen(false)}
+        dealId={dealIdOnChain}
+      />
+
       <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm overflow-hidden mb-6">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-subtle)] flex items-center gap-2">
           <CheckCircle size={16} className="text-[var(--text-muted)]" />
@@ -64,7 +68,10 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
         </div>
         <div className="p-4 space-y-6">
           {!isFullyFunded ? (
-            <div className="flex items-start gap-3 p-4 bg-[var(--state-awaiting-funding)]/10 border border-[var(--state-awaiting-funding)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
+            <div
+              className="flex items-start gap-3 p-4 bg-[var(--state-awaiting-funding)]/10 border border-[var(--state-awaiting-funding)]/30
+  rounded-md text-[var(--text-primary)] text-sm shadow-sm"
+            >
               <AlertTriangle
                 size={20}
                 className="shrink-0 mt-0.5 text-[var(--state-awaiting-funding)]"
@@ -75,7 +82,8 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
                   The deal is not yet fully funded. You must deposit the
                   remaining{" "}
                   {formatAmount(
-                    BigInt(deal.amount) - BigInt(deal.depositedFunds),
+                    BigInt(deal?.amount || 0) -
+                      BigInt(deal?.depositedFunds || 0),
                     6,
                   )}{" "}
                   USDC before you can accept the delivery.
@@ -83,7 +91,10 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
               </div>
             </div>
           ) : (
-            <div className="flex items-start gap-3 p-4 bg-[var(--state-active)]/10 border border-[var(--state-active)]/30 rounded-md text-[var(--text-primary)] text-sm shadow-sm">
+            <div
+              className="flex items-start gap-3 p-4 bg-[var(--state-active)]/10 border border-[var(--state-active)]/30 rounded-md text-
+  [var(--text-primary)] text-sm shadow-sm"
+            >
               <CheckCircle
                 size={20}
                 className="shrink-0 mt-0.5 text-[var(--state-active)]"
@@ -100,7 +111,10 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
           )}
 
           {status === "success" ? (
-            <div className="bg-[var(--state-active)]/10 p-4 rounded-md border border-[var(--state-active)]/30 text-[var(--state-active)] text-sm font-medium text-center shadow-sm">
+            <div
+              className="bg-[var(--state-active)]/10 p-4 rounded-md border border-[var(--state-active)]/30 text-[var(--state-active)] text-
+  sm font-medium text-center shadow-sm"
+            >
               Action submitted successfully! The deal state will update shortly.
             </div>
           ) : (
@@ -131,18 +145,15 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
               </button>
 
               <button
-                onClick={handleRevision}
+                onClick={() => setRevisionModalOpen(true)}
                 disabled={status === "submitting"}
-                className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--state-awaiting-funding)] hover:bg-[var(--state-awaiting-funding)]/10 transition-colors"
+                className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--state-awaiting-
+  funding)] hover:bg-[var(--state-awaiting-funding)]/10 transition-colors"
               >
-                {status === "submitting" ? (
-                  <Spinner size={16} className="mx-auto mb-2" />
-                ) : (
-                  <RefreshCw
-                    size={24}
-                    className="text-[var(--state-awaiting-funding)] mx-auto mb-2"
-                  />
-                )}
+                <RefreshCw
+                  size={24}
+                  className="text-[var(--state-awaiting-funding)] mx-auto mb-2"
+                />
                 <h4 className="font-semibold text-[var(--text-primary)]">
                   Request Revision
                 </h4>
@@ -151,7 +162,11 @@ export function BuyerAcceptancePanel({ deal }: BuyerAcceptancePanelProps) {
                 </p>
               </button>
 
-              <div className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 transition-colors cursor-pointer">
+              <div
+                onClick={() => setDisputeModalOpen(true)}
+                className="border border-[var(--border)] bg-[var(--bg-card)] rounded-lg p-4 text-center hover:border-[var(--accent-red)]
+  hover:bg-[var(--accent-red)]/10 transition-colors cursor-pointer"
+              >
                 <AlertTriangle
                   size={24}
                   className="text-[var(--accent-red)] mx-auto mb-2"

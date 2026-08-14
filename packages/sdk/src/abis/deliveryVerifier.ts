@@ -12,9 +12,7 @@ export const deliveryVerifierAbi = [
       { name: "proofHash", type: "bytes32" },
       { name: "data", type: "bytes" },
     ],
-    outputs: [
-      { name: "requestId", type: "bytes32" },
-    ],
+    outputs: [{ name: "requestId", type: "bytes32" }],
     stateMutability: "nonpayable",
   },
 
@@ -43,21 +41,15 @@ export const deliveryVerifierAbi = [
   {
     type: "function",
     name: "getVerificationState",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint8" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint8" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "getVerification",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -79,12 +71,8 @@ export const deliveryVerifierAbi = [
   {
     type: "function",
     name: "getProof",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bytes32" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bytes32" }],
     stateMutability: "view",
   },
 
@@ -102,9 +90,7 @@ export const deliveryVerifierAbi = [
       { name: "validUntil", type: "uint64" },
       { name: "approved", type: "bool" },
     ],
-    outputs: [
-      { name: "", type: "bytes32" },
-    ],
+    outputs: [{ name: "", type: "bytes32" }],
     stateMutability: "view",
   },
 
@@ -112,9 +98,7 @@ export const deliveryVerifierAbi = [
     type: "function",
     name: "domainSeparator",
     inputs: [],
-    outputs: [
-      { name: "", type: "bytes32" },
-    ],
+    outputs: [{ name: "", type: "bytes32" }],
     stateMutability: "view",
   },
 
@@ -190,9 +174,7 @@ export const deliveryVerifierAbi = [
       { name: "role", type: "bytes32" },
       { name: "account", type: "address" },
     ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 ] as const;

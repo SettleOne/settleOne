@@ -10,18 +10,14 @@ export const evidenceManagerAbi = [
       { name: "hash", type: "bytes32" },
       { name: "cid", type: "string" },
     ],
-    outputs: [
-      { name: "evidenceId", type: "uint256" },
-    ],
+    outputs: [{ name: "evidenceId", type: "uint256" }],
     stateMutability: "nonpayable",
   },
 
   {
     type: "function",
     name: "getEvidence",
-    inputs: [
-      { name: "evidenceId", type: "uint256" },
-    ],
+    inputs: [{ name: "evidenceId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -44,24 +40,16 @@ export const evidenceManagerAbi = [
   {
     type: "function",
     name: "getDealEvidenceCount",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "getDealEvidenceIds",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint256[]" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256[]" }],
     stateMutability: "view",
   },
 

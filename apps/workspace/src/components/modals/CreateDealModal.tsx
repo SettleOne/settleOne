@@ -101,8 +101,8 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   const { requireWallet, WalletPromptModal } = useRequireWallet();
 
   React.useEffect(() => {
-        if (txError) console.error("SMART CONTRACT CRASHED:", txError);
-      }, [txError]);
+    if (txError) console.error("SMART CONTRACT CRASHED:", txError);
+  }, [txError]);
 
   // Early return AFTER all hooks
   if (!isOpen) return null;
@@ -146,7 +146,8 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           fundingType: form.fundingOption,
           sellerAcceptanceWindowSeconds: Number(form.sellerWindow) * 86400,
           deliveryDeadlineTimestamp: Math.floor(
-            new Date(form.deliveryDeadline || Date.now() + 86400000).getTime() / 1000,
+            new Date(form.deliveryDeadline || Date.now() + 86400000).getTime() /
+              1000,
           ),
           acceptanceWindowSeconds: Number(form.acceptanceWindow) * 86400,
           disputeWindowSeconds: Number(form.disputeWindow) * 86400,
@@ -195,13 +196,14 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
             (form.sellerAddress as `0x${string}`) ||
             "0x0000000000000000000000000000000000000000",
           token: tokenAddress as `0x${string}`,
-          amount: amountInWei,
-          deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
-          disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
-          acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
+
           sellerAcceptanceWindow: BigInt(
             apiPayload.sellerAcceptanceWindowSeconds,
           ),
+          deliveryDeadline: BigInt(apiPayload.deliveryDeadlineTimestamp),
+          acceptanceWindow: BigInt(apiPayload.acceptanceWindowSeconds),
+          disputeWindow: BigInt(apiPayload.disputeWindowSeconds),
+
           dealType: form.dealType === "software" ? 0 : 1,
           partialSettlementAllowed: form.partialSettlement,
           termsHash:
@@ -217,8 +219,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           settlementRulesHash:
             result.hashes?.rulesHash ||
             "0x0000000000000000000000000000000000000000000000000000000000000000",
-          verifier: (apiPayload.verifierAddress || "0x0000000000000000000000000000000000000000") as `0x${string}`,
-              disputeResolver: (apiPayload.resolverAddress || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+          verifier: (apiPayload.verifierAddress ||
+            "0x0000000000000000000000000000000000000000") as `0x${string}`,
+          disputeResolver: (apiPayload.resolverAddress ||
+            "0x0000000000000000000000000000000000000000") as `0x${string}`,
         });
 
         setCreatedId(result.deal.id);

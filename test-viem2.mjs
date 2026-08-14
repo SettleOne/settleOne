@@ -6,7 +6,7 @@ const errors = [
   "ZeroAddress(address)",
   "ZeroAddress()",
   "InvalidSellerWindow()",
-  "InvalidSellerAcceptanceWindow()"
+  "InvalidSellerAcceptanceWindow()",
 ];
 
 for (const err of errors) {

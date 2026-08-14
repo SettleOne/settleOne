@@ -51,9 +51,7 @@ export const simpleResolverAbi = [
   {
     type: "function",
     name: "getDecision",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       { name: "outcome", type: "uint8" },
       { name: "sellerAward", type: "uint256" },
@@ -67,12 +65,8 @@ export const simpleResolverAbi = [
   {
     type: "function",
     name: "hasDecisionReady",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
@@ -80,18 +74,14 @@ export const simpleResolverAbi = [
     type: "function",
     name: "decisionTtl",
     inputs: [],
-    outputs: [
-      { name: "", type: "uint256" },
-    ],
+    outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "revokeDecision",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -111,16 +101,12 @@ export const simpleResolverAbi = [
   {
     type: "event",
     name: "DecisionConsumed",
-    inputs: [
-      { name: "dealId", type: "uint256", indexed: true },
-    ],
+    inputs: [{ name: "dealId", type: "uint256", indexed: true }],
   },
 
   {
     type: "event",
     name: "DecisionRevoked",
-    inputs: [
-      { name: "dealId", type: "uint256", indexed: true },
-    ],
+    inputs: [{ name: "dealId", type: "uint256", indexed: true }],
   },
 ] as const;

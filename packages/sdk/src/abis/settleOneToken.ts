@@ -88,9 +88,7 @@ export const settleOneTokenAbi = [
   {
     type: "function",
     name: "burn",
-    inputs: [
-      { name: "value", type: "uint256" },
-    ],
+    inputs: [{ name: "value", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -221,29 +219,21 @@ export const settleOneTokenAbi = [
   {
     type: "event",
     name: "MinterAdded",
-    inputs: [
-      { name: "account", type: "address", indexed: true },
-    ],
+    inputs: [{ name: "account", type: "address", indexed: true }],
   },
   {
     type: "event",
     name: "MinterRemoved",
-    inputs: [
-      { name: "account", type: "address", indexed: true },
-    ],
+    inputs: [{ name: "account", type: "address", indexed: true }],
   },
   {
     type: "event",
     name: "BurnerAdded",
-    inputs: [
-      { name: "account", type: "address", indexed: true },
-    ],
+    inputs: [{ name: "account", type: "address", indexed: true }],
   },
   {
     type: "event",
     name: "BurnerRemoved",
-    inputs: [
-      { name: "account", type: "address", indexed: true },
-    ],
+    inputs: [{ name: "account", type: "address", indexed: true }],
   },
 ] as const;

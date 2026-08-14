@@ -3,6 +3,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { deliveryManagerAbi } from "../abis/deliveryManager";
 import { disputeManagerAbi } from "../abis/disputeManager";
 import { getContractAddress } from "../addresses";
@@ -14,16 +15,12 @@ export function useSubmitDeliveryProof(chainId: number) {
     hash,
   });
 
-  const submitDeliveryProof = (
-    dealId: bigint,
-    proofHash: `0x${string}`,
-    cid: string,
-  ) => {
+  const submitDeliveryProof = (dealId: bigint, proofHash: `0x${string}`) => {
     writeContract({
       address,
       abi: deliveryManagerAbi,
       functionName: "submitDeliveryProof",
-      args: [dealId, proofHash, cid],
+      args: [dealId, proofHash], // Uses the 2-arg ABI overload
     });
   };
 
@@ -44,12 +41,15 @@ export function useFinalizeDelivery(chainId: number) {
     hash,
   });
 
-  const finalizeDelivery = (dealId: bigint) => {
+  const finalizeDelivery = (
+    dealId: bigint,
+    verificationData: `0x${string}`,
+  ) => {
     writeContract({
       address,
       abi: deliveryManagerAbi,
       functionName: "finalizeDelivery",
-      args: [dealId],
+      args: [dealId, verificationData],
     });
   };
 
@@ -82,12 +82,16 @@ export function useRequestRevision(chainId: number) {
     hash,
   });
 
-  const requestRevision = (dealId: bigint, reasonHash: `0x${string}`) => {
+  const requestRevision = (
+    dealId: bigint,
+    reasonHash: `0x${string}`,
+    evidenceHash: `0x${string}`,
+  ) => {
     writeContract({
       address,
       abi: deliveryManagerAbi,
       functionName: "requestRevision",
-      args: [dealId, reasonHash],
+      args: [dealId, reasonHash, evidenceHash],
     });
   };
 
@@ -95,7 +99,7 @@ export function useRequestRevision(chainId: number) {
 }
 
 export function useRaiseDispute(chainId: number) {
-  const address = getContractAddress(chainId, "DisputeManager");
+  const address = getContractAddress(chainId, "DeliveryManager");
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
@@ -108,7 +112,7 @@ export function useRaiseDispute(chainId: number) {
   ) => {
     writeContract({
       address,
-      abi: disputeManagerAbi,
+      abi: deliveryManagerAbi,
       functionName: "raiseDispute",
       args: [dealId, reasonHash, evidenceHash],
     });
@@ -146,15 +150,22 @@ export function useResolveDispute(chainId: number) {
   const resolveDispute = (
     dealId: bigint,
     outcome: number,
-    sellerBps: bigint,
-    buyerBps: bigint,
+    sellerAward: bigint,
+    buyerAward: bigint,
     resolutionHash: `0x${string}`,
   ) => {
+    const resolverData = encodeAbiParameters(
+      parseAbiParameters(
+        "uint8 outcome, uint256 sellerAward, uint256 buyerAward, bytes32 resolutionHash",
+      ),
+      [outcome, sellerAward, buyerAward, resolutionHash],
+    );
+
     writeContract({
       address,
       abi: disputeManagerAbi,
       functionName: "resolveDispute",
-      args: [dealId, outcome, sellerBps, buyerBps, resolutionHash],
+      args: [dealId, resolverData],
     });
   };
 

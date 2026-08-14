@@ -36,9 +36,7 @@ export const deliveryManagerAbi = [
   {
     type: "function",
     name: "acceptDelivery",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -46,9 +44,7 @@ export const deliveryManagerAbi = [
   {
     type: "function",
     name: "autoAcceptDelivery",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -121,9 +117,7 @@ export const deliveryManagerAbi = [
   {
     type: "function",
     name: "cancelDispute",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -135,9 +129,7 @@ export const deliveryManagerAbi = [
   {
     type: "function",
     name: "getDelivery",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -165,9 +157,7 @@ export const deliveryManagerAbi = [
     type: "function",
     name: "dealManager",
     inputs: [],
-    outputs: [
-      { name: "", type: "address" },
-    ],
+    outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
 
@@ -175,9 +165,7 @@ export const deliveryManagerAbi = [
     type: "function",
     name: "evidenceManager",
     inputs: [],
-    outputs: [
-      { name: "", type: "address" },
-    ],
+    outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
 
@@ -185,9 +173,7 @@ export const deliveryManagerAbi = [
     type: "function",
     name: "disputeManager",
     inputs: [],
-    outputs: [
-      { name: "", type: "address" },
-    ],
+    outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
 
@@ -195,9 +181,7 @@ export const deliveryManagerAbi = [
     type: "function",
     name: "paused",
     inputs: [],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 

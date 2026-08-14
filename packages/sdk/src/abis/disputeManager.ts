@@ -2,9 +2,7 @@ export const disputeManagerAbi = [
   {
     type: "function",
     name: "cancelDispute",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -12,9 +10,7 @@ export const disputeManagerAbi = [
   {
     type: "function",
     name: "getDispute",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -48,24 +44,16 @@ export const disputeManagerAbi = [
   {
     type: "function",
     name: "getDisputeStatus",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint8" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint8" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "isDisputed",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
@@ -106,9 +94,7 @@ export const disputeManagerAbi = [
   {
     type: "event",
     name: "DisputeCancelled",
-    inputs: [
-      { name: "dealId", type: "uint256", indexed: true },
-    ],
+    inputs: [{ name: "dealId", type: "uint256", indexed: true }],
   },
 
   {

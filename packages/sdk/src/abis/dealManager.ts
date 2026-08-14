@@ -81,9 +81,7 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "acceptDeal",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -108,9 +106,7 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "cancelDeal",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -136,9 +132,7 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "refundExpired",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -149,9 +143,7 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "getDeal",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -206,12 +198,8 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "getDealState",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint8" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint8" }],
     stateMutability: "view",
   },
 
@@ -222,9 +210,7 @@ export const dealManagerAbi = [
     type: "function",
     name: "getDealCount",
     inputs: [],
-    outputs: [
-      { name: "", type: "uint256" },
-    ],
+    outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
   },
 
@@ -234,9 +220,7 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "getDelivery",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -262,24 +246,16 @@ export const dealManagerAbi = [
   {
     type: "function",
     name: "getAutomationAction",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint8" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint8" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "isSellerAcceptanceActionRequired",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
@@ -371,9 +347,7 @@ export const dealManagerAbi = [
   {
     type: "event",
     name: "SellerAcceptanceExpired",
-    inputs: [
-      { name: "dealId", type: "uint256", indexed: true },
-    ],
+    inputs: [{ name: "dealId", type: "uint256", indexed: true }],
   },
 
   {

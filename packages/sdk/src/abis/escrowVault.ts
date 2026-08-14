@@ -2,9 +2,7 @@ export const escrowVaultAbi = [
   {
     type: "function",
     name: "balanceOf",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       { name: "principal", type: "uint256" },
       { name: "assets", type: "uint256" },
@@ -15,45 +13,31 @@ export const escrowVaultAbi = [
   {
     type: "function",
     name: "depositedAmount",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "isFunded",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "isFullyFunded",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
   {
     type: "function",
     name: "getPosition",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -82,9 +66,7 @@ export const escrowVaultAbi = [
       { name: "amount", type: "uint256" },
       { name: "dealAmount", type: "uint256" },
     ],
-    outputs: [
-      { name: "sharesMinted", type: "uint256" },
-    ],
+    outputs: [{ name: "sharesMinted", type: "uint256" }],
     stateMutability: "payable",
   },
 
@@ -96,9 +78,7 @@ export const escrowVaultAbi = [
       { name: "to", type: "address" },
       { name: "principalAmount", type: "uint256" },
     ],
-    outputs: [
-      { name: "assetsReleased", type: "uint256" },
-    ],
+    outputs: [{ name: "assetsReleased", type: "uint256" }],
     stateMutability: "nonpayable",
   },
 
@@ -109,9 +89,7 @@ export const escrowVaultAbi = [
       { name: "dealId", type: "uint256" },
       { name: "to", type: "address" },
     ],
-    outputs: [
-      { name: "assetsReleased", type: "uint256" },
-    ],
+    outputs: [{ name: "assetsReleased", type: "uint256" }],
     stateMutability: "nonpayable",
   },
 

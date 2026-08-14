@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useChainId } from "wagmi";
-import { useAcceptDeal, useRejectDeal, useCancelDeal } from "@settleone/sdk";
+import {
+  useAcceptDeal,
+  useRejectDeal,
+  useCancelDeal,
+  useAcceptDelivery,
+  useRequestRevision,
+} from "@settleone/sdk";
 import { useRequireWallet } from "../../../hooks/useRequireWallet";
 // Use plain strings matching Prisma backend state field
 import {
@@ -21,6 +27,7 @@ import { Button } from "@settleone/design-system";
 import { FundDealModal } from "../modals/FundDealModal";
 import { SubmitDeliveryModal } from "../modals/SubmitDeliveryModal";
 import { DisputeModal } from "../modals/DisputeModal";
+import { RequestRevisionModal } from "../modals/RequestRevisionModal";
 
 interface ActionCenterProps {
   currentState: string; // string from backend e.g. "AwaitingFunding"
@@ -37,6 +44,10 @@ export function ActionCenter({
   const { acceptDeal, isPending: isAccepting } = useAcceptDeal(chainId);
   const { rejectDeal, isPending: isRejecting } = useRejectDeal(chainId);
   const { cancelDeal, isPending: isCanceling } = useCancelDeal(chainId);
+  const { acceptDelivery, isPending: isAcceptingDelivery } =
+    useAcceptDelivery(chainId);
+  const { requestRevision, isPending: isRequestingRevision } =
+    useRequestRevision(chainId);
 
   const { requireWallet, WalletPromptModal } = useRequireWallet();
 
@@ -45,6 +56,7 @@ export function ActionCenter({
   const [isFundModalOpen, setFundModalOpen] = useState(false);
   const [isDeliveryModalOpen, setDeliveryModalOpen] = useState(false);
   const [isDisputeModalOpen, setDisputeModalOpen] = useState(false);
+  const [isRevisionModalOpen, setRevisionModalOpen] = useState(false);
 
   // Helper to check if viewer is a party
   const isBuyer = userRole === "buyer";
@@ -221,18 +233,21 @@ export function ActionCenter({
             <Button
               variant="danger"
               onClick={() => setDisputeModalOpen(true)}
-              className="border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10 bg-transparent"
+              className="border-[var(--accent-red)] text-[var(--text-primary)] hover:bg-[var(--accent-red)]/10 bg-transparent"
             >
               Raise Dispute
             </Button>
             <Button
               variant="secondary"
+              onClick={() => setRevisionModalOpen(true)}
               className="border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] bg-transparent"
             >
               Request Revision
             </Button>
             <Button
               variant="primary"
+              onClick={() => requireWallet(() => acceptDelivery(getDealId()))}
+              disabled={isAcceptingDelivery}
               className="bg-[var(--accent-green)] hover:brightness-110 border-none text-[var(--bg-base)] font-bold shadow-[var(--shadow-glow)]"
             >
               Accept Delivery
@@ -351,7 +366,7 @@ export function ActionCenter({
         <FundDealModal
           isOpen={isFundModalOpen}
           onClose={() => setFundModalOpen(false)}
-          dealId={deal?.id ? BigInt(deal.id as any) : 0n}
+          dealId={deal?.onChainId ? BigInt(deal.onChainId) : 0n}
           tokenAddress={(deal?.token as any) || "0x"}
           tokenSymbol={(deal?.token as any) || "USDC"}
           decimals={6}
@@ -365,6 +380,13 @@ export function ActionCenter({
         <DisputeModal
           isOpen={isDisputeModalOpen}
           onClose={() => setDisputeModalOpen(false)}
+          dealId={
+            deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)
+          }
+        />
+        <RequestRevisionModal
+          isOpen={isRevisionModalOpen}
+          onClose={() => setRevisionModalOpen(false)}
           dealId={
             deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)
           }

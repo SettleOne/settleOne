@@ -2,9 +2,7 @@ export const settlementAbi = [
   {
     type: "function",
     name: "getBalance",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       { name: "principal", type: "uint256" },
       { name: "assets", type: "uint256" },
@@ -15,9 +13,7 @@ export const settlementAbi = [
   {
     type: "function",
     name: "getPayout",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [
       {
         name: "",
@@ -38,12 +34,8 @@ export const settlementAbi = [
   {
     type: "function",
     name: "isSettled",
-    inputs: [
-      { name: "dealId", type: "uint256" },
-    ],
-    outputs: [
-      { name: "", type: "bool" },
-    ],
+    inputs: [{ name: "dealId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
   },
 
