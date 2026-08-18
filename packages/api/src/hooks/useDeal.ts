@@ -75,20 +75,26 @@ export function useDealPayout(dealId: string | undefined) {
   });
 }
 
- export function useLinkDealMutation() {
-      const queryClient = useQueryClient();
-      return useMutation({
-        mutationFn: ({ dealId, onChainId }: { dealId: string; onChainId: string }) =>
-          apiClient<{ deal: any }>(`/deals/${dealId}/link`, {
-            method: "PATCH",
-            body: JSON.stringify({ onChainId }),
-          }),
-        onSuccess: (_, variables) => {
-          // Invalidate the cache so the UI updates to show the linked deal
-          queryClient.invalidateQueries({ queryKey: ["deals"] });
-          queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
-          queryClient.invalidateQueries({ queryKey: ["myCreatedDeals"] });
-          queryClient.invalidateQueries({ queryKey: ["activeDeals"] });
-        },
-      });
-    }
+export function useLinkDealMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      dealId,
+      onChainId,
+    }: {
+      dealId: string;
+      onChainId: string;
+    }) =>
+      apiClient<{ deal: any }>(`/deals/${dealId}/link`, {
+        method: "PATCH",
+        body: JSON.stringify({ onChainId }),
+      }),
+    onSuccess: (_, variables) => {
+      // Invalidate the cache so the UI updates to show the linked deal
+      queryClient.invalidateQueries({ queryKey: ["deals"] });
+      queryClient.invalidateQueries({ queryKey: ["deal", variables.dealId] });
+      queryClient.invalidateQueries({ queryKey: ["myCreatedDeals"] });
+      queryClient.invalidateQueries({ queryKey: ["activeDeals"] });
+    },
+  });
+}

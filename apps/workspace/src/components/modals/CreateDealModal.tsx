@@ -14,9 +14,9 @@ import {
   Upload,
   Trash2,
 } from "lucide-react";
-import { useChainId, useAccount, usePublicClient } from "wagmi";
+import { useChainId, useAccount } from "wagmi";
 import { useCreateDeal } from "@settleone/sdk";
-import { apiClient, useLinkDealMutation } from "@settleone/api";
+import { apiClient } from "@settleone/api";
 import { useRequireWallet } from "../../hooks/useRequireWallet";
 import { CHAIN_CONFIG, UI_CHAIN_MAPPING } from "../../lib/config";
 import { parseUnits, keccak256 } from "viem";
@@ -91,7 +91,6 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
   // ALL hooks MUST be called before any conditional return (Rules of Hooks)
   const rawChainId = useChainId();
   const { address } = useAccount();
-  const publicClient = usePublicClient();
   const safeChainId = CHAINS_ID.includes(rawChainId) ? rawChainId : 421614;
   const {
     createDeal,
@@ -101,7 +100,6 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     error: txError,
   } = useCreateDeal(safeChainId);
   const { requireWallet, WalletPromptModal } = useRequireWallet();
-  const { mutateAsync: linkDealOnChain } = useLinkDealMutation();
 
   React.useEffect(() => {
     if (txError) {
@@ -111,39 +109,14 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
     }
   }, [txError]);
 
-      React.useEffect(() => {
-        if (isTxSuccess && hash && createdId && publicClient) {
-          publicClient.waitForTransactionReceipt({ hash }).then(async (receipt) => {
-            try {
-               // Instead of hardcoding logs[0], we look for the exact topic hash of DealCreated
-              // keccak256("DealCreated(uint256,address,address,address,uint256)")
-              const dealCreatedTopic = "0x0bc127ec368c49855f83b33056bc62c2c434e5bb4affed3de29ad7c9126df553";
- 
-              const dealLog = receipt.logs.find(log => log.topics[0] === dealCreatedTopic);
-
-              if (dealLog && dealLog.topics[1]) {
-                const dealIdHex = dealLog.topics[1];
-                const onChainId = BigInt(dealIdHex).toString();
-
-                await linkDealOnChain({ dealId: createdId, onChainId });
-                setIsSuccess(true);
-                setIsPending(false);
-              } else {
-                 console.error("DealCreated event not found in transaction logs");
-                 setIsPending(false);
-              }
-            } catch (err) {
-              console.error("Failed to link deal", err);
-              setErrorMessage("Failed to link deal on our servers.");
-              setIsPending(false);
-            }
-          }).catch(err => {
-            console.error("Failed to get receipt", err);
-            setErrorMessage("Could not fetch transaction receipt. Please try again.");
-            setIsPending(false);
-          });
-        }
-      }, [isTxSuccess, hash, createdId, publicClient, linkDealOnChain]);
+  // Fire-and-forget: the indexer auto-links onChainId in the background.
+  // We just show success as soon as the tx is confirmed on-chain.
+  React.useEffect(() => {
+    if (isTxSuccess && createdId) {
+      setIsSuccess(true);
+      setIsPending(false);
+    }
+  }, [isTxSuccess, createdId]);
 
   // Early return AFTER all hooks
   if (!isOpen) return null;

@@ -23,6 +23,7 @@ export function useDeals(params: DealsParams = {}) {
   return useQuery({
     queryKey: ["deals", params],
     queryFn: () => apiClient<DealsResponse>("/deals", { params }),
+    refetchInterval: 10_000, // Poll every 10s so indexer-linked deals appear automatically
   });
 }
 
@@ -30,6 +31,7 @@ export function useMyCreatedDeals(params: DealsParams = {}) {
   return useQuery({
     queryKey: ["myCreatedDeals", params],
     queryFn: () => apiClient<DealsResponse>("/deals/my/created", { params }),
+    refetchInterval: 10_000,
   });
 }
 

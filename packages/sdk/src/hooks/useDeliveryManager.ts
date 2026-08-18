@@ -13,7 +13,7 @@ export function useSubmitDeliveryProof(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const submitDeliveryProof = (dealId: bigint, proofHash: `0x${string}`) => {
@@ -40,7 +40,7 @@ export function useFinalizeDelivery(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const finalizeDelivery = (
@@ -63,7 +63,7 @@ export function useAcceptDelivery(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const acceptDelivery = (dealId: bigint) => {
@@ -83,7 +83,7 @@ export function useRequestRevision(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const requestRevision = (
@@ -107,7 +107,7 @@ export function useRaiseDispute(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const raiseDispute = (
@@ -131,7 +131,7 @@ export function useCancelDispute(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const cancelDispute = (dealId: bigint) => {
@@ -151,7 +151,7 @@ export function useResolveDispute(chainId: number) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const resolveDispute = (

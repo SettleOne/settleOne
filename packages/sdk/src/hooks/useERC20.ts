@@ -9,7 +9,7 @@ export function useERC20Approve(tokenAddress: `0x${string}`) {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-     timeout: 120_000,
+    timeout: 120_000,
   });
 
   const approve = (spender: `0x${string}`, amount: bigint) => {

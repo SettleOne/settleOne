@@ -125,7 +125,14 @@ export function ActionCenter({
             <Button
               variant="danger"
               className="bg-transparent border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red)]/10"
-              onClick={() => requireWallet(() => rejectDeal(getDealId(), "0x0000000000000000000000000000000000000000000000000000000000000000"))}
+              onClick={() =>
+                requireWallet(() =>
+                  rejectDeal(
+                    getDealId(),
+                    "0x0000000000000000000000000000000000000000000000000000000000000000",
+                  ),
+                )
+              }
               disabled={isRejecting}
             >
               Reject Deal
