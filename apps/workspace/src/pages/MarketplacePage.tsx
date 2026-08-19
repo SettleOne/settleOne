@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -13,30 +13,35 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button, Spinner } from "@settleone/design-system";
-import { useInfiniteDeals, usePortfolio } from "@settleone/api";
+import { useInfiniteDeals, usePortfolio, useMarketplaceStats, useMyCreatedDeals, useMyAcceptedDeals } from "@settleone/api";
 import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
 import { formatUnits } from "viem";
 import { DealCard, getDealStateStyle } from "./Marketplace/components/DealCard";
 import { CHAIN_CONFIG } from "../lib/config";
+import { SUPPORTED_CHAINS, SUPPORTED_TOKENS } from "../lib/constants";
 
-const getTokenAddress = (t: string) => {
-  if (t === "All Tokens") return undefined;
+// Returns comma-separated addresses for a token symbol across all supported chains
+const getTokenAddresses = (symbol: string) => {
+  if (symbol === "All Tokens" || !symbol) return undefined;
+  const addresses: string[] = [];
   for (const c of Object.values(CHAIN_CONFIG)) {
-    if (c.tokens[t as keyof typeof c.tokens]) return c.tokens[t as keyof typeof c.tokens];
+    const addr = c.tokens[symbol as keyof typeof c.tokens];
+    if (addr) addresses.push(addr);
   }
-  return undefined;
+  return addresses.length > 0 ? addresses.join(",") : undefined;
 };
 
 const STATUS_FILTERS = [
   "All",
   "Open",
   "Active",
-  "Accepted",
+  "Finalizing",
   "Completed",
   "Expired",
 ];
+
 const SORT_OPTIONS = [
   "Newest First",
   "Oldest First",
@@ -44,6 +49,59 @@ const SORT_OPTIONS = [
   "Lowest Value",
   "Ending Soon",
 ];
+
+const SOFTWARE_CATEGORIES = ["Smart Contract Audit", "Web Development", "Mobile App"];
+const HARDWARE_CATEGORIES = ["Electronics", "Hardware Manufacturing", "IoT Devices"];
+
+function CustomDropdown({ value, onChange, options, defaultLabel, width = "w-full" }: any) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selected = options.find((o: any) => o.id === value);
+
+  return (
+    <div className={`relative ${width}`} ref={ref}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)] transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          {selected?.logo && <img src={selected.logo} alt="" className="w-4 h-4 rounded-full" />}
+          <span>{selected ? (selected.name || selected.symbol || selected.id) : defaultLabel}</span>
+        </div>
+        <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 w-full max-h-60 overflow-y-auto bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-input)] z-50 shadow-xl">
+          <button
+            onClick={() => { onChange(defaultLabel); setIsOpen(false); }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
+          >
+            {defaultLabel}
+          </button>
+          {options.map((opt: any) => (
+            <button
+              key={opt.id}
+              onClick={() => { onChange(opt.id); setIsOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[var(--bg-subtle)] text-[var(--text-primary)]"
+            >
+              {opt.logo && <img src={opt.logo} alt="" className="w-4 h-4 rounded-full" />}
+              <span>{opt.name || opt.symbol || opt.id}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function MarketplacePage() {
   const navigate = useNavigate();
@@ -58,26 +116,41 @@ export function MarketplacePage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [fundingType, setFundingType] = useState<"All" | "full" | "staged">("All");
   const [partialSettlement, setPartialSettlement] = useState<boolean>(true);
+  const [category, setCategory] = useState("");
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteDeals({
-    state:
-      activeTab === "Open"
-        ? "AwaitingFunding,PendingSellerAcceptance"
-        : activeTab === "Active"
-          ? "Active"
-          : activeTab === "Accepted"
-            ? "Accepted"
-            : activeTab === "Completed"
-              ? "Released,Settled"
-              : activeTab === "Expired"
-                ? "Expired,Cancelled"
-                : undefined,
+  // Map status pill to the backend state values
+  const statusToBackendState: Record<string, string> = {
+    Open: "AwaitingFunding,PendingSellerAcceptance",
+    Active: "Active",
+    Finalizing: "DeliverySubmitted,AwaitingAcceptance,Accepted",
+    Completed: "Released,Settled",
+    Expired: "Expired,Cancelled",
+  };
+
+  const effectiveState =
+    statusFilter !== "All" ? statusToBackendState[statusFilter] : undefined;
+
+  const endpoint =
+    activeTab === "My Created"
+      ? "/deals/my/created"
+      : activeTab === "My Selling" || activeTab === "My Accepted"
+        ? "/deals/my/accepted"
+        : "/deals";
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteDeals(endpoint, {
+    state: effectiveState,
     search: searchQuery || undefined,
-    sortBy: sortBy.includes("Value") ? "amount" : "createdAt",
+    sortBy:
+      sortBy === "Highest Value" || sortBy === "Lowest Value"
+        ? "amount"
+        : sortBy === "Ending Soon"
+          ? "deliveryDeadline"
+          : "createdAt",
     sortDir: sortBy === "Oldest First" || sortBy === "Lowest Value" ? "asc" : "desc",
     dealType: dealType !== "All Types" ? (dealType === "Software" ? "SoftDelivery" : "HardDelivery") : undefined,
-    chainId: chain !== "All Chains" ? CHAIN_CONFIG[chain]?.chainId : undefined,
-    token: getTokenAddress(token),
+    chainId: chain !== "All Chains" ? SUPPORTED_CHAINS.find(c => c.name === chain)?.chainId : undefined,
+    token: getTokenAddresses(token),
+    category: category || undefined,
     fundingType: fundingType !== "All" ? fundingType : undefined,
     partialSettlement: partialSettlement ? true : undefined,
     limit: 20,
@@ -85,13 +158,16 @@ export function MarketplacePage() {
 
   const deals = data?.pages.flatMap((page: any) => page.deals) || [];
   const { data: portfolioData } = usePortfolio();
+  const { data: statsData } = useMarketplaceStats();
+  const { data: myCreatedData } = useMyCreatedDeals({ limit: 1 });
+  const { data: myAcceptedData } = useMyAcceptedDeals({ limit: 1 });
 
-  // If status filter is set locally to something other than "All"
-  // Since backend uses 'state' for tabs, we keep local filtering for the tiny status dropdown
-  const filteredDeals = deals.filter((d: any) => {
-    if (statusFilter !== "All" && d.state !== statusFilter) return false;
-    return true;
-  });
+  const stats = (statsData as any)?.data || statsData;
+  const myCreatedCount = (myCreatedData as any)?.data?.total ?? (myCreatedData as any)?.total ?? 0;
+  const myAcceptedCount = (myAcceptedData as any)?.data?.total ?? (myAcceptedData as any)?.total ?? 0;
+
+  // No more JS filtering — backend does all the work
+  const filteredDeals = deals;
 
   return (
     <>
@@ -139,27 +215,27 @@ export function MarketplacePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 relative z-10 stagger-children">
             {[
               {
-                label: "Total Deals",
-                value: "1,248",
-                icon: "📋",
+                label: "Total On-chain",
+                value: stats?.totalDeals?.toLocaleString() ?? "—",
+                Icon: LayoutGrid,
                 color: "#3b82f6",
               },
               {
-                label: "Yield Generated",
-                value: "$4.2M",
-                icon: "💰",
+                label: "Total Volume",
+                value: stats?.totalVolume ?? "—",
+                Icon: TrendingUp,
                 color: "#22c55e",
               },
               {
                 label: "Completed",
-                value: "1,180",
-                icon: "✅",
+                value: stats?.completedDeals?.toLocaleString() ?? "—",
+                Icon: Clock,
                 color: "#06b6d4",
               },
               {
                 label: "Active Now",
-                value: "342",
-                icon: "⚡",
+                value: stats?.activeDeals?.toLocaleString() ?? "—",
+                Icon: Zap,
                 color: "#8b5cf6",
               },
             ].map((stat, i) => (
@@ -176,7 +252,7 @@ export function MarketplacePage() {
                   animationDelay: `${i * 60}ms`,
                 }}
               >
-                <span className="text-2xl mb-1">{stat.icon}</span>
+                <stat.Icon size={18} className="mb-2" style={{ color: stat.color }} />
                 <span
                   className="text-2xl font-black"
                   style={{
@@ -281,38 +357,34 @@ export function MarketplacePage() {
                   <option>Hardware</option>
                 </select>
 
-                <select className="px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)]">
-                  <option>All Categories</option>
-                  <option>Smart Contract Audit</option>
-                  <option>Web Development</option>
-                  <option>Mobile App</option>
-                  <option>Electronics</option>
-                </select>
-
                 <select
-                  value={chain}
-                  onChange={(e) => setChain(e.target.value)}
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value === "All Categories" ? "" : e.target.value)}
                   className="px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)]"
                 >
-                  <option>All Chains</option>
-                  <option>Ethereum</option>
-                  <option>Arbitrum</option>
-                  <option>Polygon</option>
-                  <option>Base</option>
+                  <option value="">All Categories</option>
+                  {(dealType === "All Types" || dealType === "Software" ? SOFTWARE_CATEGORIES : []).map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                  {(dealType === "All Types" || dealType === "Hardware" ? HARDWARE_CATEGORIES : []).map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
                 </select>
 
-                <select
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                  className="px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)]"
-                >
-                  <option>All Tokens</option>
-                  <option>USDC</option>
-                  <option>USDT</option>
-                  <option>DAI</option>
-                  <option>ETH</option>
-                  <option>SETL</option>
-                </select>
+                <CustomDropdown
+                  value={chain === "All Chains" ? "All" : chain}
+                  onChange={(val: string) => setChain(val === "All" ? "All Chains" : val)}
+                  options={SUPPORTED_CHAINS.map(c => ({ ...c, id: c.name }))}
+                  defaultLabel="All Chains"
+                />
+
+                <CustomDropdown
+                  value={token === "All Tokens" ? "All" : token}
+                  onChange={(val: string) => setToken(val === "All" ? "All Tokens" : val)}
+                  options={SUPPORTED_TOKENS}
+                  defaultLabel="All Tokens"
+                />
+
 
                 <div className="col-span-2 md:col-span-4 flex flex-wrap gap-6 pt-3 border-t border-[var(--border)] mt-1">
                   <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer">
@@ -355,16 +427,19 @@ export function MarketplacePage() {
             {[
               {
                 label: "All Deals",
-                count: filteredDeals.length,
+                count: stats?.totalDeals,
                 icon: LayoutGrid,
               },
-              { label: "My Created", count: 0, icon: Plus },
-              { label: "My Accepted", count: 0, icon: TrendingUp },
+              { label: "My Created", count: myCreatedCount || undefined, icon: Plus },
+              { label: "My Selling", count: myAcceptedCount || undefined, icon: TrendingUp },
               { label: "Trending", icon: Zap },
             ].map(({ label, count, icon: Icon }) => (
               <button
                 key={label}
-                onClick={() => setActiveTab(label)}
+                onClick={() => {
+                  setActiveTab(label);
+                  setStatusFilter("All"); // Reset pill on tab switch (industry best practice)
+                }}
                 className={`pb-3 px-2 text-sm font-medium flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
                   activeTab === label
                     ? "border-[var(--accent-blue)] text-[var(--text-primary)]"
@@ -403,7 +478,7 @@ export function MarketplacePage() {
                   <DealCard
                     key={deal.id}
                     deal={deal}
-                    onClick={() => navigate(`/deal/${deal.id}`)}
+                    onClick={() => navigate(`/marketplace/${deal.id}`)}
                   />
                 ))}
               </div>

@@ -4,7 +4,7 @@ import { useAccount, useChainId } from "wagmi";
 import { DealState } from "@settleone/types";
 import { useDeal } from "@settleone/api";
 import { Spinner } from "@settleone/design-system";
-import { AlertCircle, ArrowLeft, Share2, Bookmark } from "lucide-react";
+import { AlertCircle, ArrowLeft, Share2, Bookmark, Clock } from "lucide-react";
 
 import { DealLifecycleTimeline } from "./DealRoom/components/DealLifecycleTimeline";
 import { ActionCenter } from "./DealRoom/components/ActionCenter";
@@ -178,7 +178,7 @@ function DealHeroHeader({ deal }: { deal: any }) {
               <p
                 className={`text-xs font-semibold mt-1 flex items-center gap-1 md:justify-end ${hoursLeft <= 48 ? "text-[var(--accent-red)]" : "text-[var(--text-muted)]"}`}
               >
-                ⏱{" "}
+                <Clock size={11} />{" "}
                 {hoursLeft > 24
                   ? `${Math.floor(hoursLeft / 24)}d ${Math.floor(hoursLeft % 24)}h left`
                   : `${Math.floor(hoursLeft)}h left`}
@@ -324,13 +324,20 @@ export function DealRoomPage() {
   const userRole = useMemo(() => {
     if (!deal || !address) return "none";
     const addr = address.toLowerCase();
-    if (deal.buyer?.toLowerCase() === addr) return "buyer";
-    if (deal.seller?.toLowerCase() === addr) return "seller";
+    const d = deal as any;
+    if (d.buyerAddress?.toLowerCase() === addr || d.buyer?.toLowerCase() === addr) return "buyer";
+    if (d.sellerAddress?.toLowerCase() === addr || d.seller?.toLowerCase() === addr) return "seller";
+    if (d.verifierAddress?.toLowerCase() === addr || d.verifier?.toLowerCase() === addr) return "verifier";
+    if (d.resolverAddress?.toLowerCase() === addr || d.disputeResolver?.toLowerCase() === addr) return "resolver";
     return "none";
   }, [deal, address]);
 
   const currentState: DealState =
     (deal?.state as DealState) ?? DealState.AwaitingFunding;
+
+  // Access control: private deals (with a designated seller) are only visible to parties
+  const isPrivateDeal = !!((deal as any)?.sellerAddress);
+  const isParty = userRole !== "none";
 
   // ── Loading ──
   if (isLoading) {
@@ -363,6 +370,32 @@ export function DealRoomPage() {
           className="mt-2 px-4 py-2 rounded-lg bg-[var(--accent-blue)] text-white text-sm font-semibold hover:brightness-110 transition-all"
         >
           Try Again
+        </button>
+      </div>
+    );
+  }
+
+  // ── Private Deal Access Gate ──
+  if (isPrivateDeal && !isParty) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-base)] gap-5 text-center px-4">
+        <div className="w-16 h-16 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] flex items-center justify-center">
+          <AlertCircle size={28} className="text-[var(--text-muted)]" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+            Private Deal Room
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] max-w-sm leading-relaxed">
+            This deal has a designated seller. Access is restricted to the buyer,
+            seller, verifier, and resolver of this deal.
+          </p>
+        </div>
+        <button
+          onClick={() => window.history.back()}
+          className="px-5 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)] transition-all"
+        >
+          Back to Marketplace
         </button>
       </div>
     );

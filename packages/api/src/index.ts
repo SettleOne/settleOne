@@ -27,6 +27,7 @@ export {
   useMyAcceptedDeals,
   useActiveDeals,
   useInfiniteDeals,
+  useMarketplaceStats,
 } from "./hooks/useDeals";
 export {
   useDeal,
