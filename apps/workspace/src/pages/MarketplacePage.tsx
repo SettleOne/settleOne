@@ -13,13 +13,21 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button, Spinner } from "@settleone/design-system";
-import { useDeals, usePortfolio } from "@settleone/api";
+import { useInfiniteDeals, usePortfolio } from "@settleone/api";
 import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
 import { formatUnits } from "viem";
 import { DealCard, getDealStateStyle } from "./Marketplace/components/DealCard";
 import { CHAIN_CONFIG } from "../lib/config";
+
+const getTokenAddress = (t: string) => {
+  if (t === "All Tokens") return undefined;
+  for (const c of Object.values(CHAIN_CONFIG)) {
+    if (c.tokens[t as keyof typeof c.tokens]) return c.tokens[t as keyof typeof c.tokens];
+  }
+  return undefined;
+};
 
 const STATUS_FILTERS = [
   "All",
@@ -48,8 +56,10 @@ export function MarketplacePage() {
   const [isMoreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("All Deals");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [fundingType, setFundingType] = useState<"All" | "full" | "staged">("All");
+  const [partialSettlement, setPartialSettlement] = useState<boolean>(true);
 
-  const { data, isLoading } = useDeals({
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteDeals({
     state:
       activeTab === "Open"
         ? "AwaitingFunding,PendingSellerAcceptance"
@@ -63,54 +73,23 @@ export function MarketplacePage() {
                 ? "Expired,Cancelled"
                 : undefined,
     search: searchQuery || undefined,
+    sortBy: sortBy.includes("Value") ? "amount" : "createdAt",
+    sortDir: sortBy === "Oldest First" || sortBy === "Lowest Value" ? "asc" : "desc",
+    dealType: dealType !== "All Types" ? (dealType === "Software" ? "SoftDelivery" : "HardDelivery") : undefined,
+    chainId: chain !== "All Chains" ? CHAIN_CONFIG[chain]?.chainId : undefined,
+    token: getTokenAddress(token),
+    fundingType: fundingType !== "All" ? fundingType : undefined,
+    partialSettlement: partialSettlement ? true : undefined,
     limit: 20,
   });
 
-  const deals = data?.deals || [];
+  const deals = data?.pages.flatMap((page: any) => page.deals) || [];
   const { data: portfolioData } = usePortfolio();
 
+  // If status filter is set locally to something other than "All"
+  // Since backend uses 'state' for tabs, we keep local filtering for the tiny status dropdown
   const filteredDeals = deals.filter((d: any) => {
-    // 1. Search Query
-    if (
-      searchQuery &&
-      !(d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !String(d.id).includes(searchQuery)
-    )
-      return false;
-
-    // 2. Status
     if (statusFilter !== "All" && d.state !== statusFilter) return false;
-
-    // 3. Deal Type (Backend returns strings like "SoftDelivery")
-    if (
-      dealType !== "All Types" &&
-      (dealType === "Software"
-        ? d.dealType !== "SoftDelivery"
-        : d.dealType !== "HardDelivery")
-    )
-      return false;
-
-    // 4. Chain (Backend returns numbers like 421614)
-    if (chain !== "All Chains") {
-      const targetChainId = CHAIN_CONFIG[chain]?.chainId;
-      if (d.chainId !== targetChainId) return false;
-    }
-
-    // 5. Token (Convert string "USDC" to address based on the deal's chain)
-    if (token !== "All Tokens") {
-      // Find which chain config this deal belongs to
-      const configEntry = Object.values(CHAIN_CONFIG).find(
-        (c) => c.chainId === d.chainId,
-      );
-      // Get the address for the selected token on that chain
-      const requiredTokenAddress =
-        configEntry?.tokens[token as keyof typeof configEntry.tokens];
-
-      // Compare addresses (case-insensitive)
-      if (d.tokenAddress?.toLowerCase() !== requiredTokenAddress?.toLowerCase())
-        return false;
-    }
-
     return true;
   });
 
@@ -336,23 +315,25 @@ export function MarketplacePage() {
                 </select>
 
                 <div className="col-span-2 md:col-span-4 flex flex-wrap gap-6 pt-3 border-t border-[var(--border)] mt-1">
-                  {[
-                    { label: "Full deals only", default: false },
-                    { label: "Partial settlement allowed", default: true },
-                    { label: "My Deals Only", default: false },
-                  ].map((item) => (
-                    <label
-                      key={item.label}
-                      className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        defaultChecked={item.default}
-                        className="accent-[var(--accent-blue)] rounded"
-                      />
-                      {item.label}
-                    </label>
-                  ))}
+                  <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={fundingType === "full"}
+                      onChange={(e) => setFundingType(e.target.checked ? "full" : "All")}
+                      className="accent-[var(--accent-blue)] rounded"
+                    />
+                    Full deals only (100% Upfront)
+                  </label>
+
+                  <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={partialSettlement}
+                      onChange={(e) => setPartialSettlement(e.target.checked)}
+                      className="accent-[var(--accent-blue)] rounded"
+                    />
+                    Partial settlement allowed
+                  </label>
                   <div className="flex items-center gap-2 ml-auto">
                     <span className="text-xs text-[var(--text-secondary)]">
                       Delivery:
@@ -416,14 +397,27 @@ export function MarketplacePage() {
               </p>
             </div>
           ) : filteredDeals.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-10">
-              {filteredDeals.map((deal: any) => (
-                <DealCard
-                  key={deal.id}
-                  deal={deal}
-                  onClick={() => navigate(`/deal/${deal.id}`)}
-                />
-              ))}
+            <div className="pb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {filteredDeals.map((deal: any) => (
+                  <DealCard
+                    key={deal.id}
+                    deal={deal}
+                    onClick={() => navigate(`/deal/${deal.id}`)}
+                  />
+                ))}
+              </div>
+              {hasNextPage && (
+                <div className="flex justify-center mt-8">
+                  <Button 
+                    onClick={() => fetchNextPage()} 
+                    disabled={isFetchingNextPage}
+                    variant="secondary"
+                  >
+                    {isFetchingNextPage ? "Loading more..." : "Load More Deals"}
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <EmptyState

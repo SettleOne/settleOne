@@ -161,7 +161,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           sellerAcceptanceWindowSeconds: Number(form.sellerWindow) * 86400,
           deliveryDeadlineTimestamp: Math.floor(
             new Date(form.deliveryDeadline || Date.now() + 86400000).getTime() /
-              1000,
+            1000,
           ),
           acceptanceWindowSeconds: Number(form.acceptanceWindow) * 86400,
           disputeWindowSeconds: Number(form.disputeWindow) * 86400,
@@ -187,10 +187,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           body: JSON.stringify(apiPayload),
         });
 
-        if (form.termsFile && result.deal?.id) {
+        if (form.termsFile && result.data.deal?.id) {
           const fd = new FormData();
           fd.append("file", form.termsFile);
-          fd.append("dealId", result.deal.id);
+          fd.append("dealId", result.data.deal.id);
           fd.append("context", "terms");
           apiClient("/files/upload", { method: "POST", body: fd }).catch(
             console.error,
@@ -222,17 +222,17 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
           dealType: form.dealType === "software" ? 0 : 1,
           partialSettlementAllowed: form.partialSettlement,
           termsHash:
-            result.hashes?.termsHash ||
+            result.data.hashes?.termsHash ||
             termsHash ||
             "0x0000000000000000000000000000000000000000000000000000000000000000",
           metadataHash:
-            result.hashes?.metadataHash ||
+            result.data.hashes?.metadataHash ||
             "0x0000000000000000000000000000000000000000000000000000000000000000",
           evidenceRequirementsHash:
-            result.hashes?.evidenceHash ||
+            result.data.hashes?.evidenceHash ||
             "0x0000000000000000000000000000000000000000000000000000000000000000",
           settlementRulesHash:
-            result.hashes?.rulesHash ||
+            result.data.hashes?.rulesHash ||
             "0x0000000000000000000000000000000000000000000000000000000000000000",
           verifier: (apiPayload.verifierAddress ||
             "0x0000000000000000000000000000000000000000") as `0x${string}`,
@@ -240,7 +240,7 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
             "0x0000000000000000000000000000000000000000") as `0x${string}`,
         });
 
-        setCreatedId(result.deal.id);
+        setCreatedId(result.data.deal.id);
         // setIsSuccess(true);
       } catch (err: any) {
         setErrorMessage(err.message || "Failed to create deal");
@@ -293,20 +293,18 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                 <React.Fragment key={s.num}>
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                        step >= s.num
+                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= s.num
                           ? "bg-[var(--accent-blue)] text-white"
                           : "bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]"
-                      }`}
+                        }`}
                     >
                       {step > s.num ? <Check size={12} /> : s.num}
                     </div>
                     <span
-                      className={`text-xs font-medium hidden sm:block ${
-                        step === s.num
+                      className={`text-xs font-medium hidden sm:block ${step === s.num
                           ? "text-[var(--text-primary)]"
                           : "text-[var(--text-muted)]"
-                      }`}
+                        }`}
                     >
                       {s.label}
                     </span>
@@ -403,11 +401,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                       <button
                         key={type}
                         onClick={() => update("dealType", type)}
-                        className={`p-4 rounded-[var(--radius-card)] border-2 text-left transition-all ${
-                          form.dealType === type
+                        className={`p-4 rounded-[var(--radius-card)] border-2 text-left transition-all ${form.dealType === type
                             ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                             : "border-[var(--border)] hover:border-[var(--border-light)] bg-[var(--bg-base)]"
-                        }`}
+                          }`}
                       >
                         <div
                           className={`mb-2 ${form.dealType === type ? "text-[var(--accent-blue)]" : "text-[var(--text-muted)]"}`}
@@ -545,11 +542,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                               if (details) details.open = false;
                             }}
                             className={`w-full px-4 py-2.5 flex items-center gap-3 text-sm transition-colors text-left 
-  border-b border-[var(--border)] last:border-0 ${
-    form.token === token.id
-      ? "bg-[var(--bg-subtle)] text-[var(--text-primary)]"
-      : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
-  }`}
+  border-b border-[var(--border)] last:border-0 ${form.token === token.id
+                                ? "bg-[var(--bg-subtle)] text-[var(--text-primary)]"
+                                : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                              }`}
                           >
                             <img
                               src={token.logo}
@@ -576,11 +572,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                           key={chain.id}
                           type="button"
                           onClick={() => update("chain", chain.id)}
-                          className={`px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all flex items-center gap-2 ${
-                            form.chain === chain.id
+                          className={`px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all flex items-center gap-2 ${form.chain === chain.id
                               ? "border-[var(--accent-blue)] bg-[var(--accent-blue)] text-white shadow-md shadow-blue-500/20"
                               : "border-[var(--border)] bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)]"
-                          }`}
+                            }`}
                         >
                           <img
                             src={chain.logo}
@@ -635,11 +630,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                     ].map((opt) => (
                       <label
                         key={opt.key}
-                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                          form.fundingOption === opt.key
+                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.fundingOption === opt.key
                             ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                             : "border-[var(--border)] hover:border-[var(--border-light)]"
-                        }`}
+                          }`}
                       >
                         <input
                           type="radio"
@@ -798,11 +792,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                     ].map((opt) => (
                       <label
                         key={opt.key}
-                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                          form.verifier === opt.key
+                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.verifier === opt.key
                             ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                             : "border-[var(--border)] hover:border-[var(--border-light)]"
-                        }`}
+                          }`}
                       >
                         <input
                           type="radio"
@@ -855,11 +848,10 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
                     ].map((opt) => (
                       <label
                         key={opt.key}
-                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${
-                          form.resolver === opt.key
+                        className={`flex items-start gap-3 p-3 rounded-[var(--radius-input)] border cursor-pointer transition-all ${form.resolver === opt.key
                             ? "border-[var(--accent-blue)] bg-[var(--accent-blue-glow2)]"
                             : "border-[var(--border)] hover:border-[var(--border-light)]"
-                        }`}
+                          }`}
                       >
                         <input
                           type="radio"
@@ -1009,129 +1001,154 @@ export function CreateDealModal({ isOpen, onClose }: CreateDealModalProps) {
               /* STEP 4: Preview */
               <>
                 {/* Preview Panel */}
-                <div className="p-5 bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-inner">
-                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-4 uppercase tracking-wider">
-                    Complete Deal Preview
-                  </h4>
-                  <div className="space-y-3 text-sm font-mono">
-                    {[
-                      ["Name", form.name || "—"],
-                      ["Type", form.dealType],
-                      ["Category", form.category || "—"],
-                      ["Amount", `${form.amount || "0"} ${form.token}`],
-                      ["Chain", form.chain],
-                      ["Seller", form.sellerAddress || "Open Marketplace"],
-                      [
-                        "Funding",
-                        form.fundingOption === "staged"
-                          ? "60/40 staged"
-                          : "100% upfront",
-                      ],
-                      [
-                        "Partial Settlement",
-                        form.partialSettlement ? "Enabled" : "Disabled",
-                      ],
-                      ["Seller Window", `${form.sellerWindow} days`],
-                      ["Delivery Deadline", form.deliveryDeadline || "Not set"],
-                      ["Buyer Acceptance", `${form.acceptanceWindow} days`],
-                      ["Dispute Window", `${form.disputeWindow} days`],
-                      ["Verifier", form.verifier],
-                      ["Arbitrator", form.resolver],
-                    ].map(([k, v]) => (
-                      <div
-                        key={k}
-                        className="flex justify-between gap-4 py-1 border-b border-[var(--border)] last:border-0 pb-2 mb-2"
-                      >
-                        <span className="text-[var(--text-muted)]">{k}:</span>
-                        <span className="text-[var(--text-primary)] text-right truncate max-w-[60%]">
-                          {v}
-                        </span>
-                      </div>
-                    ))}
+                <div className="p-5 bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-inner overflow-hidden">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-5 uppercase tracking-wider flex items-center gap-2">
+                          Deal Preview
+                    </h4>
+
+                    {/* Grid for short key-value pairs */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm mb-6 pb-6 border-b border-[var(--border)]">
+                      {[
+                        { label: "Deal Name", value: form.name || "—" },
+                        { label: "Type", value: form.dealType === "software" ? "Software" : "Hardware" },
+                        { label: "Category", value: form.category || "—" },
+                        { label: "Amount", value: `${form.amount || "0"} ${form.token}` },
+                        { label: "Network", value: form.chain },
+                        { label: "Seller", value: form.sellerAddress ? `${form.sellerAddress.slice(0, 6)}...${form.sellerAddress.slice(-4)}` : "Open Marketplace" },
+                        { label: "Funding", value: form.fundingOption === "staged" ? "60/40 Staged" : "100% Upfront" },
+                        { label: "Partial Settlement", value: form.partialSettlement ? "Enabled" : "Disabled" },
+                        { label: "Delivery Deadline", value: form.deliveryDeadline || "Not set" },
+                        { label: "Verifier", value: form.verifier === "custom" ? "Custom" : form.verifier },
+                        { label: "Arbitrator", value: form.resolver === "custom" ? "Custom" : form.resolver },
+                        { label: "Attached File", value: form.termsFile ? form.termsFile.name : "None" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col">
+                          <span className="text-xs text-[var(--text-muted)] mb-1">{item.label}</span>
+                          <span className="text-[var(--text-primary)] font-medium truncate">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Full width blocks for long text fields */}
+                    <div className="space-y-4 text-sm">
+                      {form.description && (
+                        <div>
+                          <span className="block text-xs text-[var(--text-muted)] mb-1.5">Description</span>
+                          <p className="p-3 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] whitespace-pre-wrap">
+                            {form.description}
+                          </p>
+                        </div>
+                      )}
+                      {form.evidenceRequirements && (
+                        <div>
+                          <span className="block text-xs text-[var(--text-muted)] mb-1.5">Evidence Requirements</span>
+                          <p className="p-3 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] whitespace-pre-wrap">
+                            {form.evidenceRequirements}
+                          </p>
+                        </div>
+                      )}
+                      {form.settlementRules && (
+                        <div>
+                          <span className="block text-xs text-[var(--text-muted)] mb-1.5">Settlement Rules</span>
+                          <p className="p-3 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] whitespace-pre-wrap">
+                            {form.settlementRules}
+                          </p>
+                        </div>
+                      )}
+                      {form.sellerSpecifications && (
+                        <div>
+                          <span className="block text-xs text-[var(--text-muted)] mb-1.5">Seller Specifications</span>
+                          <p className="p-3 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] whitespace-pre-wrap">
+                            {form.sellerSpecifications}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Disclaimer */}
-                <div className="flex items-start gap-3 p-4 bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 rounded-[var(--radius-input)]">
-                  <AlertCircle
-                    size={20}
-                    className="text-[var(--accent-amber)] mt-0.5 shrink-0"
-                  />
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                    Creating this deal will call{" "}
-                    <span className="font-mono text-[var(--text-primary)] bg-[var(--bg-subtle)] px-1 rounded border border-[var(--border)]">
-                      DealManager.createDeal()
-                    </span>{" "}
-                    on {form.chain}. Make sure you have carefully reviewed the
-                    terms. Estimated gas cost: ~0.003 ETH.
-                  </p>
-                </div>
-              </>
+
+
+                  {/* Disclaimer */}
+                  <div className="flex items-start gap-3 p-4 bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 rounded-[var(--radius-input)]">
+                    <AlertCircle
+                      size={20}
+                      className="text-[var(--accent-amber)] mt-0.5 shrink-0"
+                    />
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                      Creating this deal will call{" "}
+                      <span className="font-mono text-[var(--text-primary)] bg-[var(--bg-subtle)] px-1 rounded border border-[var(--border)]">
+                        DealManager.createDeal()
+                      </span>{" "}
+                      on {form.chain}. Make sure you have carefully reviewed the
+                      terms. Estimated gas cost: ~0.003 ETH.
+                    </p>
+                  </div>
+                </>
             )}
-          </div>
+              </div>
 
-          {/* Footer */}
-          {!isSuccess && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--border)] shrink-0 bg-[var(--bg-elevated)]">
-              <button
-                onClick={() =>
-                  step > 1 ? setStep((s) => (s - 1) as any) : onClose()
-                }
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-[var(--radius-input)] transition-colors border border-[var(--border)]"
-              >
-                <ChevronLeft size={16} />
-                {step === 1 ? "Cancel" : "Back"}
-              </button>
+            {/* Footer */}
+            {!isSuccess && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--border)] shrink-0 bg-[var(--bg-elevated)]">
+                <button
+                  onClick={() =>
+                    step > 1 ? setStep((s) => (s - 1) as any) : onClose()
+                  }
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-[var(--radius-input)] transition-colors border border-[var(--border)]"
+                >
+                  <ChevronLeft size={16} />
+                  {step === 1 ? "Cancel" : "Back"}
+                </button>
 
-              {step < 4 ? (
-                <button
-                  onClick={() => setStep((s) => (s + 1) as any)}
-                  className="flex items-center gap-1.5 px-6 py-2 text-sm font-semibold text-white bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] rounded-[var(--radius-input)] transition-all shadow-[var(--shadow-glow)]"
-                >
-                  Next <ChevronRight size={16} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  disabled={isPending}
-                  className="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] rounded-[var(--radius-input)] transition-all shadow-[var(--shadow-glow)] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isPending ? (
-                    <>
-                      <svg
-                        className="animate-spin h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      Signing…
-                    </>
-                  ) : (
-                    <>
-                      Create Deal <Check size={16} />
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          )}
+                {step < 4 ? (
+                  <button
+                    onClick={() => setStep((s) => (s + 1) as any)}
+                    className="flex items-center gap-1.5 px-6 py-2 text-sm font-semibold text-white bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] rounded-[var(--radius-input)] transition-all shadow-[var(--shadow-glow)]"
+                  >
+                    Next <ChevronRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isPending}
+                    className="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white bg-[var(--accent-blue)] hover:bg-[var(--accent-blue-hover)] rounded-[var(--radius-input)] transition-all shadow-[var(--shadow-glow)] disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isPending ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        Signing…
+                      </>
+                    ) : (
+                      <>
+                        Create Deal <Check size={16} />
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>{" "}
+          {/* end modal card */}
         </div>{" "}
-        {/* end modal card */}
-      </div>{" "}
-      {/* end overlay */}
-    </>
-  );
+        {/* end overlay */}
+      </>
+      );
 }

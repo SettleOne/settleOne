@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../client";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface DealsResponse {
   deals: any[];
@@ -55,3 +56,19 @@ export function useMyDeals(params: DealsParams = {}) {
     queryFn: () => apiClient<DealsResponse>("/deals/my/created", { params }),
   });
 }
+
+
+  export function useInfiniteDeals(params: DealsParams = {}) {
+      return useInfiniteQuery({
+        queryKey: ["deals", "infinite", params],
+        queryFn: async ({ pageParam }) => {
+          // This automatically unwraps the { success, data } response
+          const res = await apiClient<any>("/deals", { 
+            params: { ...params, cursor: pageParam || undefined } 
+          });
+          return res.data as DealsResponse; 
+        },
+        getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
+        initialPageParam: null as string | null,
+      });
+    }
