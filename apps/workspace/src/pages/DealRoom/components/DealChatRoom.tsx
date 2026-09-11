@@ -67,25 +67,43 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
           messages.map((msg: any, idx: number) => {
             const isMe =
               msg.senderAddress.toLowerCase() === address?.toLowerCase();
+            const senderName = msg.sender?.name || (isMe ? "You" : "Counterparty");
+            
             return (
               <div
                 key={msg.id || idx}
                 className={`flex items-start gap-3 ${isMe ? "flex-row-reverse" : ""}`}
               >
-                <Avatar initials={isMe ? "ME" : "CP"} size="sm" />
+                {msg.sender?.avatarUrl ? (
+                   <img src={msg.sender.avatarUrl} alt={senderName} className="w-8 h-8 rounded-full object-cover shrink-0 border border-[var(--border)]" />
+                ) : (
+                   <Avatar initials={isMe ? "ME" : senderName.charAt(0).toUpperCase()} size="sm" />
+                )}
+                
                 <div
                   className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[70%]`}
                 >
                   <span className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
-                    {!isMe && (
-                      <AddressDisplay
-                        address={msg.senderAddress}
-                        length={4}
-                        showCopy={false}
-                        showExternalLink={false}
-                      />
+                    {msg.sender?.name ? (
+                      <span className="font-medium text-[var(--text-primary)]">{isMe ? "You" : msg.sender.name}</span>
+                    ) : (
+                      <>
+                        {!isMe && (
+                          <AddressDisplay
+                            address={msg.senderAddress}
+                            length={4}
+                            showCopy={false}
+                            showExternalLink={false}
+                          />
+                        )}
+                        {isMe && "You"}
+                      </>
                     )}
-                    {isMe && "You"}
+                    {msg.sender?.role && !isMe && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] uppercase font-bold">
+                        {msg.sender.role}
+                      </span>
+                    )}
                   </span>
                   <div
                     className={`

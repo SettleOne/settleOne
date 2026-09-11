@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "@settleone/design-system";
-import { useAcceptDeal, useRejectDeal, useCancelDeal, useFundDeal } from "@settleone/sdk";
+import { useAcceptDeal, useRejectDeal, useCancelDeal, useAcceptDelivery } from "@settleone/sdk";
 import { useChainId } from "wagmi";
-import { useRequireWalletConnection } from "../../../hooks/useRequireWalletConnection";
+import { useRequireWallet } from "../../../hooks/useRequireWallet";
 import { FundDealModal } from "../modals/FundDealModal";
 import { SubmitDeliveryModal } from "../modals/SubmitDeliveryModal";
 import { DisputeModal } from "../modals/DisputeModal";
 import { RequestRevisionModal } from "../modals/RequestRevisionModal";
-import { WalletPromptModal } from "../modals/WalletPromptModal";
-import { Info, Play, PlusCircle, CreditCard, Check, ArrowRight } from "lucide-react";
+import { Info, PlusCircle, CreditCard, Check } from "lucide-react";
 
 interface NextActionBannerProps {
   currentState: string;
@@ -21,7 +20,7 @@ export function NextActionBanner({ currentState, userRole, deal }: NextActionBan
   const isSeller = userRole === "seller";
 
   const chainId = useChainId();
-  const { requireWallet } = useRequireWalletConnection();
+  const { requireWallet, WalletPromptModal } = useRequireWallet();
 
   const [isFundModalOpen, setFundModalOpen] = useState(false);
   const [isDeliveryModalOpen, setDeliveryModalOpen] = useState(false);
@@ -31,10 +30,7 @@ export function NextActionBanner({ currentState, userRole, deal }: NextActionBan
   const { acceptDeal, isPending: isAccepting } = useAcceptDeal(chainId);
   const { rejectDeal, isPending: isRejecting } = useRejectDeal(chainId);
   const { cancelDeal, isPending: isCanceling } = useCancelDeal(chainId);
-  
-  // Dummy Accept Delivery for now since sdk may lack it
-  const acceptDelivery = (id: any) => console.log("Accepting delivery", id);
-  const isAcceptingDelivery = false;
+  const { acceptDelivery, isPending: isAcceptingDelivery } = useAcceptDelivery(chainId);
 
   const getDealId = () => {
     return deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0);
@@ -63,7 +59,7 @@ export function NextActionBanner({ currentState, userRole, deal }: NextActionBan
       description = "Review the terms and accept the deal to proceed.";
       buttons = (
         <div className="flex gap-3">
-          <Button variant="danger" onClick={() => requireWallet(() => rejectDeal(getDealId()))} disabled={isRejecting}>
+          <Button variant="danger" onClick={() => requireWallet(() => rejectDeal(getDealId(), "0x0000000000000000000000000000000000000000000000000000000000000000"))} disabled={isRejecting}>
             Reject
           </Button>
           <Button variant="primary" onClick={() => requireWallet(() => acceptDeal(getDealId()))} disabled={isAccepting}>

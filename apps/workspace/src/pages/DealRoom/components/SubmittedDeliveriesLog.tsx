@@ -5,6 +5,7 @@ import {
   CheckCircle,
   ExternalLink,
   AlertCircle,
+  MessageSquare
 } from "lucide-react";
 import { AddressDisplay, Spinner } from "@settleone/design-system";
 import { useDeliveries } from "@settleone/api";
@@ -69,23 +70,47 @@ export function SubmittedDeliveriesLog({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="bg-[var(--bg-subtle)] text-[var(--text-secondary)] text-xs font-bold px-2 py-0.5 rounded uppercase">
-                  Rev {deliveries.length - idx}
+                  Rev {delivery.revision || (deliveries.length - idx)}
                 </span>
                 <h4 className="font-semibold text-sm text-[var(--text-primary)]">
                   Delivery Submission
                 </h4>
               </div>
-              <p className="text-xs text-[var(--text-muted)] flex items-center gap-2">
-                Submitted{" "}
-                <span className="text-[var(--text-primary)] font-medium">
-                  {formatTimestamp(BigInt(delivery.createdAt || 0))}
+              <div className="text-xs text-[var(--text-muted)] flex flex-wrap items-center gap-2">
+                <span>
+                  Submitted{" "}
+                  <span className="text-[var(--text-primary)] font-medium">
+                    {delivery.submittedAt ? new Date(delivery.submittedAt).toLocaleString() : formatTimestamp(BigInt(delivery.createdAt || 0))}
+                  </span>
                 </span>
-              </p>
+                {delivery.verifiedAt && (
+                  <>
+                    <span>•</span>
+                    <span className="text-[var(--accent-green)]">
+                      Verified {new Date(delivery.verifiedAt).toLocaleString()}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
-            <span className="text-xs font-semibold text-[var(--accent-purple)] bg-[var(--accent-purple)]/20 px-2 py-1 rounded-md flex items-center gap-1.5 shadow-glow">
-              <CheckCircle size={14} /> Submitted
+            <span className={`text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5 shadow-glow ${
+              delivery.status === "Verified" || delivery.status === "Accepted"
+                ? "text-[var(--accent-green)] bg-[var(--accent-green)]/20"
+                : "text-[var(--accent-purple)] bg-[var(--accent-purple)]/20"
+            }`}>
+              <CheckCircle size={14} /> {delivery.status || "Submitted"}
             </span>
           </div>
+
+          {delivery.sellerNotes && (
+            <div className="mb-4 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-md p-3">
+              <div className="flex items-center gap-2 mb-1 text-[var(--text-muted)]">
+                <MessageSquare size={14} />
+                <span className="text-xs font-semibold">Seller Notes</span>
+              </div>
+              <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">{delivery.sellerNotes}</p>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex items-center justify-between p-3 border border-[var(--border)] rounded-md bg-[var(--bg-card)] hover:border-[var(--border-light)] transition-colors group">
@@ -98,18 +123,20 @@ export function SubmittedDeliveriesLog({
                     Delivery Proof CID
                   </p>
                   <p className="text-xs text-[var(--text-muted)] font-mono truncate">
-                    {delivery.cid}
+                    {delivery.cid || delivery.primaryCid || "None"}
                   </p>
                 </div>
               </div>
-              <a
-                href={`https://ipfs.io/ipfs/${delivery.cid}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-[var(--text-muted)] hover:text-[var(--accent-blue)] rounded-full hover:bg-[var(--accent-blue)]/10 transition-colors"
-              >
-                <ExternalLink size={18} />
-              </a>
+              {(delivery.cid || delivery.primaryCid) && (
+                <a
+                  href={`https://ipfs.io/ipfs/${delivery.cid || delivery.primaryCid}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-[var(--text-muted)] hover:text-[var(--accent-blue)] rounded-full hover:bg-[var(--accent-blue)]/10 transition-colors"
+                >
+                  <ExternalLink size={18} />
+                </a>
+              )}
             </div>
 
             <div className="flex items-center justify-between p-3 border border-[var(--border)] rounded-md bg-[var(--bg-card)] hover:border-[var(--border-light)] transition-colors">
@@ -122,7 +149,7 @@ export function SubmittedDeliveriesLog({
                     On-chain Proof Hash
                   </p>
                   <p className="text-xs text-[var(--text-muted)] font-mono truncate">
-                    {delivery.proofHash}
+                    {delivery.proofHash || "Not committed"}
                   </p>
                 </div>
               </div>
