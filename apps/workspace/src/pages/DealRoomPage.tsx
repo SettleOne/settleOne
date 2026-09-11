@@ -312,19 +312,21 @@ export function DealRoomPage() {
   const { data: deal, isLoading, isError, refetch } = useDeal(id);
   const { address } = useAccount();
 
+  const actualDeal = (deal as any)?.data?.deal || deal;
+
   const dealId = useMemo(() => {
-    if (!deal?.onChainId && !id) return undefined;
+    if (!actualDeal?.onChainId && !id) return undefined;
     try {
-      return BigInt(deal?.onChainId || id || 0);
+      return BigInt(actualDeal?.onChainId || id || 0);
     } catch {
       return undefined;
     }
   }, [deal, id]);
 
   const userRole = useMemo(() => {
-    if (!deal || !address) return "none";
+    if (!actualDeal || !address) return "none";
     const addr = address.toLowerCase();
-    const d = deal as any;
+    const d = actualDeal as any;
     if (d.buyerAddress?.toLowerCase() === addr || d.buyer?.toLowerCase() === addr) return "buyer";
     if (d.sellerAddress?.toLowerCase() === addr || d.seller?.toLowerCase() === addr) return "seller";
     if (d.verifierAddress?.toLowerCase() === addr || d.verifier?.toLowerCase() === addr) return "verifier";
@@ -333,10 +335,10 @@ export function DealRoomPage() {
   }, [deal, address]);
 
   const currentState: DealState =
-    (deal?.state as DealState) ?? DealState.AwaitingFunding;
+    (actualDeal?.state as DealState) ?? DealState.AwaitingFunding;
 
   // Access control: private deals (with a designated seller) are only visible to parties
-  const isPrivateDeal = !!((deal as any)?.sellerAddress);
+  const isPrivateDeal = !!((actualDeal as any)?.sellerAddress);
   const isParty = userRole !== "none";
 
   // ── Loading ──
@@ -352,7 +354,7 @@ export function DealRoomPage() {
   }
 
   // ── Error ──
-  if (isError || !deal) {
+  if (isError || !actualDeal) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-base)] gap-4 text-center px-4">
         <div className="w-16 h-16 rounded-full bg-[var(--accent-red)]/10 flex items-center justify-center border border-[var(--accent-red)]/30">
@@ -404,7 +406,7 @@ export function DealRoomPage() {
   return (
     <div className="flex flex-col -mx-4 md:-mx-6 -mt-4 md:-mt-6 min-h-screen bg-[var(--bg-base)]">
       {/* Zone 1: Hero Header + Timeline */}
-      <DealHeroHeader deal={deal} />
+      <DealHeroHeader deal={actualDeal} />
 
       {/* Zone 2: Two-column layout (65/35) → stacks on mobile */}
       <div className="max-w-[1400px] w-full mx-auto px-4 md:px-8 py-8">
@@ -415,12 +417,12 @@ export function DealRoomPage() {
             <ActionCenter
               currentState={currentState}
               userRole={userRole as "buyer" | "seller" | "none"}
-              deal={deal}
+              deal={actualDeal}
             />
 
             {/* Work Log (conditional) */}
             <WorkLogSection
-              deal={deal}
+              deal={actualDeal}
               dealId={dealId}
               userRole={userRole}
               currentState={currentState}
@@ -430,7 +432,7 @@ export function DealRoomPage() {
           {/* RIGHT: Info Sidebar (35%) — always visible */}
           <div className="w-full xl:w-[380px] shrink-0">
             {/* On mobile it's full-width and appears below the action center */}
-            <DealInfoSidebar deal={deal} />
+            <DealInfoSidebar deal={actualDeal} />
           </div>
         </div>
 
