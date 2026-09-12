@@ -12,3 +12,5 @@ dist/
 *.env
 *.next/
 SETTLEONE_FRONTEND_SCRIPT.txt
+ADDRESSES.md
+ContractReadme.md
