@@ -380,7 +380,7 @@ export function ActionCenter({
           requiredAmount={deal?.amount ? BigInt(deal.amount as any) : 0n}
         />
         <SubmitDeliveryModal
-          dealId={deal?.id as unknown as bigint}
+          dealId={deal?.id as string} onChainId={deal?.onChainId ? BigInt(deal.onChainId) : 0n}
           isOpen={isDeliveryModalOpen}
           onClose={() => setDeliveryModalOpen(false)}
         />

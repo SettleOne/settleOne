@@ -56,8 +56,6 @@ export const docsNavigation: DocSection[] = [
     id: "resources",
     title: "Resources",
     icon: Book,
-    pages: [
-      { id: "license", title: "License" },
-    ],
+    pages: [{ id: "license", title: "License" }],
   },
 ];

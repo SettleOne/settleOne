@@ -1,4 +1,5 @@
-import React from "react";
+import type { FC } from "react";
+
 import * as Overview from "../sections/Overview";
 import * as Workflow from "../sections/Workflow";
 import * as Infrastructure from "../sections/Infrastructure";
@@ -6,34 +7,34 @@ import * as Deployments from "../sections/Deployments";
 import * as Developer from "../sections/Developer";
 import * as Resources from "../sections/Resources";
 
-const pageRegistry: Record<string, React.FC> = {
+const pageRegistry: Record<string, FC> = {
   // Overview
-  "introduction": Overview.Introduction,
-  "principles": Overview.Principles,
+  introduction: Overview.Introduction,
+  principles: Overview.Principles,
   "how-it-works": Overview.HowItWorks,
-  
+
   // Workflow
   "deal-lifecycle": Workflow.DealLifecycle,
   "escrow-funding": Workflow.EscrowFunding,
-  "verification": Workflow.VerificationDisputes,
+  verification: Workflow.VerificationDisputes,
   "deal-room": Workflow.DealRoom,
-  
+
   // Infrastructure
-  "architecture": Infrastructure.Architecture,
+  architecture: Infrastructure.Architecture,
   "risk-engine": Infrastructure.RiskEngine,
   "ai-monitor": Infrastructure.AIMonitor,
   "yield-layer": Infrastructure.YieldLayer,
-  
+
   // Deployments (Protocol)
   "contract-addresses": Deployments.ContractAddresses,
-  "security": Deployments.SecurityModel,
-  
+  security: Deployments.SecurityModel,
+
   // Developer
   "api-reference": Developer.ApiReference,
   "sdk-reference": Developer.SdkReference,
-  
+
   // Resources
-  "license": Resources.License,
+  license: Resources.License,
 };
 
 export function PageContent({ pageId }: { pageId: string }) {

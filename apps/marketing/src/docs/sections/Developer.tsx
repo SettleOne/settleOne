@@ -1,10 +1,18 @@
-import React from "react";
-import { PageHeader, Section, Paragraph, Callout, List } from "../components/DocsUI";
+import {
+  PageHeader,
+  Section,
+  Paragraph,
+  Callout,
+  List,
+} from "../components/DocsUI";
 
 export function TechStack() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <PageHeader title="Technology Stack" description="The core technologies powering SettleOne." />
+      <PageHeader
+        title="Technology Stack"
+        description="The core technologies powering SettleOne."
+      />
       <Section title="Frontend">
         <List>
           <li>React & TypeScript</li>
@@ -47,9 +55,14 @@ export function TechStack() {
 export function Infrastructure() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <PageHeader title="Data & Infrastructure" description="How data moves through the SettleOne system." />
+      <PageHeader
+        title="Data & Infrastructure"
+        description="How data moves through the SettleOne system."
+      />
       <Section title="Background Processing">
-        <Paragraph>Asynchronous tasks are handled efficiently by background workers:</Paragraph>
+        <Paragraph>
+          Asynchronous tasks are handled efficiently by background workers:
+        </Paragraph>
         <List>
           <li>Position monitoring & risk checks</li>
           <li>Settlement deadline checks</li>
@@ -58,8 +71,14 @@ export function Infrastructure() {
         </List>
       </Section>
       <Section title="Real-Time Updates">
-        <Paragraph>WebSockets provide live updates for yield changes, position state, risk status, settlement countdown, alerts, and transaction status.</Paragraph>
-        <Callout type="info">Real-time infrastructure improves the user experience but does not become the source of truth for financial state.</Callout>
+        <Paragraph>
+          WebSockets provide live updates for yield changes, position state,
+          risk status, settlement countdown, alerts, and transaction status.
+        </Paragraph>
+        <Callout type="info">
+          Real-time infrastructure improves the user experience but does not
+          become the source of truth for financial state.
+        </Callout>
       </Section>
     </div>
   );
@@ -68,9 +87,16 @@ export function Infrastructure() {
 export function ApiReference() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <PageHeader title="API Reference" description="Detailed API documentation will be published here." />
+      <PageHeader
+        title="API Reference"
+        description="Detailed API documentation will be published here."
+      />
       <Section title="Coming Soon">
-        <Paragraph>SettleOne's public APIs are currently in development. This section will eventually include comprehensive endpoints for programmatic interaction with the SettleOne infrastructure.</Paragraph>
+        <Paragraph>
+          SettleOne's public APIs are currently in development. This section
+          will eventually include comprehensive endpoints for programmatic
+          interaction with the SettleOne infrastructure.
+        </Paragraph>
       </Section>
     </div>
   );
@@ -79,9 +105,17 @@ export function ApiReference() {
 export function SdkReference() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <PageHeader title="SDK Reference" description="Detailed SDK documentation will be published here." />
+      <PageHeader
+        title="SDK Reference"
+        description="Detailed SDK documentation will be published here."
+      />
       <Section title="Coming Soon">
-        <Paragraph>The official SettleOne SDK is under active development. Once released, developers will be able to easily integrate SettleOne's deal creation, escrow, and settlement capabilities natively within their own applications.</Paragraph>
+        <Paragraph>
+          The official SettleOne SDK is under active development. Once released,
+          developers will be able to easily integrate SettleOne's deal creation,
+          escrow, and settlement capabilities natively within their own
+          applications.
+        </Paragraph>
       </Section>
     </div>
   );

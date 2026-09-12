@@ -268,7 +268,10 @@ export function DealRoomPage() {
   }
 
   // Post-Acceptance Privacy Lock
-  const isPostAcceptance = !["AwaitingFunding", "PendingSellerAcceptance"].includes(currentState as unknown as string);
+  const isPostAcceptance = ![
+    "AwaitingFunding",
+    "PendingSellerAcceptance",
+  ].includes(currentState as unknown as string);
   const hidePrivateTabs = isPostAcceptance && userRole === "none";
 
   const availableTabs = [
@@ -282,7 +285,7 @@ export function DealRoomPage() {
       { id: "evidence", label: "Evidence" },
       { id: "activity", label: "Activity" },
       { id: "dispute", label: "Dispute" },
-      { id: "chat", label: "Chat" }
+      { id: "chat", label: "Chat" },
     );
   }
 
@@ -324,7 +327,7 @@ export function DealRoomPage() {
 
         {/* Main Content Split */}
         <div className="flex flex-col xl:flex-row gap-6 items-start mt-2">
-                    {/* Main Tab Area */}
+          {/* Main Tab Area */}
           <div className="flex-1 min-w-0 w-full">
             {activeTab === "overview" && <OverviewTab deal={actualDeal} />}
             {activeTab === "terms" && <TermsTab deal={actualDeal} />}

@@ -25,10 +25,10 @@ export function useUploadFile() {
       file: File;
     }) => {
       const fd = new FormData();
-      fd.append("file", file);
       fd.append("dealId", dealId);
       fd.append("context", context);
-      return apiClient<{ file: any }>("/files/upload", {
+      fd.append("file", file);
+      return apiClient<any>("/files/upload", {
         method: "POST",
         body: fd,
         headers: {}, // Let browser set Content-Type with boundary
