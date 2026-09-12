@@ -49,6 +49,11 @@ export async function apiClient<T>(
     ...((options.headers as Record<string, string>) || {}),
   };
 
+  // If body is FormData, browser MUST set the Content-Type automatically to include the boundary
+  if (options.body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   if (authToken) {
     headers["Authorization"] = `Bearer ${authToken}`;
   }

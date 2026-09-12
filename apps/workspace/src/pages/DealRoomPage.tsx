@@ -267,15 +267,26 @@ export function DealRoomPage() {
     );
   }
 
-  const tabs = [
+  // Post-Acceptance Privacy Lock
+  const isPostAcceptance = !["AwaitingFunding", "PendingSellerAcceptance"].includes(currentState as unknown as string);
+  const hidePrivateTabs = isPostAcceptance && userRole === "none";
+
+  const availableTabs = [
     { id: "overview", label: "Overview" },
     { id: "terms", label: "Terms" },
-    { id: "delivery", label: "Delivery" },
-    { id: "evidence", label: "Evidence" },
-    { id: "activity", label: "Activity" },
-    { id: "dispute", label: "Dispute" },
-    { id: "chat", label: "Chat" },
   ];
+
+  if (!hidePrivateTabs) {
+    availableTabs.push(
+      { id: "delivery", label: "Delivery" },
+      { id: "evidence", label: "Evidence" },
+      { id: "activity", label: "Activity" },
+      { id: "dispute", label: "Dispute" },
+      { id: "chat", label: "Chat" }
+    );
+  }
+
+  const tabs = availableTabs;
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[var(--bg-base)] font-sans">
@@ -313,23 +324,27 @@ export function DealRoomPage() {
 
         {/* Main Content Split */}
         <div className="flex flex-col xl:flex-row gap-6 items-start mt-2">
-          {/* Main Tab Area */}
+                    {/* Main Tab Area */}
           <div className="flex-1 min-w-0 w-full">
             {activeTab === "overview" && <OverviewTab deal={actualDeal} />}
             {activeTab === "terms" && <TermsTab deal={actualDeal} />}
-            {activeTab === "delivery" && (
-              <div className="space-y-6">
-                <SubmittedDeliveriesLog dealId={dealId} />
-                {userRole === "buyer" &&
-                  ["AwaitingAcceptance", "Disputed"].includes(
-                    currentState as unknown as string,
-                  ) && <BuyerAcceptancePanel deal={actualDeal} />}
-              </div>
+            {!hidePrivateTabs && (
+              <>
+                {activeTab === "delivery" && (
+                  <div className="space-y-6">
+                    <SubmittedDeliveriesLog dealId={dealId} />
+                    {userRole === "buyer" &&
+                      ["AwaitingAcceptance", "Disputed"].includes(
+                        currentState as unknown as string,
+                      ) && <BuyerAcceptancePanel deal={actualDeal} />}
+                  </div>
+                )}
+                {activeTab === "evidence" && <EvidenceTab deal={actualDeal} />}
+                {activeTab === "activity" && <ActivityFeed dealId={dealId} />}
+                {activeTab === "dispute" && <DisputeTab deal={actualDeal} />}
+                {activeTab === "chat" && <DealChatRoom dealId={dealId} />}
+              </>
             )}
-            {activeTab === "evidence" && <EvidenceTab deal={actualDeal} />}
-            {activeTab === "activity" && <ActivityFeed dealId={dealId} />}
-            {activeTab === "dispute" && <DisputeTab deal={actualDeal} />}
-            {activeTab === "chat" && <DealChatRoom dealId={dealId} />}
           </div>
 
           {/* Persistent Context Sidebar */}

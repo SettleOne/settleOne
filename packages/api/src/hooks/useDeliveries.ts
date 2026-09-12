@@ -20,18 +20,18 @@ export function useSubmitDelivery() {
   return useMutation({
     mutationFn: ({
       dealId,
-      proofHash,
-      cid,
-      notes,
+      sellerNotes,
+      fileIds,
+      externalLinks,
     }: {
       dealId: string;
-      proofHash: string;
-      cid: string;
-      notes?: string;
+      sellerNotes?: string;
+      fileIds?: string[];
+      externalLinks?: string[];
     }) =>
-      apiClient<{ delivery: any; proofHash: string }>("/deliveries", {
+      apiClient<{ data: { delivery: any; proofHash: string } }>("/deliveries", {
         method: "POST",
-        body: JSON.stringify({ dealId, proofHash, cid, notes }),
+        body: JSON.stringify({ dealId, sellerNotes, fileIds, externalLinks }),
       }),
     onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({ queryKey: ["deliveries", vars.dealId] });

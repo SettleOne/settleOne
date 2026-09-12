@@ -41,6 +41,11 @@ export function DealLifecycleTimeline({
   if (activeIndex === -1) {
     activeIndex = TERMINAL_MAP[currentState] ?? 0;
   }
+  
+  if (isDisputed) {
+    // Inject Disputed state dynamically after Delivery/Verifying
+    STATES.splice(activeIndex, 0, { id: "Disputed", label: "Disputed" });
+  }
 
   return (
     <div className="bg-transparent overflow-x-auto hide-scrollbar">
