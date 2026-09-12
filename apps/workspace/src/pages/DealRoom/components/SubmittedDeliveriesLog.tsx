@@ -5,7 +5,7 @@ import {
   CheckCircle,
   ExternalLink,
   AlertCircle,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
 import { AddressDisplay, Spinner } from "@settleone/design-system";
 import { useDeliveries } from "@settleone/api";
@@ -70,7 +70,7 @@ export function SubmittedDeliveriesLog({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="bg-[var(--bg-subtle)] text-[var(--text-secondary)] text-xs font-bold px-2 py-0.5 rounded uppercase">
-                  Rev {delivery.revision || (deliveries.length - idx)}
+                  Rev {delivery.revision || deliveries.length - idx}
                 </span>
                 <h4 className="font-semibold text-sm text-[var(--text-primary)]">
                   Delivery Submission
@@ -80,7 +80,9 @@ export function SubmittedDeliveriesLog({
                 <span>
                   Submitted{" "}
                   <span className="text-[var(--text-primary)] font-medium">
-                    {delivery.submittedAt ? new Date(delivery.submittedAt).toLocaleString() : formatTimestamp(BigInt(delivery.createdAt || 0))}
+                    {delivery.submittedAt
+                      ? new Date(delivery.submittedAt).toLocaleString()
+                      : formatTimestamp(BigInt(delivery.createdAt || 0))}
                   </span>
                 </span>
                 {delivery.verifiedAt && (
@@ -93,11 +95,13 @@ export function SubmittedDeliveriesLog({
                 )}
               </div>
             </div>
-            <span className={`text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5 shadow-glow ${
-              delivery.status === "Verified" || delivery.status === "Accepted"
-                ? "text-[var(--accent-green)] bg-[var(--accent-green)]/20"
-                : "text-[var(--accent-purple)] bg-[var(--accent-purple)]/20"
-            }`}>
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5 shadow-glow ${
+                delivery.status === "Verified" || delivery.status === "Accepted"
+                  ? "text-[var(--accent-green)] bg-[var(--accent-green)]/20"
+                  : "text-[var(--accent-purple)] bg-[var(--accent-purple)]/20"
+              }`}
+            >
               <CheckCircle size={14} /> {delivery.status || "Submitted"}
             </span>
           </div>
@@ -108,7 +112,9 @@ export function SubmittedDeliveriesLog({
                 <MessageSquare size={14} />
                 <span className="text-xs font-semibold">Seller Notes</span>
               </div>
-              <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">{delivery.sellerNotes}</p>
+              <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">
+                {delivery.sellerNotes}
+              </p>
             </div>
           )}
 

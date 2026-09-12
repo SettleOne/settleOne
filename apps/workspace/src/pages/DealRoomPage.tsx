@@ -25,7 +25,9 @@ import { BuyerAcceptancePanel } from "./DealRoom/components/BuyerAcceptancePanel
 
 // Helpers
 function getChainName(chainId: number) {
-  const chain = Object.values(CHAIN_CONFIG).find((c: any) => c.chainId === chainId);
+  const chain = Object.values(CHAIN_CONFIG).find(
+    (c: any) => c.chainId === chainId,
+  );
   return chain ? chain.name : "Unknown Chain";
 }
 
@@ -66,15 +68,21 @@ function DealHeroHeader({ deal }: { deal: any }) {
 
   let tokenSymbol = "USDC";
   let tokenDecimals = 6;
-  const chainConfig = Object.values(CHAIN_CONFIG).find((c: any) => c.chainId === deal.chainId);
-  
+  const chainConfig = Object.values(CHAIN_CONFIG).find(
+    (c: any) => c.chainId === deal.chainId,
+  );
+
   if (chainConfig && deal.tokenAddress) {
     const entry = Object.entries(chainConfig.tokens).find(
-      ([, addr]) => (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase(),
+      ([, addr]) =>
+        (addr as string).toLowerCase() === deal.tokenAddress?.toLowerCase(),
     );
     if (entry) {
       tokenSymbol = entry[0];
-      tokenDecimals = chainConfig.decimals[tokenSymbol as keyof typeof chainConfig.decimals] || 6;
+      tokenDecimals =
+        chainConfig.decimals[
+          tokenSymbol as keyof typeof chainConfig.decimals
+        ] || 6;
     }
   }
 
@@ -93,8 +101,12 @@ function DealHeroHeader({ deal }: { deal: any }) {
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${style}`}>
-                  {deal.state === "Active" && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />}
+                <div
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${style}`}
+                >
+                  {deal.state === "Active" && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                  )}
                   {getDealStateLabel(deal.state || "Unknown")}
                 </div>
               </div>
@@ -103,7 +115,10 @@ function DealHeroHeader({ deal }: { deal: any }) {
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="font-mono text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-0.5 rounded border border-[var(--border)]">
-                  #{deal.onChainId ? String(deal.onChainId).padStart(5, "0") : deal.id?.slice(0, 8)}
+                  #
+                  {deal.onChainId
+                    ? String(deal.onChainId).padStart(5, "0")
+                    : deal.id?.slice(0, 8)}
                 </span>
                 <span className="bg-[var(--accent-blue)]/20 text-[var(--accent-blue)] px-2 py-0.5 rounded font-semibold">
                   {deal.dealType === "SoftDelivery" ? "Software" : "Hardware"}
@@ -119,7 +134,9 @@ function DealHeroHeader({ deal }: { deal: any }) {
           </div>
           {/* Right: Amount */}
           <div className="md:text-right bg-[var(--bg-subtle)] md:bg-transparent p-4 md:p-0 rounded-xl md:rounded-none border border-[var(--border)] md:border-none">
-            <p className="text-sm text-[var(--text-muted)] font-medium mb-1">Total Deal Amount</p>
+            <p className="text-sm text-[var(--text-muted)] font-medium mb-1">
+              Total Deal Amount
+            </p>
             <div className="flex items-end md:justify-end gap-1.5">
               <span className="text-3xl font-bold text-[var(--text-primary)] leading-none">
                 {formattedAmount.toLocaleString()}
@@ -140,7 +157,7 @@ export function DealRoomPage() {
   const { data: deal, isLoading, isError, refetch } = useDeal(id);
   const { address } = useAccount();
 
-  // FIX: Unwrap backend envelope
+  // Unwrap backend envelope
   const actualDeal = (deal as any)?.data?.deal || deal;
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -158,17 +175,24 @@ export function DealRoomPage() {
     if (!actualDeal || !address) return "none";
     const addr = address.toLowerCase();
     const d = actualDeal as any;
-    if (d.buyerAddress?.toLowerCase() === addr || d.buyer?.toLowerCase() === addr) return "buyer";
-    if (d.sellerAddress?.toLowerCase() === addr || d.seller?.toLowerCase() === addr) return "seller";
-    if (d.verifierAddress?.toLowerCase() === addr || d.verifier?.toLowerCase() === addr) return "verifier";
-    if (d.resolverAddress?.toLowerCase() === addr || d.disputeResolver?.toLowerCase() === addr) return "resolver";
+
+    if (d.buyerAddress?.toLowerCase() === addr) return "buyer";
+    if (d.sellerAddress?.toLowerCase() === addr) return "seller";
+    if (d.verifierAddress?.toLowerCase() === addr) return "verifier";
+    if (d.resolverAddress?.toLowerCase() === addr) return "resolver";
+
     return "none";
   }, [actualDeal, address]);
 
-  const currentState: DealState = (actualDeal?.state as DealState) ?? DealState.AwaitingFunding;
+  const currentState: DealState =
+    (actualDeal?.state as DealState) ?? DealState.AwaitingFunding;
 
   // Access control
-  const isPrivateDeal = !!((actualDeal as any)?.sellerAddress);
+  const isPrivateDeal = !!(
+    (actualDeal as any)?.sellerAddress &&
+    (actualDeal as any)?.sellerAddress !==
+      "0x0000000000000000000000000000000000000000"
+  );
   const isParty = userRole !== "none";
 
   // ── Loading ──
@@ -176,7 +200,9 @@ export function DealRoomPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-base)] gap-4">
         <Spinner size={40} />
-        <p className="text-sm text-[var(--text-muted)] animate-pulse">Loading deal room…</p>
+        <p className="text-sm text-[var(--text-muted)] animate-pulse">
+          Loading deal room…
+        </p>
       </div>
     );
   }
@@ -188,9 +214,19 @@ export function DealRoomPage() {
         <div className="w-16 h-16 rounded-full bg-[var(--accent-red)]/10 flex items-center justify-center border border-[var(--accent-red)]/30">
           <AlertCircle size={32} className="text-[var(--accent-red)]" />
         </div>
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">Deal Not Found</h2>
-        <p className="text-sm text-[var(--text-secondary)] max-w-md">We couldn't find this deal. It may not exist or there was a network error.</p>
-        <button onClick={() => refetch()} className="mt-2 px-4 py-2 rounded-lg bg-[var(--accent-blue)] text-white text-sm font-semibold hover:brightness-110">Try Again</button>
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">
+          Deal Not Found
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)] max-w-md">
+          We couldn't find this deal. It may not exist or there was a network
+          error.
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="mt-2 px-4 py-2 rounded-lg bg-[var(--accent-blue)] text-white text-sm font-semibold hover:brightness-110"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -204,13 +240,28 @@ export function DealRoomPage() {
           <div className="w-16 h-16 bg-[var(--bg-subtle)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border)] shadow-inner">
             <Lock size={28} className="text-[var(--text-muted)]" />
           </div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Private Deal Room</h2>
-          <p className="text-[var(--text-secondary)] mb-8">This deal has a designated seller. Access is restricted to the buyer, seller, verifier, and resolver of this deal.</p>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3">
+            Private Deal Room
+          </h2>
+          <p className="text-[var(--text-secondary)] mb-8">
+            This deal has a designated seller. Access is restricted to the
+            buyer, seller, verifier, and resolver of this deal.
+          </p>
           <div className="bg-[var(--bg-subtle)] rounded-lg p-4 mb-8 border border-[var(--border)]">
-            <p className="text-sm font-medium text-[var(--text-primary)] mb-1">Currently connected as:</p>
-            <p className="text-xs font-mono text-[var(--text-muted)] break-all">{address || "Not connected"}</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
+              Currently connected as:
+            </p>
+            <p className="text-xs font-mono text-[var(--text-muted)] break-all">
+              {address || "Not connected"}
+            </p>
           </div>
-          <Button variant="primary" onClick={() => window.history.back()} className="w-full h-12 text-base shadow-glow">Go Back</Button>
+          <Button
+            variant="primary"
+            onClick={() => window.history.back()}
+            className="w-full h-12 text-base shadow-glow"
+          >
+            Go Back
+          </Button>
         </div>
       </div>
     );
@@ -232,7 +283,9 @@ export function DealRoomPage() {
 
       <div className="max-w-[1400px] w-full mx-auto px-4 md:px-8 py-8 flex flex-col gap-6">
         {/* Timeline */}
-        <DealLifecycleTimeline currentState={currentState as unknown as string} />
+        <DealLifecycleTimeline
+          currentState={currentState as unknown as string}
+        />
 
         {/* Tabs Row */}
         <div className="border-b border-[var(--border)] flex overflow-x-auto scrollbar-hide">
@@ -252,11 +305,14 @@ export function DealRoomPage() {
         </div>
 
         {/* Full-width Next Action Banner */}
-        <NextActionBanner currentState={currentState as unknown as string} userRole={userRole} deal={actualDeal} />
+        <NextActionBanner
+          currentState={currentState as unknown as string}
+          userRole={userRole}
+          deal={actualDeal}
+        />
 
         {/* Main Content Split */}
         <div className="flex flex-col xl:flex-row gap-6 items-start mt-2">
-          
           {/* Main Tab Area */}
           <div className="flex-1 min-w-0 w-full">
             {activeTab === "overview" && <OverviewTab deal={actualDeal} />}
@@ -264,9 +320,10 @@ export function DealRoomPage() {
             {activeTab === "delivery" && (
               <div className="space-y-6">
                 <SubmittedDeliveriesLog dealId={dealId} />
-                {userRole === "buyer" && ["AwaitingAcceptance", "Disputed"].includes(currentState as unknown as string) && (
-                  <BuyerAcceptancePanel deal={actualDeal} />
-                )}
+                {userRole === "buyer" &&
+                  ["AwaitingAcceptance", "Disputed"].includes(
+                    currentState as unknown as string,
+                  ) && <BuyerAcceptancePanel deal={actualDeal} />}
               </div>
             )}
             {activeTab === "evidence" && <EvidenceTab deal={actualDeal} />}
@@ -279,7 +336,6 @@ export function DealRoomPage() {
           <div className="w-full xl:w-[320px] shrink-0 space-y-4">
             <DealInfoSidebar deal={actualDeal} />
           </div>
-
         </div>
       </div>
     </div>

@@ -46,7 +46,6 @@ export function DealLifecycleTimeline({
     <div className="bg-transparent overflow-x-auto hide-scrollbar">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 min-w-[600px] relative">
         <div className="relative flex items-center justify-between">
-          
           {/* Background track (z-0 so it goes behind nodes, but not behind the whole page) */}
           <div className="absolute left-0 right-0 top-1/2 h-1 bg-[var(--border)] -translate-y-1/2 z-0 rounded-full" />
 
@@ -72,7 +71,8 @@ export function DealLifecycleTimeline({
             const isCompleted = index < activeIndex;
             const isActive = index === activeIndex;
 
-            let nodeStyle = "bg-[var(--bg-subtle)] border-2 border-[var(--border)]";
+            let nodeStyle =
+              "bg-[var(--bg-subtle)] border-2 border-[var(--border)]";
             let textStyle = "text-[var(--text-muted)]";
 
             if (isCompleted) {
@@ -88,7 +88,9 @@ export function DealLifecycleTimeline({
                 : isCancelled
                   ? "bg-[var(--bg-subtle)] text-[var(--accent-red)] border-[var(--accent-red)] ring-4 ring-red-500/20"
                   : "bg-[var(--accent-blue)] text-white ring-4 ring-blue-500/30 border-[var(--accent-blue)]";
-              textStyle = isCancelled ? "text-[var(--accent-red)] font-bold" : "text-[var(--text-primary)] font-bold";
+              textStyle = isCancelled
+                ? "text-[var(--accent-red)] font-bold"
+                : "text-[var(--text-primary)] font-bold";
             }
 
             return (

@@ -66,17 +66,18 @@ export function useMarketplaceStats() {
   });
 }
 
-
-
-export function useInfiniteDeals(endpoint: string = "/deals", params: DealsParams = {}) {
+export function useInfiniteDeals(
+  endpoint: string = "/deals",
+  params: DealsParams = {},
+) {
   return useInfiniteQuery({
     queryKey: ["deals", "infinite", endpoint, params],
     queryFn: async ({ pageParam }) => {
       // This automatically unwraps the { success, data } response
-      const res = await apiClient<any>(endpoint, { 
-        params: { ...params, cursor: pageParam || undefined } 
+      const res = await apiClient<any>(endpoint, {
+        params: { ...params, cursor: pageParam || undefined },
       });
-      return res.data as DealsResponse; 
+      return res.data as DealsResponse;
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
     initialPageParam: null as string | null,

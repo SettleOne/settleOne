@@ -192,7 +192,9 @@ export function DealCard({
             className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-subtle)] px-2 py-1 rounded-md
   flex items-center gap-1 border border-[var(--border)]"
           >
-            {deal.sellerAddress ? (
+            {deal.sellerAddress &&
+            deal.sellerAddress !==
+              "0x0000000000000000000000000000000000000000" ? (
               <>
                 <Lock size={10} /> Private
               </>

@@ -13,7 +13,13 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button, Spinner } from "@settleone/design-system";
-import { useInfiniteDeals, usePortfolio, useMarketplaceStats, useMyCreatedDeals, useMyAcceptedDeals } from "@settleone/api";
+import {
+  useInfiniteDeals,
+  usePortfolio,
+  useMarketplaceStats,
+  useMyCreatedDeals,
+  useMyAcceptedDeals,
+} from "@settleone/api";
 import { DealState, DealType } from "@settleone/types";
 import { EmptyState } from "./Marketplace/components/EmptyState";
 import { CreateDealModal } from "../components/modals/CreateDealModal";
@@ -50,16 +56,31 @@ const SORT_OPTIONS = [
   "Ending Soon",
 ];
 
-const SOFTWARE_CATEGORIES = ["Smart Contract Audit", "Web Development", "Mobile App"];
-const HARDWARE_CATEGORIES = ["Electronics", "Hardware Manufacturing", "IoT Devices"];
+const SOFTWARE_CATEGORIES = [
+  "Smart Contract Audit",
+  "Web Development",
+  "Mobile App",
+];
+const HARDWARE_CATEGORIES = [
+  "Electronics",
+  "Hardware Manufacturing",
+  "IoT Devices",
+];
 
-function CustomDropdown({ value, onChange, options, defaultLabel, width = "w-full" }: any) {
+function CustomDropdown({
+  value,
+  onChange,
+  options,
+  defaultLabel,
+  width = "w-full",
+}: any) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) setIsOpen(false);
+      if (ref.current && !ref.current.contains(event.target as Node))
+        setIsOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -74,15 +95,27 @@ function CustomDropdown({ value, onChange, options, defaultLabel, width = "w-ful
         className="w-full flex items-center justify-between px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)] transition-colors"
       >
         <div className="flex items-center gap-2">
-          {selected?.logo && <img src={selected.logo} alt="" className="w-4 h-4 rounded-full" />}
-          <span>{selected ? (selected.name || selected.symbol || selected.id) : defaultLabel}</span>
+          {selected?.logo && (
+            <img src={selected.logo} alt="" className="w-4 h-4 rounded-full" />
+          )}
+          <span>
+            {selected
+              ? selected.name || selected.symbol || selected.id
+              : defaultLabel}
+          </span>
         </div>
-        <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          size={14}
+          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 w-full max-h-60 overflow-y-auto bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-input)] z-50 shadow-xl">
           <button
-            onClick={() => { onChange(defaultLabel); setIsOpen(false); }}
+            onClick={() => {
+              onChange(defaultLabel);
+              setIsOpen(false);
+            }}
             className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
           >
             {defaultLabel}
@@ -90,10 +123,15 @@ function CustomDropdown({ value, onChange, options, defaultLabel, width = "w-ful
           {options.map((opt: any) => (
             <button
               key={opt.id}
-              onClick={() => { onChange(opt.id); setIsOpen(false); }}
+              onClick={() => {
+                onChange(opt.id);
+                setIsOpen(false);
+              }}
               className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[var(--bg-subtle)] text-[var(--text-primary)]"
             >
-              {opt.logo && <img src={opt.logo} alt="" className="w-4 h-4 rounded-full" />}
+              {opt.logo && (
+                <img src={opt.logo} alt="" className="w-4 h-4 rounded-full" />
+              )}
               <span>{opt.name || opt.symbol || opt.id}</span>
             </button>
           ))}
@@ -114,7 +152,9 @@ export function MarketplacePage() {
   const [isMoreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("All Deals");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [fundingType, setFundingType] = useState<"All" | "full" | "staged">("All");
+  const [fundingType, setFundingType] = useState<"All" | "full" | "staged">(
+    "All",
+  );
   const [partialSettlement, setPartialSettlement] = useState<boolean>(true);
   const [category, setCategory] = useState("");
 
@@ -137,24 +177,34 @@ export function MarketplacePage() {
         ? "/deals/my/accepted"
         : "/deals";
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteDeals(endpoint, {
-    state: effectiveState,
-    search: searchQuery || undefined,
-    sortBy:
-      sortBy === "Highest Value" || sortBy === "Lowest Value"
-        ? "amount"
-        : sortBy === "Ending Soon"
-          ? "deliveryDeadline"
-          : "createdAt",
-    sortDir: sortBy === "Oldest First" || sortBy === "Lowest Value" ? "asc" : "desc",
-    dealType: dealType !== "All Types" ? (dealType === "Software" ? "SoftDelivery" : "HardDelivery") : undefined,
-    chainId: chain !== "All Chains" ? SUPPORTED_CHAINS.find(c => c.name === chain)?.chainId : undefined,
-    token: getTokenAddresses(token),
-    category: category || undefined,
-    fundingType: fundingType !== "All" ? fundingType : undefined,
-    partialSettlement: partialSettlement ? true : undefined,
-    limit: 20,
-  });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteDeals(endpoint, {
+      state: effectiveState,
+      search: searchQuery || undefined,
+      sortBy:
+        sortBy === "Highest Value" || sortBy === "Lowest Value"
+          ? "amount"
+          : sortBy === "Ending Soon"
+            ? "deliveryDeadline"
+            : "createdAt",
+      sortDir:
+        sortBy === "Oldest First" || sortBy === "Lowest Value" ? "asc" : "desc",
+      dealType:
+        dealType !== "All Types"
+          ? dealType === "Software"
+            ? "SoftDelivery"
+            : "HardDelivery"
+          : undefined,
+      chainId:
+        chain !== "All Chains"
+          ? SUPPORTED_CHAINS.find((c) => c.name === chain)?.chainId
+          : undefined,
+      token: getTokenAddresses(token),
+      category: category || undefined,
+      fundingType: fundingType !== "All" ? fundingType : undefined,
+      partialSettlement: partialSettlement ? true : undefined,
+      limit: 20,
+    });
 
   const deals = data?.pages.flatMap((page: any) => page.deals) || [];
   const { data: portfolioData } = usePortfolio();
@@ -163,8 +213,10 @@ export function MarketplacePage() {
   const { data: myAcceptedData } = useMyAcceptedDeals({ limit: 1 });
 
   const stats = (statsData as any)?.data || statsData;
-  const myCreatedCount = (myCreatedData as any)?.data?.total ?? (myCreatedData as any)?.total ?? 0;
-  const myAcceptedCount = (myAcceptedData as any)?.data?.total ?? (myAcceptedData as any)?.total ?? 0;
+  const myCreatedCount =
+    (myCreatedData as any)?.data?.total ?? (myCreatedData as any)?.total ?? 0;
+  const myAcceptedCount =
+    (myAcceptedData as any)?.data?.total ?? (myAcceptedData as any)?.total ?? 0;
 
   // No more JS filtering — backend does all the work
   const filteredDeals = deals;
@@ -252,7 +304,11 @@ export function MarketplacePage() {
                   animationDelay: `${i * 60}ms`,
                 }}
               >
-                <stat.Icon size={18} className="mb-2" style={{ color: stat.color }} />
+                <stat.Icon
+                  size={18}
+                  className="mb-2"
+                  style={{ color: stat.color }}
+                />
                 <span
                   className="text-2xl font-black"
                   style={{
@@ -359,39 +415,58 @@ export function MarketplacePage() {
 
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value === "All Categories" ? "" : e.target.value)}
+                  onChange={(e) =>
+                    setCategory(
+                      e.target.value === "All Categories" ? "" : e.target.value,
+                    )
+                  }
                   className="px-3 py-2 bg-[var(--bg-subtle)] border border-[var(--border)] rounded-[var(--radius-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-blue)]"
                 >
                   <option value="">All Categories</option>
-                  {(dealType === "All Types" || dealType === "Software" ? SOFTWARE_CATEGORIES : []).map(c => (
-                    <option key={c} value={c}>{c}</option>
+                  {(dealType === "All Types" || dealType === "Software"
+                    ? SOFTWARE_CATEGORIES
+                    : []
+                  ).map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
-                  {(dealType === "All Types" || dealType === "Hardware" ? HARDWARE_CATEGORIES : []).map(c => (
-                    <option key={c} value={c}>{c}</option>
+                  {(dealType === "All Types" || dealType === "Hardware"
+                    ? HARDWARE_CATEGORIES
+                    : []
+                  ).map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
 
                 <CustomDropdown
                   value={chain === "All Chains" ? "All" : chain}
-                  onChange={(val: string) => setChain(val === "All" ? "All Chains" : val)}
-                  options={SUPPORTED_CHAINS.map(c => ({ ...c, id: c.name }))}
+                  onChange={(val: string) =>
+                    setChain(val === "All" ? "All Chains" : val)
+                  }
+                  options={SUPPORTED_CHAINS.map((c) => ({ ...c, id: c.name }))}
                   defaultLabel="All Chains"
                 />
 
                 <CustomDropdown
                   value={token === "All Tokens" ? "All" : token}
-                  onChange={(val: string) => setToken(val === "All" ? "All Tokens" : val)}
+                  onChange={(val: string) =>
+                    setToken(val === "All" ? "All Tokens" : val)
+                  }
                   options={SUPPORTED_TOKENS}
                   defaultLabel="All Tokens"
                 />
-
 
                 <div className="col-span-2 md:col-span-4 flex flex-wrap gap-6 pt-3 border-t border-[var(--border)] mt-1">
                   <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={fundingType === "full"}
-                      onChange={(e) => setFundingType(e.target.checked ? "full" : "All")}
+                      onChange={(e) =>
+                        setFundingType(e.target.checked ? "full" : "All")
+                      }
                       className="accent-[var(--accent-blue)] rounded"
                     />
                     Full deals only (100% Upfront)
@@ -430,8 +505,16 @@ export function MarketplacePage() {
                 count: stats?.totalDeals,
                 icon: LayoutGrid,
               },
-              { label: "My Created", count: myCreatedCount || undefined, icon: Plus },
-              { label: "My Selling", count: myAcceptedCount || undefined, icon: TrendingUp },
+              {
+                label: "My Created",
+                count: myCreatedCount || undefined,
+                icon: Plus,
+              },
+              {
+                label: "My Selling",
+                count: myAcceptedCount || undefined,
+                icon: TrendingUp,
+              },
               { label: "Trending", icon: Zap },
             ].map(({ label, count, icon: Icon }) => (
               <button
@@ -484,8 +567,8 @@ export function MarketplacePage() {
               </div>
               {hasNextPage && (
                 <div className="flex justify-center mt-8">
-                  <Button 
-                    onClick={() => fetchNextPage()} 
+                  <Button
+                    onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
                     variant="secondary"
                   >

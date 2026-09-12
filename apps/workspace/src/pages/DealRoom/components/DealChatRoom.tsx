@@ -67,25 +67,35 @@ export function DealChatRoom({ dealId }: DealChatRoomProps) {
           messages.map((msg: any, idx: number) => {
             const isMe =
               msg.senderAddress.toLowerCase() === address?.toLowerCase();
-            const senderName = msg.sender?.name || (isMe ? "You" : "Counterparty");
-            
+            const senderName =
+              msg.sender?.name || (isMe ? "You" : "Counterparty");
+
             return (
               <div
                 key={msg.id || idx}
                 className={`flex items-start gap-3 ${isMe ? "flex-row-reverse" : ""}`}
               >
                 {msg.sender?.avatarUrl ? (
-                   <img src={msg.sender.avatarUrl} alt={senderName} className="w-8 h-8 rounded-full object-cover shrink-0 border border-[var(--border)]" />
+                  <img
+                    src={msg.sender.avatarUrl}
+                    alt={senderName}
+                    className="w-8 h-8 rounded-full object-cover shrink-0 border border-[var(--border)]"
+                  />
                 ) : (
-                   <Avatar initials={isMe ? "ME" : senderName.charAt(0).toUpperCase()} size="sm" />
+                  <Avatar
+                    initials={isMe ? "ME" : senderName.charAt(0).toUpperCase()}
+                    size="sm"
+                  />
                 )}
-                
+
                 <div
                   className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[70%]`}
                 >
                   <span className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                     {msg.sender?.name ? (
-                      <span className="font-medium text-[var(--text-primary)]">{isMe ? "You" : msg.sender.name}</span>
+                      <span className="font-medium text-[var(--text-primary)]">
+                        {isMe ? "You" : msg.sender.name}
+                      </span>
                     ) : (
                       <>
                         {!isMe && (
