@@ -204,3 +204,28 @@ export function HowItWorks() {
     </div>
   );
 }
+
+export function PlatformDemo() {
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <PageHeader title="Platform Demo" description="See SettleOne in action." />
+      <Section title="Video Walkthrough">
+        <Paragraph>
+          Watch the comprehensive walkthrough of the SettleOne platform, covering deal creation, risk evaluation, and settlement.
+        </Paragraph>
+        <div className="my-10 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black relative w-full aspect-video flex items-center justify-center">
+          {/* USER: Replace the src with your actual YouTube embed link below */}
+          <iframe 
+            className="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+            title="SettleOne Platform Demo" 
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerPolicy="strict-origin-when-cross-origin" 
+            allowFullScreen
+          ></iframe>
+        </div>
+      </Section>
+    </div>
+  );
+}

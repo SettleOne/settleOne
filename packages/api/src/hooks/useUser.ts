@@ -167,3 +167,30 @@ export function useMakePrimaryWallet() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 }
+
+export function useWalletNonce() {
+      return useMutation({
+        mutationFn: async (address: string) => {
+          const res = await apiClient<{ data: { nonce: string } }>("/users/me/wallets/nonce", {
+            method: "POST",
+            body: JSON.stringify({ address }),
+          });
+          return res.data.nonce;
+        }
+      });
+    }
+    
+    export function useLinkWallet() {
+      const queryClient = useQueryClient();
+      return useMutation({
+        mutationFn: async ({ address, signature }: { address: string; signature: string }) => {
+          return apiClient("/users/me/wallets/verify", {
+            method: "POST",
+            body: JSON.stringify({ address, signature }),
+          });
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+      });
+    }

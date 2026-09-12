@@ -32,6 +32,8 @@ import {
   exportUserData,
 } from "@settleone/api";
 import { useDisconnect } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
+import { useLinkWallet, useWalletNonce } from "@settleone/api";
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("notifications");
@@ -77,6 +79,36 @@ export function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Wallet Linking Logic
+  const { address } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const getNonce = useWalletNonce();
+  const linkWallet = useLinkWallet();
+
+  const handleLinkWallet = async () => {
+    if (!address) {
+      alert("Please connect the wallet in MetaMask first.");
+      return;
+    }
+
+    if (user?.wallets?.some((w: any) => w.address.toLowerCase() === address.toLowerCase())) {
+      alert("This wallet is already linked to your account!");
+      return;
+    }
+
+    try {
+      const nonce = await getNonce.mutateAsync(address);
+      const message = `Sign this to link your wallet: ${nonce}`;
+      const signature = await signMessageAsync({ message });
+
+      await linkWallet.mutateAsync({ address, signature });
+      alert("Wallet linked successfully! You can now make it primary.");
+    } catch (error: any) {
+      console.error(error);
+      alert("Failed to link wallet: " + error.message);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-6 text-[var(--text-primary)] font-[var(--font-sans)] relative">
       {/* Background image */}
@@ -118,11 +150,10 @@ export function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-input)] transition-colors ${
-                  activeTab === tab.id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-input)] transition-colors ${activeTab === tab.id
                     ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/30"
                     : "hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
-                } ${tab.color || ""}`}
+                  } ${tab.color || ""}`}
               >
                 <tab.icon size={18} />
                 <span className="font-medium">{tab.label}</span>
@@ -153,15 +184,13 @@ export function SettingsPage() {
                   {(!user?.wallets || user.wallets.length < 3) && (
                     <button
                       type="button"
-                      onClick={() => {
-                        disconnect();
-                        setTimeout(() => openConnectModal?.(), 300);
-                      }}
-                      className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-[var(--border)] rounded-
-  [var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-light)]
-  transition-colors bg-[var(--bg-subtle)] whitespace-nowrap"
+                      onClick={handleLinkWallet}
+                      disabled={linkWallet.isPending || getNonce.isPending}
+                      className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-[var(--border)] rounded-[var(--radius-input)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--
+  border-light)] transition-colors bg-[var(--bg-subtle)] whitespace-nowrap"
                     >
-                      <Plus size={16} /> Link New Wallet
+                      <Plus size={16} />
+                      {linkWallet.isPending ? "Linking..." : "Link New Wallet"}
                     </button>
                   )}
                 </div>
@@ -205,11 +234,10 @@ export function SettingsPage() {
                             disabled={
                               removeWallet.isPending || wallet.isPrimary
                             }
-                            className={`px-3 py-1 text-xs rounded transition-colors ${
-                              wallet.isPrimary
+                            className={`px-3 py-1 text-xs rounded transition-colors ${wallet.isPrimary
                                 ? "bg-slate-500/10 text-slate-500 cursor-not-allowed"
                                 : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                            }`}
+                              }`}
                             title={
                               wallet.isPrimary
                                 ? "Cannot delete primary wallet"
@@ -290,7 +318,7 @@ export function SettingsPage() {
                             } catch (err: any) {
                               alert(
                                 err.message ||
-                                  "Failed to send verification code",
+                                "Failed to send verification code",
                               );
                             }
                           }}

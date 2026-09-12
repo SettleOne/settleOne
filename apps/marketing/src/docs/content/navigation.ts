@@ -10,6 +10,7 @@ export const docsNavigation: DocSection[] = [
       { id: "introduction", title: "Introduction" },
       { id: "principles", title: "Core Principles" },
       { id: "how-it-works", title: "How It Works" },
+      { id: "demo", title: "Platform Demo" },
     ],
   },
   {

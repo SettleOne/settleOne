@@ -58,6 +58,8 @@ export {
   useChangePassword,
   useRemoveWallet,
   useMakePrimaryWallet,
+  useWalletNonce,
+  useLinkWallet,
 } from "./hooks/useUser";
 export {
   useNotifications,

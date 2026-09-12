@@ -12,6 +12,7 @@ const pageRegistry: Record<string, FC> = {
   introduction: Overview.Introduction,
   principles: Overview.Principles,
   "how-it-works": Overview.HowItWorks,
+  "demo": Overview.PlatformDemo,
 
   // Workflow
   "deal-lifecycle": Workflow.DealLifecycle,
