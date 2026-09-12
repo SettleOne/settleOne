@@ -8,6 +8,7 @@ import { SubmitDeliveryModal } from "../modals/SubmitDeliveryModal";
 import { DisputeModal } from "../modals/DisputeModal";
 import { RequestRevisionModal } from "../modals/RequestRevisionModal";
 import { Info, PlusCircle, CreditCard, Check } from "lucide-react";
+import { CHAIN_CONFIG } from "../../../lib/config";
 
 interface NextActionBannerProps {
   currentState: string;
@@ -18,9 +19,15 @@ interface NextActionBannerProps {
 export function NextActionBanner({ currentState, userRole, deal }: NextActionBannerProps) {
   const isBuyer = userRole === "buyer";
   const isSeller = userRole === "seller";
-
+  
   const chainId = useChainId();
   const { requireWallet, WalletPromptModal } = useRequireWallet();
+  
+  const chainName = Object.keys(CHAIN_CONFIG).find((key: any) => CHAIN_CONFIG[key as keyof typeof CHAIN_CONFIG].chainId === deal?.chainId);
+  const chainConfig = chainName ? CHAIN_CONFIG[chainName as keyof typeof CHAIN_CONFIG] : null;
+  const tokenEntry = chainConfig ? Object.entries(chainConfig.tokens).find(([, addr]) => (addr  as string).toLowerCase() === deal?.tokenAddress?.toLowerCase()) : null;
+  const tokenSymbol = tokenEntry ? tokenEntry[0] : "USDC";
+  const decimals = chainConfig?.decimals?.[tokenSymbol as keyof typeof chainConfig.decimals] || 6;
 
   const [isFundModalOpen, setFundModalOpen] = useState(false);
   const [isDeliveryModalOpen, setDeliveryModalOpen] = useState(false);
@@ -35,6 +42,7 @@ export function NextActionBanner({ currentState, userRole, deal }: NextActionBan
   const getDealId = () => {
     return deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0);
   };
+
 
   let title = "Next Action";
   let description = "No action required at this time.";
@@ -127,14 +135,14 @@ export function NextActionBanner({ currentState, userRole, deal }: NextActionBan
       </div>
 
       <FundDealModal
-        isOpen={isFundModalOpen}
-        onClose={() => setFundModalOpen(false)}
-        dealId={deal?.onChainId ? BigInt(deal.onChainId) : 0n}
-        tokenAddress={(deal?.token as any) || "0x"}
-        tokenSymbol={(deal?.token as any) || "USDC"}
-        decimals={6}
-        requiredAmount={deal?.amount ? BigInt(deal.amount as any) : 0n}
-      />
+            isOpen={isFundModalOpen}
+            onClose={() => setFundModalOpen(false)}
+            dealId={deal?.onChainId ? BigInt(deal.onChainId) : 0n}
+            tokenAddress={deal?.tokenAddress || "0x0000000000000000000000000000000000000000"}
+            tokenSymbol={tokenSymbol}
+            decimals={decimals}
+            requiredAmount={deal?.amount ? BigInt(deal.amount.toString()) : 0n}
+          />
       <SubmitDeliveryModal dealId={deal?.id as unknown as bigint} isOpen={isDeliveryModalOpen} onClose={() => setDeliveryModalOpen(false)} />
       <DisputeModal isOpen={isDisputeModalOpen} onClose={() => setDisputeModalOpen(false)} dealId={deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)} />
       <RequestRevisionModal isOpen={isRevisionModalOpen} onClose={() => setRevisionModalOpen(false)} dealId={deal?.onChainId ? BigInt(deal.onChainId) : BigInt(deal?.id || 0)} />
