@@ -98,8 +98,8 @@ export function SettingsPage() {
 
     try {
       const nonce = await getNonce.mutateAsync(address);
-      const message = `Sign this to link your wallet: ${nonce}`;
-      const signature = await signMessageAsync({ message });
+      const messageToSign = await getNonce.mutateAsync(address);
+      const signature = await signMessageAsync({ message: messageToSign });
 
       await linkWallet.mutateAsync({ address, signature });
       alert("Wallet linked successfully! You can now make it primary.");
@@ -151,8 +151,8 @@ export function SettingsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-input)] transition-colors ${activeTab === tab.id
-                    ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/30"
-                    : "hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
+                  ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue-bright)] border border-[var(--accent-blue)]/30"
+                  : "hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
                   } ${tab.color || ""}`}
               >
                 <tab.icon size={18} />
@@ -235,8 +235,8 @@ export function SettingsPage() {
                               removeWallet.isPending || wallet.isPrimary
                             }
                             className={`px-3 py-1 text-xs rounded transition-colors ${wallet.isPrimary
-                                ? "bg-slate-500/10 text-slate-500 cursor-not-allowed"
-                                : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                              ? "bg-slate-500/10 text-slate-500 cursor-not-allowed"
+                              : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
                               }`}
                             title={
                               wallet.isPrimary
